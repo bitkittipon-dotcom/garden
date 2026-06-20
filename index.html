@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1005;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 14 มิ.ย. 69 (5)';   // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1011;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (11)';   // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -1976,6 +1976,13 @@ window.supaReady = false;
   width: 30px; height: 30px; font-size: 14px; cursor: pointer; flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
 }
+.rv-head .rv-readall {
+  background: rgba(212,175,55,0.12); color: #d4af37;
+  border: 1px solid rgba(212,175,55,0.3); border-radius: 9px;
+  padding: 5px 11px; font-size: 12px; font-weight: 700; cursor: pointer;
+  flex: 0 0 auto; font-family: inherit; white-space: nowrap;
+}
+.rv-head .rv-readall:active { transform: scale(0.95); }
 .rv-head .rv-x:active { transform: scale(0.9); }
 .rv-body { padding: 12px; display: flex; flex-direction: column; gap: 11px; overflow: auto; flex: 1 1 auto; }
 .rv-empty { text-align: center; color: #8a7340; font-size: 13px; padding: 28px 0; }
@@ -3150,6 +3157,60 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     display: flex; align-items: center; justify-content: center;
   }
   #garden-view .gv-bset-x:active { background: #e5dfd0; }
+  /* ── ปุ่มกลับใน header ── */
+  #garden-view .gv-bset-backbtn { position: absolute; left: 12px; top: 10px; width: 30px; height: 30px; border-radius: 9px; background: #ece4d4; border: 0; color: #6b563a; font-size: 22px; font-weight: 800; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  #garden-view .gv-bset-backbtn:active { background: #ddd2bd; }
+  /* ── เมนูฟันเฟือง ── */
+  #garden-view .gv-menu-item { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #e5dcc8; border-radius: 12px; padding: 14px; margin-bottom: 10px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  #garden-view .gv-menu-item:active { background: #f6f1e6; }
+  #garden-view .gv-menu-item .gmi-ic { font-size: 22px; }
+  #garden-view .gv-menu-item .gmi-t { font-size: 14.5px; font-weight: 800; color: #3a2812; }
+  #garden-view .gv-menu-item .gmi-d { font-size: 11px; color: #8a7a5a; margin-top: 1px; }
+  #garden-view .gv-menu-item .gmi-arr { margin-left: auto; color: #b0a080; font-size: 18px; }
+  /* ── หน้าสรุปกำไร/ขาดทุน ── */
+  #garden-view .gv-prof-rng { display: flex; gap: 6px; margin-bottom: 12px; }
+  #garden-view .gv-prof-rng button { flex: 1; border: 1px solid #d8ccae; background: #fff; color: #6b563a; font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 9px; cursor: pointer; font-family: inherit; }
+  #garden-view .gv-prof-rng button.on { background: #6b8e3d; color: #fff; border-color: #5c7d33; }
+  #garden-view .gv-prof-rng button .ca { font-size: 9px; opacity: .85; }
+  #garden-view .gv-prof-rng button.open { box-shadow: 0 0 0 2px rgba(107,142,61,.35); }
+  #garden-view .gv-prof-picker { background: #fff; border: 1px solid #d8ccae; border-radius: 11px; padding: 9px; margin: -4px 0 12px; }
+  #garden-view .gv-prof-pick-h { font-size: 11px; font-weight: 800; color: #7a4a16; margin: 0 2px 7px; }
+  #garden-view .gv-prof-pick-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  #garden-view .gv-prof-pick-grid button { border: 1px solid #d8ccae; background: #faf6ee; color: #5a4a30; font-size: 12.5px; font-weight: 700; padding: 7px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+  #garden-view .gv-prof-pick-grid button.on { background: #6b8e3d; color: #fff; border-color: #5c7d33; }
+  #garden-view .gv-prof-pick-grid button .c { font-size: 9.5px; opacity: .75; margin-left: 5px; }
+  #garden-view .gv-prof-pick-empty { font-size: 12px; color: #8a7a5a; padding: 6px 4px; }
+  #garden-view .gv-prof-sum { background: linear-gradient(180deg,#fff,#f6f2e6); border: 1.5px solid #cdbf9a; border-radius: 14px; padding: 13px 14px; margin-bottom: 14px; }
+  #garden-view .gv-prof-counts { display: flex; gap: 8px; margin-bottom: 10px; }
+  #garden-view .gv-prof-cnt { flex: 1; text-align: center; border-radius: 10px; padding: 7px 4px; }
+  #garden-view .gv-prof-cnt.g { background: #eaf6e2; border: 1px solid #b6dca0; }
+  #garden-view .gv-prof-cnt.l { background: #fbe6e4; border: 1px solid #e6b3ad; }
+  #garden-view .gv-prof-cnt .n { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 20px; line-height: 1; }
+  #garden-view .gv-prof-cnt.g .n { color: #2f7d1f; }
+  #garden-view .gv-prof-cnt.l .n { color: #b5281b; }
+  #garden-view .gv-prof-cnt .x { font-size: 10px; color: #7a6a4a; font-weight: 700; margin-top: 2px; }
+  #garden-view .gv-prof-srow { display: flex; justify-content: space-between; font-size: 12.5px; padding: 3px 2px; color: #5a4a30; font-weight: 700; }
+  #garden-view .gv-prof-srow .v { font-family: 'JetBrains Mono', monospace; }
+  #garden-view .gv-prof-main { border-top: 1px dashed #d8c8a0; margin-top: 6px; padding-top: 8px; }
+  #garden-view .gv-prof-main .lbl { font-size: 13px; font-weight: 800; color: #3a2812; }
+  #garden-view .gv-prof-main .big { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 22px; }
+  #garden-view .gv-bset-body .pos { color: #2f7d1f; }
+  #garden-view .gv-bset-body .neg { color: #b5281b; }
+  #garden-view .gv-prof-mdiv { display: flex; align-items: center; gap: 8px; margin: 12px 2px 7px; }
+  #garden-view .gv-prof-mdiv span:first-child { font-size: 11.5px; font-weight: 800; color: #7a4a16; white-space: nowrap; }
+  #garden-view .gv-prof-mdiv::before, #garden-view .gv-prof-mdiv::after { content: ''; flex: 1; height: 1px; background: rgba(122,74,22,.25); }
+  #garden-view .gv-prof-mdiv .cnt { font-size: 10px; color: #a08a63; font-weight: 700; flex: 0 0 auto; }
+  #garden-view .gv-prof-row { display: flex; align-items: center; gap: 9px; background: #fff; border: 1px solid #e8e0cc; border-radius: 10px; padding: 8px 11px; margin-bottom: 7px; cursor: pointer; }
+  #garden-view .gv-prof-row.off { opacity: .42; }
+  #garden-view .gv-prof-ck { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #6b8e3d; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; color: #fff; background: #6b8e3d; }
+  #garden-view .gv-prof-row.off .gv-prof-ck { background: #fff; color: transparent; border-color: #c8bca0; }
+  #garden-view .gv-prof-l { flex: 1; min-width: 0; }
+  #garden-view .gv-prof-nm { font-size: 13px; font-weight: 700; color: #3a2812; }
+  #garden-view .gv-prof-dt { font-size: 10px; color: #9a8a63; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  #garden-view .gv-prof-r { text-align: right; }
+  #garden-view .gv-prof-amt { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 13px; white-space: nowrap; }
+  #garden-view .gv-prof-pct { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; }
+  #garden-view .gv-prof-empty { text-align: center; color: #8a7a5a; font-size: 12.5px; padding: 24px 10px; }
   #garden-view .gv-bset-body {
     padding: 14px 16px 24px;
   }
@@ -4681,12 +4742,12 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     }
     /* วันที่เปิด + การ์ดวันเที่ยวเก็บ (แบบ 3) */
     #garden-view .lc-line2-dates { display: block; }
-    #garden-view .lc-drow { display: flex; align-items: center; gap: 5px; }
+    #garden-view .lc-drow { display: flex; align-items: center; gap: 5px; position: relative; }
     #garden-view .lc-drow:first-child { margin-bottom: 7px; }
     #garden-view .lc-dlabel { white-space: nowrap; font-size: 11.5px; color: #8b6f3f; font-weight: 700; }
     #garden-view .lc-dcolon { color: #8b6f3f; font-weight: 700; font-size: 11.5px; }
     #garden-view .lc-drow .num { color: #4a6928; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-    #garden-view .lc-daywrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    #garden-view .lc-daywrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0; }
     #garden-view .lc-daycard {
       display: inline-flex; flex-direction: column; align-items: center; min-width: 34px;
       background: #fff; border: 1px solid rgba(107,68,35,0.3); border-radius: 8px;
@@ -4711,6 +4772,27 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-daywrap.open::-webkit-scrollbar-thumb { background: rgba(74,105,40,.4); border-radius: 3px; }
     #garden-view .lc-daywrap.open .lc-daycard { min-width: 96px; border-color: #4a6928; background: #f4faec; box-shadow: 0 2px 6px rgba(74,105,40,.22); }
     #garden-view .lc-daywrap.open .lc-daycard.last { background: #eef7e0; }
+    /* เงาจางขอบขวา บอกว่าเลื่อนซ้าย-ขวาดูต่อได้ */
+    #garden-view .lc-drow:has(.lc-daywrap.open)::after { content: ''; position: absolute; top: 0; right: 0; bottom: 6px; width: 24px; pointer-events: none; background: linear-gradient(90deg, rgba(240,228,192,0), rgba(240,228,192,0.92)); }
+    /* ── กล่องกำไร/ขาดทุนบนการ์ด ── */
+    #garden-view .lc-mid { display: flex; gap: 9px; align-items: stretch; }
+    #garden-view .lc-mid-left { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 7px; }
+    #garden-view .lc-pbox { flex-shrink: 0; width: 140px; border-radius: 10px; padding: 8px 10px; cursor: pointer; border: 1.5px solid; display: flex; flex-direction: column; justify-content: center; user-select: none; transition: transform .12s; }
+    #garden-view .lc-pbox:active { transform: scale(.98); }
+    #garden-view .lc-pbox.gain { background: linear-gradient(180deg,#eefbe9,#dff3d2); border-color: #4a9e3a; }
+    #garden-view .lc-pbox.loss { background: linear-gradient(180deg,#fdecec,#f7d8d8); border-color: #c0392b; }
+    #garden-view .lc-pb-row { display: flex; justify-content: space-between; font-size: 10px; color: #6b6048; font-weight: 700; line-height: 1.5; }
+    #garden-view .lc-pb-row .v { font-family: 'JetBrains Mono', monospace; }
+    #garden-view .lc-pb-sep { height: 1px; background: rgba(107,68,35,.18); margin: 5px 0; }
+    #garden-view .lc-pb-amt { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 19px; text-align: center; line-height: 1.1; }
+    #garden-view .lc-pb-pct { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 14px; text-align: center; margin-top: 1px; }
+    #garden-view .lc-pbox.gain .lc-pb-amt, #garden-view .lc-pbox.gain .lc-pb-pct { color: #2f7d1f; }
+    #garden-view .lc-pbox.loss .lc-pb-amt, #garden-view .lc-pbox.loss .lc-pb-pct { color: #b5281b; }
+    #garden-view .lc-pb-view { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s, opacity .2s, margin .25s; }
+    #garden-view .lc-pbox.open .lc-pb-view { max-height: 34px; opacity: 1; margin-top: 7px; }
+    #garden-view .lc-pb-viewbtn { display: block; width: 100%; text-align: center; font-size: 11.5px; font-weight: 800; border-radius: 7px; padding: 5px; border: 1px solid; background: #fff; cursor: pointer; font-family: inherit; }
+    #garden-view .lc-pbox.gain .lc-pb-viewbtn { color: #2f7d1f; border-color: #4a9e3a; }
+    #garden-view .lc-pbox.loss .lc-pb-viewbtn { color: #b5281b; border-color: #c0392b; }
     #garden-view .lc-daywrap.open .lc-daycard .lc-body { width: 100%; max-height: 170px; opacity: 1; margin-top: 4px; }
 
     #garden-view .lc-bar-row {
@@ -10811,6 +10893,10 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 /* ── ระบบบันทึกข้อผิดพลาด (errlog) ── */
 .menu-admin-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:8px;border-radius:9px;background:#e02424;color:#fff;font-size:11px;font-weight:800;vertical-align:middle;box-shadow:0 1px 3px rgba(224,36,36,0.5);}
 .errlog-card{margin-top:22px;background:#fbf4e2;border:1px solid rgba(90,56,24,0.22);border-radius:14px;padding:14px 13px 16px;box-shadow:0 2px 6px rgba(0,0,0,0.08);text-align:left;}
+.buglog-report-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(180deg,#d98a3a,#b5701f);color:#fff;border:0;border-radius:12px;padding:13px;font-size:14.5px;font-weight:800;box-shadow:0 2px 6px rgba(181,112,31,0.4);margin:6px 0 0;cursor:pointer;font-family:inherit;}
+.buglog-report-btn:active{transform:scale(0.97);}
+.buglog-divider{display:flex;align-items:center;gap:10px;color:#a08a63;font-size:11px;font-weight:700;margin:18px 0 4px;}
+.buglog-divider::before,.buglog-divider::after{content:'';flex:1;height:1px;background:rgba(90,56,24,0.2);}
 .errlog-h{display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:800;color:#7a4a16;margin-bottom:10px;}
 .errlog-ver{font-size:10.5px;font-weight:600;color:#a08a63;background:rgba(160,138,99,0.14);padding:2px 8px;border-radius:8px;}
 .errlog-tools{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;align-items:center;}
@@ -10847,6 +10933,24 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .combo-mini-lbl { flex-basis: 100%; min-width: 0; border-right: 0; padding-right: 0; margin-bottom: 1px; font-size: 9.5px; opacity: 0.85; }
   #garden-view .combo-input input { font-size: 15px; }
 }
+</style>
+<style>
+/* ── Modal เลือกประทับผลกำไรลงการ์ด ── */
+.stmp-bg{position:fixed;inset:0;background:rgba(20,12,4,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;}
+.stmp-box{background:#faf6ee;border-radius:16px;border-top:3px solid #6b8e3d;max-width:320px;width:100%;padding:18px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,0.4);font-family:'Sarabun',sans-serif;text-align:center;}
+.stmp-h{font-size:15px;font-weight:800;color:#4a6928;}
+.stmp-q{font-size:13px;color:#6b563a;margin:4px 0 12px;}
+.stmp-prev{border:1.5px solid #4a9e3a;border-radius:11px;padding:10px 14px;margin-bottom:14px;background:linear-gradient(180deg,#fff,#f6f2e6);}
+.stmp-prow{display:flex;justify-content:space-between;font-size:11.5px;color:#6b6048;font-weight:700;line-height:1.7;}
+.stmp-prow .v{font-family:'JetBrains Mono',monospace;}
+.stmp-psep{height:1px;background:rgba(107,68,35,0.18);margin:6px 0;}
+.stmp-pamt{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:22px;line-height:1.1;}
+.stmp-ppct{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:15px;margin-top:1px;}
+.stmp-btns{display:flex;gap:9px;}
+.stmp-btn{flex:1;border:0;border-radius:10px;padding:11px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+.stmp-btn.ghost{background:#ece4d4;color:#6b563a;}
+.stmp-btn.ok{background:linear-gradient(180deg,#6fae45,#4a8a2e);color:#fff;box-shadow:0 2px 6px rgba(74,138,46,0.4);}
+.stmp-btn:active{transform:scale(0.97);}
 </style>
 </head>
 <body>
@@ -10905,11 +11009,11 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     </div>
     <div class="user-menu" id="user-menu" onclick="event.stopPropagation()">
       <div class="user-menu-item" id="menu-admin" onclick="goAdmin()">
-        ⚜ จัดการผู้ใช้<span class="menu-admin-badge" id="menu-admin-badge" style="display:none;">0</span>
+        ⚜ จัดการผู้ใช้
       </div>
       <div class="user-menu-divider"></div>
-      <div class="user-menu-item" onclick="errlogReport()">
-        🐞 แจ้งปัญหา/บัค
+      <div class="user-menu-item" id="menu-bug" onclick="goBugLog()">
+        🐞 แจ้งปัญหา/บัค<span class="menu-admin-badge" id="menu-admin-badge" style="display:none;">0</span>
       </div>
       <div class="user-menu-divider"></div>
       <div class="user-menu-item danger" onclick="logout()">
@@ -10944,11 +11048,19 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     <div class="admin-h">จัดการผู้ใช้</div>
     <div id="users-list"></div>
     <button class="admin-add" onclick="addUser()">+ เพิ่มผู้ใช้ใหม่</button>
+    <div style="margin-top: 24px; font-size: 11px; color: rgba(212,175,55,0.4); text-align: center;">
+      💡 ประวัติการเข้าใช้: ดู console (F12)
+    </div>
+  </div>
 
-    <!-- ─── บันทึกข้อผิดพลาด (errlog) — admin เท่านั้น ─── -->
+  <!-- ─── หน้าแจ้งปัญหา/บัค (เฉพาะแอดมิน — ผู้ใช้ทั่วไปกดแล้วขึ้นช่องแจ้งอย่างเดียว) ─── -->
+  <div id="buglog-view" class="admin-page" style="display:none;">
+    <div class="admin-h">🐞 แจ้งปัญหา / บัค</div>
+    <button class="buglog-report-btn" onclick="errlogReport()">✍️ แจ้งปัญหา/บัคใหม่</button>
+    <div class="buglog-divider">รายการที่ระบบเก็บไว้</div>
     <div class="errlog-card">
       <div class="errlog-h">
-        <span>🐞 บันทึกข้อผิดพลาด</span>
+        <span>บันทึกข้อผิดพลาด</span>
         <span class="errlog-ver" id="errlog-ver"></span>
       </div>
       <div class="errlog-tools">
@@ -10958,9 +11070,6 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
         <label class="errlog-sw"><input type="checkbox" id="errlog-on-chk" onchange="errlogToggleEnabled(this.checked)"> เก็บบัค</label>
       </div>
       <div id="errlog-body"><div style="text-align:center;padding:20px;color:#8a7350;font-size:13px;">กด 🔄 รีเฟรช เพื่อโหลดรายการ</div></div>
-    </div>
-    <div style="margin-top: 24px; font-size: 11px; color: rgba(212,175,55,0.4); text-align: center;">
-      💡 ประวัติการเข้าใช้: ดู console (F12)
     </div>
   </div>
 
@@ -11755,15 +11864,16 @@ const NOTEBOOK_LABELS = {
   stock: '📙 สต็อก',
   report: '📕 รายงาน',
   gardenDelete: '🗑️ ลบสวนได้',
+  profitView: '📊 เห็นกำไร/ขาดทุน',
 };
 const USERS_KEY = 'thodsapon_users';
 const SESSION_KEY = 'thodsapon_session';
 const DEFAULT_USERS = [
-  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true } },
+  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true, profitView: true } },
 ];
 
 function loadUsers() {
-  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false };
+  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false, profitView: false };
   try {
     const raw = localStorage.getItem(USERS_KEY);
     if (!raw) { saveUsers(DEFAULT_USERS); return DEFAULT_USERS.map(u => ({...u, perms: {...u.perms}})); }
@@ -12397,6 +12507,7 @@ function openBook(id) {
   const showInterior = () => {
     document.getElementById('home-view').style.display = 'none';
     document.getElementById('admin-view').style.display = 'none';
+    var _blI = document.getElementById('buglog-view'); if (_blI) _blI.style.display = 'none';
     if (id === 'garden') {
       document.getElementById('book-view').style.display = 'none';
       document.getElementById('garden-view').style.display = '';
@@ -12471,6 +12582,7 @@ function goHome() {
   document.getElementById('home-view').style.display = '';
   document.getElementById('admin-view').style.display = 'none';
   document.getElementById('book-view').style.display = 'none';
+  var _blHome = document.getElementById('buglog-view'); if (_blHome) _blHome.style.display = 'none';
   if (gv) gv.style.display = 'none';
   document.getElementById('topbar').style.display = '';
   document.getElementById('topbar-back').style.display = 'none';
@@ -12527,6 +12639,7 @@ function goAdmin() {
   document.getElementById('home-view').style.display = 'none';
   document.getElementById('admin-view').style.display = '';
   document.getElementById('book-view').style.display = 'none';
+  var _blA = document.getElementById('buglog-view'); if (_blA) _blA.style.display = 'none';
   const gv = document.getElementById('garden-view');
   if (gv) gv.style.display = 'none';
   document.getElementById('topbar').style.display = '';
@@ -12540,7 +12653,30 @@ function goAdmin() {
   if (window.supaReady) {
     _cloudPullUsers().catch(()=>{});
   }
-  // ── errlog: เวอร์ชัน + สถานะสวิตช์ + โหลดรายการ ──
+}
+
+function goBugLog() {
+  // ผู้ใช้ทั่วไป → แจ้งบัคอย่างเดียว (ไม่เห็นรายการ)
+  if (!currentUser || currentUser.role !== 'admin') {
+    document.getElementById('user-menu').classList.remove('open');
+    if (window.errlogReport) errlogReport();
+    return;
+  }
+  // แอดมิน → เปิดหน้าบันทึกบัค
+  haptic(10);
+  document.getElementById('user-menu').classList.remove('open');
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('admin-view').style.display = 'none';
+  document.getElementById('buglog-view').style.display = '';
+  document.getElementById('book-view').style.display = 'none';
+  const gv = document.getElementById('garden-view');
+  if (gv) gv.style.display = 'none';
+  document.getElementById('topbar').style.display = '';
+  document.getElementById('topbar-back').style.display = '';
+  document.getElementById('vintage-settings-btn').style.display = 'none';
+  const bm = document.getElementById('bookmark-tail');
+  if (bm) { bm.classList.remove('show'); bm.style.display = 'none'; }
+  document.querySelectorAll('.page-corner-curl').forEach(c => c.style.display = 'none');
   try {
     const vEl = document.getElementById('errlog-ver');
     if (vEl) vEl.textContent = (window.__APP_VERSION || '') + ' · #' + (window.__APP_BUILD || '?');
@@ -12549,6 +12685,7 @@ function goAdmin() {
     if (window.errlogOpen) errlogOpen();
   } catch (e) {}
 }
+window.goBugLog = goBugLog;
 
 function toggleUserMenu(ev) {
   ev.stopPropagation();
@@ -12563,7 +12700,7 @@ function renderUsers() {
   wrap.innerHTML = users.map((u, idx) => {
     const isAdmin = u.role === 'admin';
     const isCurrent = u.id === currentUser.id;
-    const permList = ['quote','garden','gardenDelete'].map(p => {
+    const permList = ['quote','garden','gardenDelete','profitView'].map(p => {
       const checked = u.perms[p] ? 'checked' : '';
       const dis = isAdmin ? 'disabled' : '';
       const disCls = isAdmin ? 'disabled' : '';
@@ -15996,14 +16133,64 @@ function saveQuote() {
   persist();
   // mark recent for current user
   if (typeof pushRecent === 'function') pushRecent(q.id);
-  toast(idx >= 0 ? 'แก้ไขแล้ว ✓' : 'บันทึกแล้ว ✓');
   // premium feedback
   if (typeof haptic === 'function') haptic(20);
   if (typeof playSave === 'function') playSave();
   if (typeof spawnConfetti === 'function') spawnConfetti(40);
+  // ── ประทับการ์ด: ถ้าบิลผูกสวน + คำนวณกำไร/ขาดทุนได้ → ถามตัวเลือกก่อน ──
+  const _stamp = q.gardenId ? computeQuoteStamp(q) : null;
+  if (_stamp) {
+    _pendingStamp = { gardenId: q.gardenId, stamp: _stamp, isEdit: idx >= 0 };
+    showStampChoiceModal(_stamp);
+    return;
+  }
+  toast(idx >= 0 ? 'แก้ไขแล้ว ✓' : 'บันทึกแล้ว ✓');
   resetForm();
   switchView('list');
 }
+
+let _pendingStamp = null;
+function showStampChoiceModal(s) {
+  const fmtm = (typeof fmt === 'function') ? fmt : (x => x);
+  const gain = s.amount >= 0;
+  const col = gain ? '#2f7d1f' : '#b5281b';
+  const arrow = gain ? '↑' : '↓';
+  const pctTxt = (s.pct === null) ? '—' : (gain ? '+' : '') + Math.abs(s.pct).toFixed(1) + '%';
+  const html = `
+    <div class="stmp-bg" id="stmp-bg" onclick="if(event.target===this)stampChoose(false)">
+      <div class="stmp-box" role="dialog">
+        <div class="stmp-h">บันทึกบิลแล้ว ✓</div>
+        <div class="stmp-q">ประทับผลที่การ์ดสวนด้วยไหม?</div>
+        <div class="stmp-prev" style="border-color:${col}">
+          <div class="stmp-prow"><span>ต้นทุนรวม</span><span class="v">${fmtm(s.cost)}</span></div>
+          <div class="stmp-prow"><span>ยอดขาย</span><span class="v">${fmtm(s.sold)}</span></div>
+          <div class="stmp-psep"></div>
+          <div class="stmp-pamt" style="color:${col}">${gain ? '+' : '−'}${fmtm(Math.abs(s.amount))}</div>
+          <div class="stmp-ppct" style="color:${col}">${arrow} ${pctTxt}</div>
+        </div>
+        <div class="stmp-btns">
+          <button class="stmp-btn ghost" onclick="stampChoose(false)">ไม่ต้อง</button>
+          <button class="stmp-btn ok" onclick="stampChoose(true)">📌 ประทับที่การ์ด</button>
+        </div>
+      </div>
+    </div>`;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  document.body.appendChild(wrap.firstElementChild);
+}
+function stampChoose(yes) {
+  const p = _pendingStamp; _pendingStamp = null;
+  const bg = document.getElementById('stmp-bg'); if (bg) bg.remove();
+  if (yes && p && typeof window.stampGardenFromBill === 'function') {
+    window.stampGardenFromBill(p.gardenId, p.stamp);
+    if (typeof toast === 'function') toast('📌 ประทับที่การ์ดแล้ว ✓');
+  } else {
+    if (typeof toast === 'function') toast(p && p.isEdit ? 'แก้ไขแล้ว ✓' : 'บันทึกแล้ว ✓');
+  }
+  resetForm();
+  switchView('list');
+}
+window.stampChoose = stampChoose;
 
 function resetForm() {
   editingId = null;
@@ -16121,6 +16308,7 @@ function openReviewPopup() {
           <svg viewBox="0 0 24 24" fill="none" stroke="#e8c97a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
           <span class="rv-t">แจ้งเตือน</span>
           ${list.length?`<span class="rv-c">${list.length>99?'99+':list.length}</span>`:''}
+          ${list.length?`<button class="rv-readall" onclick="reviewMarkAllSeen()">อ่านทั้งหมด</button>`:''}
           <button class="rv-x" onclick="closeReviewPopup()" aria-label="ปิด">✕</button>
         </div>
         <div class="rv-body">${body}</div>
@@ -16134,6 +16322,19 @@ function closeReviewPopup() {
   const bd = document.getElementById('rv-backdrop');
   if (bd) bd.remove();
 }
+function reviewMarkAllSeen() {
+  if (typeof haptic === 'function') haptic(10);
+  const s = reviewLoadSeen();
+  (state && Array.isArray(state.quotes) ? state.quotes : [])
+    .filter(q => q && q.pendingReview && !s.has(q.id))
+    .forEach(q => s.add(q.id));
+  reviewSaveSeen(s);
+  if (typeof updateMailNotif === 'function') updateMailNotif();
+  // รีเฟรชป๊อปอัป → กลายเป็น "ไม่มีแจ้งเตือนใหม่"
+  closeReviewPopup();
+  openReviewPopup();
+}
+window.reviewMarkAllSeen = reviewMarkAllSeen;
 function notifOpenBill(id) {
   if (typeof haptic === 'function') haptic(10);
   closeReviewPopup();
@@ -16156,6 +16357,22 @@ window.closeReviewPopup = closeReviewPopup;
 window.notifOpenBill = notifOpenBill;
 window.mailNotifClick = mailNotifClick;
 window.updateMailNotif = updateMailNotif;
+
+window.openQuoteBill = function (quoteId) {
+  if (!quoteId) { if (typeof toast === 'function') toast('ไม่พบบิล'); return; }
+  const exists = state && Array.isArray(state.quotes) && state.quotes.some(x => x.id === quoteId);
+  if (!exists) { if (typeof toast === 'function') toast('บิลถูกลบไปแล้ว'); return; }
+  if (typeof haptic === 'function') haptic(10);
+  const bookView = document.getElementById('book-view');
+  const inBook = bookView && bookView.style.display !== 'none';
+  if (inBook) {
+    if (typeof loadQuote === 'function') loadQuote(quoteId);
+  } else {
+    if (typeof openBook === 'function') openBook('quote');
+    const delay = (typeof settings !== 'undefined' && settings && settings.anim) ? 1200 : 90;
+    setTimeout(() => { if (typeof loadQuote === 'function') loadQuote(quoteId); }, delay);
+  }
+};
 
 function loadQuote(id) {
   const q = state.quotes.find(x => x.id === id);
@@ -16608,6 +16825,26 @@ function calcQuoteSummary(q) {
   const hasSold = q.rows.some(r => r.soldPrice > 0);
   const profit = hasSold ? sold - quoted - exp : null;
   return { totalKg, quoted, sold, exp, profit, hasSold };
+}
+
+// ── คำนวณค่าประทับการ์ด (กำไร/ต้นทุนรวม/ยอดขาย/% ต่อต้นทุน) จากบิล ──
+function computeQuoteStamp(q) {
+  try {
+    const s = calcQuoteSummary(q);
+    if (!s || !s.hasSold || s.profit === null || s.profit === undefined) return null;
+    // ต้นทุนรวม: บิลเหมา (wholesale) = ราคาซื้อ(quoted)+ค่าใช้จ่าย ; บิลอื่น exp รวมต้นทุนซื้อแล้ว
+    const isWholesale = !(s.isOrchard || s.isPerkg || s.isMultiday || s.isPlan);
+    const cost = isWholesale ? (s.quoted + s.exp) : s.exp;
+    const pct = (cost > 0) ? (s.profit / cost * 100) : null;
+    return {
+      amount: Math.round(s.profit),
+      cost: Math.round(cost),
+      sold: Math.round(s.sold),
+      pct: (pct === null ? null : Math.round(pct * 10) / 10),
+      quoteId: q.id,
+      date: new Date().toISOString(),
+    };
+  } catch (e) { return null; }
 }
 
 function renderList() {
@@ -18962,6 +19199,30 @@ window.lcToggleDays = function (el, ev) {
   try { var w = el.closest('.lc-daywrap'); if (w) w.classList.toggle('open'); } catch (e) {}
 };
 
+// ── กล่องกำไร/ขาดทุนบนการ์ด (จากบิลที่ประทับ) ──
+function buildStampBox(s, gid) {
+  if (!s) return '';
+  const gain = (Number(s.amount) || 0) >= 0;
+  const cls = gain ? 'gain' : 'loss';
+  const arrow = gain ? '↑' : '↓';
+  const pctTxt = (s.pct === null || s.pct === undefined) ? '—'
+    : (gain ? '+' : '') + Math.abs(Number(s.pct)).toFixed(1) + '%';
+  const amtTxt = (gain ? '+' : '−') + fmtNum(Math.abs(Number(s.amount) || 0));
+  const qid = gbEscapeHtml(s.quoteId || '');
+  return `<div class="lc-pbox ${cls}" onclick="lcStampClick(event,this)">
+      <div class="lc-pb-row"><span>ทุน</span><span class="v">${fmtNum(Number(s.cost) || 0)}</span></div>
+      <div class="lc-pb-row"><span>ขาย</span><span class="v">${fmtNum(Number(s.sold) || 0)}</span></div>
+      <div class="lc-pb-sep"></div>
+      <div class="lc-pb-amt">${amtTxt}</div>
+      <div class="lc-pb-pct">${arrow} ${pctTxt}</div>
+      <div class="lc-pb-view"><button class="lc-pb-viewbtn" onclick="event.stopPropagation();window.openQuoteBill('${qid}')">📄 ดูบิล</button></div>
+    </div>`;
+}
+window.lcStampClick = function (ev, el) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  try { el.classList.toggle('open'); } catch (e) {}
+};
+
 function renderListView() {
   document.getElementById('page-sub').textContent = `No. II · ${gardens.length} สวน`;
   renderChips();
@@ -19236,7 +19497,9 @@ function renderListView() {
             ${(g.status === 'done' || g.closedAt) ? '' : stamp}
           </div>
         </div>
-        ${row2Html ? `<div class="lc-row2">${row2Html}</div>` : ''}
+        ${((typeof canViewProfit === 'function' && canViewProfit() && g.stamp)
+            ? `<div class="lc-mid"><div class="lc-mid-left">${row2Html || ''}</div>${buildStampBox(g.stamp, g.id)}</div>`
+            : (row2Html ? `<div class="lc-row2">${row2Html}</div>` : ''))}
         ${progBarHtml}
         ${(g.status === 'done' || g.closedAt) ? stamp : ''}
       </div>
@@ -20600,6 +20863,23 @@ function canDeleteGarden() {
   return !!(currentUser.perms && currentUser.perms.gardenDelete);
 }
 window.canDeleteGarden = canDeleteGarden;
+function canViewProfit() {
+  if (typeof currentUser === 'undefined' || !currentUser) return false;
+  if (currentUser.role === 'admin') return true;
+  return !!(currentUser.perms && currentUser.perms.profitView);
+}
+window.canViewProfit = canViewProfit;
+// ── ประทับผลกำไร/ขาดทุนจากบิล ลงการ์ดสวน (เรียกจาก saveQuote คนละ scope) ──
+window.stampGardenFromBill = function (gardenId, stamp) {
+  try {
+    const g = gardens.find(x => x.id === gardenId);
+    if (!g) return;
+    g.stamp = stamp;
+    g._localUpdatedAt = Date.now();
+    saveGardens(gardens);
+    if (typeof renderListView === 'function') renderListView();
+  } catch (e) {}
+};
 
 async function delGarden(id) {
   // ── เช็คสิทธิ์ลบสวน (admin หรือผู้ที่ได้รับสิทธิ์ gardenDelete เท่านั้น) ──
@@ -24305,13 +24585,16 @@ function gvBsetWriteLastBackup() {
 
 // ── Open / Close ──
 function gvBsetOpen() {
-  // เฉพาะ admin เท่านั้น
-  if (!currentUser || currentUser.role !== 'admin') {
-    if (typeof toast === 'function') toast('เฉพาะผู้ดูแลระบบ');
+  // admin (แบ็คอัพ) หรือ ผู้มีสิทธิ์เห็นกำไร (สรุป) เท่านั้น
+  const isAdmin = !!(currentUser && currentUser.role === 'admin');
+  const canProfit = (typeof canViewProfit === 'function' && canViewProfit());
+  if (!isAdmin && !canProfit) {
+    if (typeof toast === 'function') toast('ไม่มีสิทธิ์เข้าถึง');
     return;
   }
   const bg = document.getElementById('gv-bset-bg');
   if (!bg) return;
+  _gvBsetPage = 'menu';
   gvBsetRender();
   bg.classList.add('open');
   if (typeof haptic === 'function') haptic(10);
@@ -24325,7 +24608,131 @@ function gvBsetBgClick(e) {
 }
 
 // ── Render ──
+let _gvBsetPage = 'menu';
+let _gvProfitRange = 'all';
+let _gvProfitExcl = {};
+let _gvProfitSelYear = null;
+let _gvProfitSelMonthKey = null;
+let _gvProfitPicker = null;
+// ── Dispatcher: เมนู / แบ็คอัพ / สรุปกำไร ──
 function gvBsetRender() {
+  const body = document.getElementById('gv-bset-body'); if (!body) return;
+  const ttlEl = document.getElementById('gv-bset-ttl');
+  const backEl = document.getElementById('gv-bset-back');
+  if (_gvBsetPage === 'backup') { if (ttlEl) ttlEl.textContent = '💾 แบ็คอัพข้อมูล'; if (backEl) backEl.style.display = ''; gvBsetRenderBackup(); return; }
+  if (_gvBsetPage === 'profit') { if (ttlEl) ttlEl.textContent = '📊 สรุป กำไร/ขาดทุน'; if (backEl) backEl.style.display = ''; gvBsetRenderProfit(); return; }
+  if (ttlEl) ttlEl.textContent = '⚙ ตั้งค่าเล่มสวน';
+  if (backEl) backEl.style.display = 'none';
+  const showProfit = (typeof canViewProfit === 'function' && canViewProfit());
+  const showBackup = !!(currentUser && currentUser.role === 'admin');
+  body.innerHTML = `
+    ${showProfit ? `<div class="gv-menu-item" onclick="gvBsetGo('profit')"><span class="gmi-ic">📊</span><div class="gmi-tx"><div class="gmi-t">สรุป กำไร / ขาดทุน</div><div class="gmi-d">ผลรวมต่อช่วงเวลา · เลือกสวนได้</div></div><span class="gmi-arr">›</span></div>` : ''}
+    ${showBackup ? `<div class="gv-menu-item" onclick="gvBsetGo('backup')"><span class="gmi-ic">💾</span><div class="gmi-tx"><div class="gmi-t">แบ็คอัพข้อมูล</div><div class="gmi-d">ดาวน์โหลด · กู้คืน · พื้นที่ · cloud</div></div><span class="gmi-arr">›</span></div>` : ''}
+    ${(!showProfit && !showBackup) ? '<div class="gv-prof-empty">ไม่มีเมนูที่ใช้ได้</div>' : ''}`;
+}
+window.gvBsetGo = function (p) {
+  if (p === 'backup' && !(currentUser && currentUser.role === 'admin')) return;
+  if (p === 'profit' && !(typeof canViewProfit === 'function' && canViewProfit())) return;
+  _gvBsetPage = p;
+  if (p === 'profit') { _gvProfitRange = 'all'; _gvProfitExcl = {}; _gvProfitSelYear = null; _gvProfitSelMonthKey = null; _gvProfitPicker = null; }
+  gvBsetRender();
+};
+window.gvBsetBack = function () { _gvBsetPage = 'menu'; gvBsetRender(); };
+
+// ── หน้าสรุป กำไร/ขาดทุน ──
+function gvBsetRenderProfit() {
+  const body = document.getElementById('gv-bset-body'); if (!body) return;
+  const MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const MONF = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  const odOf = g => g.openedAt || (g.stamp && g.stamp.date) || null;
+  const stamped = (gardens || []).filter(g => g.stamp && typeof g.stamp.amount === 'number');
+  const mkOf = g => { const iso = odOf(g); if (!iso) return null; const d = new Date(iso); return d.getFullYear() + '-' + d.getMonth(); };
+  const yOf = g => { const iso = odOf(g); if (!iso) return null; return new Date(iso).getFullYear(); };
+  const inRange = g => {
+    const iso = odOf(g);
+    if (_gvProfitRange === 'year') return iso ? (yOf(g) === _gvProfitSelYear) : false;
+    if (_gvProfitRange === 'month') return iso ? (mkOf(g) === _gvProfitSelMonthKey) : false;
+    return true;
+  };
+  const shown = stamped.filter(inRange).sort((a, b) => String(odOf(b) || '').localeCompare(String(odOf(a) || '')));
+  const included = shown.filter(g => !_gvProfitExcl[g.id]);
+  const gain = included.filter(g => g.stamp.amount >= 0).length;
+  const loss = included.filter(g => g.stamp.amount < 0).length;
+  const totProfit = included.reduce((s, g) => s + (g.stamp.amount || 0), 0);
+  const totCost = included.reduce((s, g) => s + (g.stamp.cost || 0), 0);
+  const totSold = included.reduce((s, g) => s + (g.stamp.sold || 0), 0);
+  const pct = totCost > 0 ? (totProfit / totCost * 100) : 0;
+  const pc = totProfit >= 0 ? 'pos' : 'neg';
+  const beY = y => ((y + 543) % 100);
+  const allYears = [...new Set(stamped.map(yOf).filter(y => y != null))].sort((a, b) => b - a);
+  const allMonths = [...new Set(stamped.map(mkOf).filter(x => x))].sort((a, b) => b.localeCompare(a));
+  const yLbl = (_gvProfitRange === 'year' && _gvProfitSelYear != null) ? (' ' + beY(_gvProfitSelYear)) : ' ▾';
+  let mLbl = ' ▾';
+  if (_gvProfitRange === 'month' && _gvProfitSelMonthKey) { const pm = _gvProfitSelMonthKey.split('-').map(Number); mLbl = ' ' + MON[pm[1]] + beY(pm[0]); }
+  const rngHtml = `<div class="gv-prof-rng">
+    <button class="${_gvProfitRange === 'all' ? 'on' : ''}" onclick="gvProfSetRange('all')">ทั้งหมด</button>
+    <button class="${_gvProfitRange === 'year' ? 'on' : ''}${_gvProfitPicker === 'year' ? ' open' : ''}" onclick="gvProfTogPicker('year')">ปี<span class="ca">${yLbl}</span></button>
+    <button class="${_gvProfitRange === 'month' ? 'on' : ''}${_gvProfitPicker === 'month' ? ' open' : ''}" onclick="gvProfTogPicker('month')">เดือน<span class="ca">${mLbl}</span></button>
+    <button class="${_gvProfitRange === 'custom' ? 'on' : ''}" onclick="gvProfSetRange('custom')">เลือกเอง</button>
+  </div>`;
+  let pickerHtml = '';
+  if (_gvProfitPicker === 'year') {
+    pickerHtml = `<div class="gv-prof-picker"><div class="gv-prof-pick-h">เลือกปี (ที่มีสวนประทับ)</div><div class="gv-prof-pick-grid">${
+      allYears.length ? allYears.map(y => { const c = stamped.filter(g => yOf(g) === y).length; return `<button class="${(_gvProfitRange === 'year' && _gvProfitSelYear === y) ? 'on' : ''}" onclick="gvProfChooseYear(${y})">ปี ${beY(y)}<span class="c">${c} สวน</span></button>`; }).join('') : '<div class="gv-prof-pick-empty">ยังไม่มีสวนที่ประทับ</div>'
+    }</div></div>`;
+  } else if (_gvProfitPicker === 'month') {
+    pickerHtml = `<div class="gv-prof-picker"><div class="gv-prof-pick-h">เลือกเดือน</div><div class="gv-prof-pick-grid">${
+      allMonths.length ? allMonths.map(mk => { const pm = mk.split('-').map(Number); const c = stamped.filter(g => mkOf(g) === mk).length; return `<button class="${(_gvProfitRange === 'month' && _gvProfitSelMonthKey === mk) ? 'on' : ''}" onclick="gvProfChooseMonth('${mk}')">${MON[pm[1]]} ${beY(pm[0])}<span class="c">${c} สวน</span></button>`; }).join('') : '<div class="gv-prof-pick-empty">ยังไม่มีสวนที่ประทับ</div>'
+    }</div></div>`;
+  }
+  const fd = iso => { if (!iso) return '—'; const d = new Date(iso); return d.getDate() + ' ' + MON[d.getMonth()] + ' ' + (((d.getFullYear() + 543) % 100)); };
+  let listHtml = '';
+  if (shown.length === 0) {
+    listHtml = `<div class="gv-prof-empty">ยังไม่มีสวนที่ประทับผลในช่วงนี้</div>`;
+  } else {
+    let curM = null;
+    shown.forEach(g => {
+      const iso = odOf(g); const d = iso ? new Date(iso) : null;
+      const mk = d ? (d.getFullYear() + '-' + d.getMonth()) : 'x';
+      if (mk !== curM) {
+        curM = mk;
+        const cnt = shown.filter(x => { const i = odOf(x); const dd = i ? new Date(i) : null; return (dd ? (dd.getFullYear() + '-' + dd.getMonth()) : 'x') === mk; }).length;
+        const lbl = d ? (MONF[d.getMonth()] + ' ' + (((d.getFullYear() + 543) % 100))) : 'ไม่ระบุวัน';
+        listHtml += `<div class="gv-prof-mdiv"><span>${lbl}</span><span class="cnt">${cnt} สวน</span></div>`;
+      }
+      const inc = !_gvProfitExcl[g.id];
+      const gn = g.stamp.amount >= 0; const c2 = gn ? 'pos' : 'neg';
+      const p2 = g.stamp.cost > 0 ? (g.stamp.amount / g.stamp.cost * 100) : 0;
+      listHtml += `<div class="gv-prof-row ${inc ? '' : 'off'}" onclick="gvProfToggle('${g.id}')">
+        <div class="gv-prof-ck">✓</div>
+        <div class="gv-prof-l"><div class="gv-prof-nm">${gbEscapeHtml(g.name || '')}</div><div class="gv-prof-dt">📅 ${fd(iso)}</div></div>
+        <div class="gv-prof-r"><div class="gv-prof-amt ${c2}">${gn ? '+' : '−'}${fmtNum(Math.abs(g.stamp.amount))}</div>
+        <div class="gv-prof-pct ${c2}">${gn ? '↑' : '↓'}${Math.abs(p2).toFixed(1)}%</div></div></div>`;
+    });
+  }
+  body.innerHTML = `
+    ${rngHtml}${pickerHtml}
+    <div class="gv-prof-sum">
+      <div class="gv-prof-counts">
+        <div class="gv-prof-cnt g"><div class="n">${gain}</div><div class="x">สวนกำไร</div></div>
+        <div class="gv-prof-cnt l"><div class="n">${loss}</div><div class="x">สวนขาดทุน</div></div>
+      </div>
+      <div class="gv-prof-srow"><span>รวมต้นทุน</span><span class="v">${fmtNum(totCost)}</span></div>
+      <div class="gv-prof-srow"><span>รวมยอดขาย</span><span class="v">${fmtNum(totSold)}</span></div>
+      <div class="gv-prof-main">
+        <div class="gv-prof-srow"><span class="lbl">กำไรสุทธิ</span><span class="big ${pc}">${totProfit >= 0 ? '+' : '−'}${fmtNum(Math.abs(totProfit))}</span></div>
+        <div class="gv-prof-srow"><span class="lbl">% ต่อต้นทุน</span><span class="big ${pc}">${totProfit >= 0 ? '+' : ''}${pct.toFixed(1)}%</span></div>
+      </div>
+    </div>
+    ${listHtml}`;
+}
+window.gvProfSetRange = function (k) { _gvProfitRange = k; _gvProfitExcl = {}; _gvProfitPicker = null; gvBsetRenderProfit(); };
+window.gvProfTogPicker = function (which) { _gvProfitPicker = (_gvProfitPicker === which ? null : which); gvBsetRenderProfit(); };
+window.gvProfChooseYear = function (y) { _gvProfitRange = 'year'; _gvProfitSelYear = y; _gvProfitExcl = {}; _gvProfitPicker = null; gvBsetRenderProfit(); };
+window.gvProfChooseMonth = function (mk) { _gvProfitRange = 'month'; _gvProfitSelMonthKey = mk; _gvProfitExcl = {}; _gvProfitPicker = null; gvBsetRenderProfit(); };
+window.gvProfToggle = function (id) { if (_gvProfitExcl[id]) delete _gvProfitExcl[id]; else _gvProfitExcl[id] = 1; gvBsetRenderProfit(); };
+
+function gvBsetRenderBackup() {
   const body = document.getElementById('gv-bset-body');
   if (!body) return;
 
@@ -25984,7 +26391,8 @@ window.gvBsetCloudMigrateApply = gvBsetCloudMigrateApply;
   <div class="gv-bset-sheet">
     <div class="gv-bset-grab"><div></div></div>
     <div class="gv-bset-head">
-      <div class="ttl">⚙ ตั้งค่าเล่มสวน</div>
+      <button class="gv-bset-backbtn" id="gv-bset-back" onclick="gvBsetBack()" style="display:none" aria-label="กลับ">‹</button>
+      <div class="ttl" id="gv-bset-ttl">⚙ ตั้งค่าเล่มสวน</div>
       <div class="sub">No. II · SETTINGS</div>
       <button class="gv-bset-x" onclick="gvBsetClose()" aria-label="ปิด">✕</button>
     </div>
