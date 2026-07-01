@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1013;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (13)';   // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1015;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (15)';   // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -4601,6 +4601,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
       padding: 10px 12px;
       cursor: pointer;
       position: relative;
+      isolation: isolate;
       overflow: hidden;
       transition: transform 0.15s;
       box-shadow:
@@ -9673,7 +9674,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     margin: 0 !important;
     flex: none !important;
     align-self: auto !important;
-    z-index: 5;
+    z-index: -1;
     filter: none !important;
     color: white !important;
     font-family: 'Sarabun', sans-serif !important;
@@ -19399,7 +19400,7 @@ function renderListView() {
 
     // Row 2 — context-dependent
     let row2Html = '';
-    const isOpened = (g.status === 'collecting' || g.openedAt);
+    const isOpened = (g.status === 'collecting' || g.status === 'done' || g.openedAt || g.closedAt);
     if (isOpened) {
       // วันที่เปิด = เที่ยวแรก (วันที่หัวบิลเข้าเก็บวันแรก) + การ์ดวันแต่ละเที่ยว
       const colls = (g.collections||[]).filter(c => c && c.date).slice()
