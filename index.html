@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1036;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (36)';   // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1037;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (37)';   // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -446,7 +446,7 @@ window.supaReady = false;
   /* ── Main ─────────────────────────────── */
   main { padding: 0; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
   .view { display: none; }
-  .view.active { display: block; }
+  .view.active { display: block; -webkit-transform: translateZ(0); transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 
   /* ── Paper ─────────────────────────────── */
   .paper {
@@ -2584,12 +2584,12 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 }
 @keyframes turnLeft {
   0% { transform: perspective(800px) rotateY(0); }
-  50% { transform: perspective(800px) rotateY(-15deg); filter: brightness(0.85); }
+  50% { transform: perspective(800px) rotateY(-15deg); }
   100% { transform: perspective(800px) rotateY(0); }
 }
 @keyframes turnRight {
   0% { transform: perspective(800px) rotateY(0); }
-  50% { transform: perspective(800px) rotateY(15deg); filter: brightness(0.85); }
+  50% { transform: perspective(800px) rotateY(15deg); }
   100% { transform: perspective(800px) rotateY(0); }
 }
 
@@ -11151,7 +11151,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .pf-entry-btn .pf-e-tx small { font-size: 10.5px; font-weight: 500; color: #cbb282; }
 .pf-entry-btn .pf-e-arr { font-size: 24px; color: #d4af37; font-weight: 700; }
 .pf-entry-btn:active { transform: scale(.99); }
-.pf-screen { position: fixed; inset: 0; z-index: 400; background: linear-gradient(135deg,#faf5e6,#efe3c8); display: flex; flex-direction: column; overflow: hidden; }
+.pf-screen { position: fixed; inset: 0; z-index: 400; background: linear-gradient(135deg,#faf5e6,#efe3c8); display: flex; flex-direction: column; overflow: hidden; -webkit-transform: translateZ(0); transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .pf-edit-screen { z-index: 410; }
 .pf-hd { display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px; padding-top: max(14px, calc(env(safe-area-inset-top,0) + 10px)); border-bottom: 1.5px solid rgba(90,58,28,.3); background: linear-gradient(180deg,#5d3818,#4a2e15); }
 .pf-hd .pf-back { background: rgba(255,255,255,.12); color: #f0d99a; border: 1px solid rgba(212,175,55,.4); border-radius: 9px; padding: 6px 12px; font-size: 13px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; }
