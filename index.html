@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1034;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (34)';   // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1036;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (36)';   // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -1810,6 +1810,19 @@ window.supaReady = false;
   transform: translate(-50%, -50%);
   pointer-events: none;
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+.topbar-ver {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(212,175,55,0.72);
+  margin-top: 3px;
+  text-shadow: none;
 }
 .user-chip {
   display: flex; align-items: center; gap: 6px;
@@ -11244,7 +11257,8 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   <!-- Top bar (ใช้กับ home + admin) -->
   <div class="topbar" id="topbar" style="display:none;">
     <button class="topbar-back" id="topbar-back" onclick="smartBack()" style="display:none;">← กลับ</button>
-    <div class="topbar-brand">THODSAPON</div>
+    <div class="topbar-brand">THODSAPON<span class="topbar-ver" id="topbar-ver"></span></div>
+    <script>(function(){var e=document.getElementById('topbar-ver');if(e)e.textContent='v.'+(window.__APP_BUILD||'');})();</script>
     <div class="user-chip" onclick="toggleUserMenu(event)">
       <span class="avatar" id="user-avatar">L</span>
       <span id="user-name">เลก</span>
@@ -11998,6 +12012,8 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
       </div>
       <div class="settings-card">
         <h3>เกี่ยวกับ</h3>
+        <div id="about-ver" style="font-weight:800;color:#4f8a2e;font-size:15px;margin-bottom:8px;letter-spacing:.5px;"></div>
+        <script>(function(){var e=document.getElementById('about-ver');if(e)e.textContent='เวอร์ชัน v.'+(window.__APP_BUILD||'?')+'  ('+(window.__APP_VERSION||'')+')';})();</script>
         <p style="color: var(--ink-soft); font-size: 13px; margin: 0; line-height: 1.5;">
           <strong>ทศพร ตีราคา</strong><br>
           MVP รูปแบบ "ตีราคาขายส่ง" — เลียนแบบใบตีราคากระดาษต้นฉบับ<br>
