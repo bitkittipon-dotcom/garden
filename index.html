@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1037;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 20 มิ.ย. 69 (37)';   // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1051;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 13 ก.ค. 69 (51)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -1565,6 +1565,12 @@ window.supaReady = false;
     background: #b07d2a;
   }
   .lc-kg { color: var(--ink-mute); font-size: 11px; margin-left: 6px; }
+  /* ตราสถานะสวนบนการ์ดบิล — ขนาดเท่า badge สีเดียวกับตราเดิม */
+  .lc-status { display: inline-block; vertical-align: middle; font-family: 'Sarabun', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .2px; border-radius: 12px; padding: 2px 9px; border: 1.5px solid; background: rgba(243,236,215,.7); margin-left: 6px; line-height: 1.3; }
+  .lc-status.opened { color: #2f7d3f; border-color: #2f7d3f; }
+  .lc-status.closed { color: #6b1818; border-color: #6b1818; }
+  .lc-status.waiting { color: #b07d2a; border-color: #b07d2a; }
+  .lc-status.nocontract { color: #b53d2a; border-color: #b53d2a; }
   .lc-profit { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
   .lc-actions {
     position: absolute; top: 5px; right: 5px;
@@ -3233,6 +3239,112 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .gv-prof-main .big { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 22px; }
   #garden-view .gv-bset-body .pos { color: #2f7d1f; }
   #garden-view .gv-bset-body .neg { color: #b5281b; }
+  /* ===== redesign: ข้อมูล & สำรอง (build 1044) ===== */
+  #garden-view .gvh-sec-lbl{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#a9863c;text-transform:uppercase;margin:16px 2px 7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  #garden-view .gvh-sec-lbl:first-child{margin-top:2px}
+  #garden-view .gvh-newbadge{font-size:9px;font-weight:800;letter-spacing:.3px;color:#fff;background:#5c862f;border-radius:5px;padding:1px 7px}
+  #garden-view .gvh-card{background:#f6efdd;border:1px solid #d8c9a6;border-radius:16px;padding:14px 15px;box-shadow:0 2px 6px rgba(90,70,40,.12)}
+  #garden-view .gvh-what{font-size:12.5px;color:#736446;margin:2px 0 11px;line-height:1.45}
+  #garden-view .gvh-what b{color:#5f4a2a;font-weight:700}
+  #garden-view .gvh-row-ttl{font-size:16px;font-weight:700;color:#5f4a2a}
+  #garden-view .gvh-health{border-left:5px solid #5c862f;padding-left:15px}
+  #garden-view .gvh-health.warn{border-left-color:#bd7f24}
+  #garden-view .gvh-h-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+  #garden-view .gvh-h-badge{width:38px;height:38px;border-radius:11px;background:#e5ecd0;display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+  #garden-view .gvh-health.warn .gvh-h-badge{background:#f4e6c6}
+  #garden-view .gvh-h-ttl{font-size:16px;font-weight:800;color:#5f4a2a}
+  #garden-view .gvh-h-sub{font-size:11.5px;color:#736446}
+  #garden-view .gvh-checks{display:flex;flex-direction:column;gap:9px}
+  #garden-view .gvh-chk{display:flex;align-items:flex-start;gap:9px;font-size:13px}
+  #garden-view .gvh-chk .ic{flex:0 0 auto;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;font-weight:700;color:#fff}
+  #garden-view .gvh-chk.ok .ic{background:#5c862f}
+  #garden-view .gvh-chk.warn .ic{background:#bd7f24}
+  #garden-view .gvh-chk .tx{flex:1;min-width:0}
+  #garden-view .gvh-chk .tx b{color:#5f4a2a;font-weight:700}
+  #garden-view .gvh-chk .tx .hint{display:block;font-size:11px;color:#736446;margin-top:1px}
+  #garden-view .gvh-chk .go{flex:0 0 auto;font-size:11.5px;font-weight:700;color:#bd7f24;background:#f4e6c6;border:1px solid #e3c98a;border-radius:8px;padding:4px 11px;white-space:nowrap;cursor:pointer}
+  #garden-view .gvh-use-row{display:flex;justify-content:space-between;align-items:baseline}
+  #garden-view .gvh-use-row .lbl{font-size:14px;font-weight:600;color:#5f4a2a}
+  #garden-view .gvh-use-row .val{font-size:14px;font-weight:700;color:#5c862f;font-family:'JetBrains Mono',monospace}
+  #garden-view .gvh-use-row .val.warn{color:#bd7f24}
+  #garden-view .gvh-bar{height:12px;border-radius:7px;background:#f0e7d1;overflow:hidden;border:1px solid #d8c9a6;margin:9px 0 7px}
+  #garden-view .gvh-bar>i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#7ea83f,#5c862f)}
+  #garden-view .gvh-bar.warn>i{background:linear-gradient(90deg,#e6b34d,#c8892e)}
+  #garden-view .gvh-bar.crit>i{background:linear-gradient(90deg,#d98a5a,#a94f30)}
+  #garden-view .gvh-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  #garden-view .gvh-chip{font-size:12px;background:#f0e7d1;border:1px solid #d8c9a6;border-radius:20px;padding:5px 11px;color:#3a3018;font-weight:500}
+  #garden-view .gvh-acts{display:flex;gap:10px}
+  #garden-view .gvh-btn{flex:1;border:1.5px solid #d8c9a6;border-radius:12px;padding:11px 8px;text-align:center;background:#f0e7d1;cursor:pointer;font-family:inherit}
+  #garden-view .gvh-btn b{font-size:14px;font-weight:700;display:block}
+  #garden-view .gvh-btn small{font-size:10.5px;color:#736446;margin-top:2px;display:block}
+  #garden-view .gvh-btn.primary{border-color:#a7c06d;background:linear-gradient(180deg,#eef3df,#e2ecc9)}
+  #garden-view .gvh-btn.primary b{color:#5c862f}
+  #garden-view .gvh-btn.gold{border-color:#d8b96a;background:linear-gradient(180deg,#f6ecd2,#f0e3c1)}
+  #garden-view .gvh-btn.gold b{color:#a9863c}
+  #garden-view .gvh-laststamp{font-size:11px;color:#9a8a63;text-align:center;margin-top:9px;font-weight:600}
+  #garden-view .gvh-stack{display:flex;flex-direction:column;gap:9px}
+  #garden-view .gvh-line{display:flex;align-items:center;gap:11px;background:#f0e7d1;border:1px solid #d8c9a6;border-radius:12px;padding:11px 13px;cursor:pointer;width:100%;text-align:left;font-family:inherit}
+  #garden-view .gvh-line.disabled{opacity:.5;pointer-events:none}
+  #garden-view .gvh-line .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  #garden-view .gvh-line .dot.amber{background:#bd7f24}
+  #garden-view .gvh-line .dot.walnut{background:#5f4a2a}
+  #garden-view .gvh-line .dot.green{background:#5c862f}
+  #garden-view .gvh-line .dot.blue{background:#3a7eb5}
+  #garden-view .gvh-line .t{font-size:14px;font-weight:700;color:#5f4a2a}
+  #garden-view .gvh-line .s{font-size:11px;color:#736446;margin-top:1px}
+  #garden-view .gvh-line .arr{margin-left:auto;color:#a9863c;font-size:18px}
+  #garden-view .gvh-photo-line{display:flex;align-items:center;gap:11px}
+  #garden-view .gvh-photo-line .pic{width:40px;height:40px;border-radius:11px;background:#e5ecd0;display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto}
+  #garden-view .gvh-photo-line .t{font-size:15px;font-weight:700;color:#5f4a2a}
+  #garden-view .gvh-photo-line .t b.ok{color:#5c862f}
+  #garden-view .gvh-howto,#garden-view .gvh-adv{margin-top:11px;background:#f0e7d1;border:1px solid #d8c9a6;border-radius:11px;overflow:hidden}
+  #garden-view .gvh-adv{margin-top:16px;border-style:dashed;background:#efe7d3}
+  #garden-view .gvh-ht-h,#garden-view .gvh-adv-h{display:flex;align-items:center;gap:7px;padding:11px 13px;font-size:12.5px;font-weight:700;color:#5f4a2a;cursor:pointer}
+  #garden-view .gvh-adv-h{color:#736446}
+  #garden-view .gvh-ht-h .cv,#garden-view .gvh-adv-h .cv{margin-left:auto;color:#a9863c;font-size:12px;transition:transform .2s}
+  #garden-view .gvh-howto.open .gvh-ht-h .cv,#garden-view .gvh-adv.open .gvh-adv-h .cv{transform:rotate(180deg)}
+  #garden-view .gvh-ht-body{display:none;border-top:1px dashed #d8c9a6;padding:11px 14px 13px}
+  #garden-view .gvh-howto.open .gvh-ht-body{display:block}
+  #garden-view .gvh-adv-body{display:none;border-top:1px dashed #d8c9a6;padding:12px}
+  #garden-view .gvh-adv.open .gvh-adv-body{display:flex;flex-direction:column;gap:9px}
+  #garden-view .gvh-steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px}
+  #garden-view .gvh-steps li{counter-increment:s;position:relative;padding-left:27px;font-size:12.5px;color:#3a3018;line-height:1.45}
+  #garden-view .gvh-steps li::before{content:counter(s);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#a9863c;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace}
+  #garden-view .gvh-steps li b{color:#5f4a2a}
+  #garden-view .gvh-scope-row{display:flex;gap:7px;margin:11px 0 2px}
+  #garden-view .gvh-scope-pill{flex:1;text-align:center;font-size:12px;font-weight:700;padding:8px 6px;border-radius:10px;border:1.5px solid #d8c9a6;background:#f0e7d1;color:#736446;cursor:pointer}
+  #garden-view .gvh-scope-pill.active{border-color:#5c862f;background:#e5ecd0;color:#5c862f}
+  /* fruit manager */
+  #garden-view .gvh-add-fruit{background:linear-gradient(180deg,#eef3df,#e2ecc9);border:1.5px solid #a7c06d;border-radius:13px;padding:12px;text-align:center;font-size:15px;font-weight:800;color:#5c862f;cursor:pointer;margin-bottom:11px;width:100%;font-family:inherit}
+  #garden-view .gvh-flist{display:flex;flex-direction:column;gap:8px}
+  #garden-view .gvh-frow{display:flex;align-items:center;gap:11px;background:#f6efdd;border:1px solid #d8c9a6;border-radius:13px;padding:11px 13px;box-shadow:0 1px 4px rgba(90,70,40,.1)}
+  #garden-view .gvh-frow.unused{opacity:.72}
+  #garden-view .gvh-fdot{width:30px;height:30px;border-radius:50%;flex:0 0 auto;box-shadow:0 1px 3px rgba(0,0,0,.2),inset 0 -2px 4px rgba(0,0,0,.12)}
+  #garden-view .gvh-fmeta{min-width:0;flex:1}
+  #garden-view .gvh-fname{font-size:15.5px;font-weight:700;color:#5f4a2a}
+  #garden-view .gvh-fuse{font-size:11px;color:#736446;margin-top:1px}
+  #garden-view .gvh-frow.unused .gvh-fuse{color:#a94f30}
+  #garden-view .gvh-facts{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
+  #garden-view .gvh-fbtn{width:33px;height:33px;border-radius:9px;border:1px solid #d8c9a6;background:#f0e7d1;display:flex;align-items:center;justify-content:center;font-size:14px;color:#736446;cursor:pointer}
+  #garden-view .gvh-fbtn.del{color:#a94f30;border-color:#e0c3b7;background:#f0ddd4}
+  #garden-view .gvh-fld-lbl{font-size:11px;font-weight:800;color:#a9863c;letter-spacing:.5px;margin:12px 0 6px;text-transform:uppercase}
+  #garden-view .gvh-txt{width:100%;background:#f0e7d1;border:1.5px solid #d8c9a6;border-radius:11px;padding:11px 13px;font-size:15px;font-weight:700;color:#5f4a2a;font-family:inherit}
+  #garden-view .gvh-swatches{display:flex;gap:9px;flex-wrap:wrap}
+  #garden-view .gvh-sw{width:34px;height:34px;border-radius:50%;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+  #garden-view .gvh-sw.sel{outline:3px solid #5f4a2a;outline-offset:2px}
+  #garden-view .gvh-color-custom{display:flex;align-items:center;gap:10px;margin-top:9px}
+  #garden-view .gvh-color-custom input[type=color]{width:44px;height:34px;border:none;border-radius:8px;background:none;cursor:pointer;padding:0}
+  #garden-view .gvh-cc-lbl{font-size:12px;color:#736446}
+  #garden-view .gvh-merge-btn{width:100%;background:#f4e6c6;border:1.5px solid #e3c98a;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:800;color:#8a5a12;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  #garden-view .gvh-mg-grp{background:#f0e7d1;border:1px solid #d8c9a6;border-radius:12px;padding:11px 12px;margin-bottom:10px}
+  #garden-view .gvh-mg-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+  #garden-view .gvh-mg-chip{font-size:13px;font-weight:600;background:#fff;border:1.5px solid #d8c9a6;border-radius:16px;padding:4px 11px;color:#5f4a2a;cursor:pointer}
+  #garden-view .gvh-mg-chip b{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a9863c}
+  #garden-view .gvh-mg-chip.canon{border-color:#5c862f;background:#e5ecd0;color:#5c862f}
+  #garden-view .gvh-mg-chip.canon b{color:#5c862f}
+  #garden-view .gvh-mg-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#736446}
+  #garden-view .gvh-mg-foot b{color:#5c862f}
+  #garden-view .gvh-mg-btn{background:#5c862f;color:#fff;border:none;border-radius:9px;padding:6px 16px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;flex:0 0 auto}
   #garden-view .gv-prof-mdiv { display: flex; align-items: center; gap: 8px; margin: 12px 2px 7px; }
   #garden-view .gv-prof-mdiv span:first-child { font-size: 11.5px; font-weight: 800; color: #7a4a16; white-space: nowrap; }
   #garden-view .gv-prof-mdiv::before, #garden-view .gv-prof-mdiv::after { content: ''; flex: 1; height: 1px; background: rgba(122,74,22,.25); }
@@ -11414,7 +11526,8 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
       <div class="slip-meta" style="border-bottom: 0; padding-bottom: 4px; margin-bottom: 8px;">
         <div class="meta-field">
           <span class="meta-label">ผลไม้</span>
-          <input class="meta-input" id="f-fruit" value="ลำไย" autocomplete="off">
+          <input class="meta-input" id="f-fruit" value="ลำไย" autocomplete="off" list="f-fruit-list">
+          <datalist id="f-fruit-list"></datalist>
         </div>
         <div style="flex: 0.85; text-align: right; align-self: center;">
           <button class="type-tag" id="type-tag-btn" onclick="toggleType()" style="border: 0; cursor: pointer; font-family: inherit;">
@@ -11999,12 +12112,13 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   <section class="view" id="view-settings">
     <div class="settings-wrap">
       <div class="settings-card">
-        <h3>ข้อมูล</h3>
-        <button class="btn ghost" onclick="forceFullResync()">🔄 ดึงข้อมูลใหม่ทั้งหมด (จาก cloud)</button>
-        <button class="btn ghost" onclick="exportData()">📤 Export ข้อมูล</button>
-        <button class="btn ghost" onclick="document.getElementById('import-file').click()">📥 Import ข้อมูล</button>
+        <h3>💾 ข้อมูล &amp; สำรอง</h3>
+        <p style="font-size:12px;color:var(--ink-mute);margin:-2px 0 10px;line-height:1.5;">สำรอง/กู้คืนได้<b>ทั้งตีราคาและสวน</b>จากที่นี่ · ไฟล์เดียวครบ กันลืมเล่มใดเล่มหนึ่ง</p>
+        <button class="btn ghost" onclick="window.gvBsetExportAll ? window.gvBsetExportAll() : exportData()">📦 สำรองทั้งหมด (ตีราคา + สวน)</button>
+        <button class="btn ghost" onclick="document.getElementById('import-file').click()">📥 กู้คืนจากไฟล์</button>
         <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-        <button class="btn danger" onclick="confirmClear()">🗑️ ล้างข้อมูล</button>
+        <button class="btn ghost" onclick="forceFullResync()">🔄 ดึงข้อมูลใหม่จาก cloud</button>
+        <button class="btn danger" onclick="confirmClear()">🗑️ ล้างใบตีราคาทั้งหมด</button>
       </div>
       <div class="settings-card">
         <h3>เสียง & การแสดงผล</h3>
@@ -14149,6 +14263,43 @@ let _pfFruitFilter = null;   // null = ทั้งหมด
 let _pfEditId = null;
 window._pfDraftRows = [];
 
+// ═══════════════════ คลังชื่อผลไม้ (FRUIT NAME LIBRARY) — build 1048 ═══════════════════
+// เก็บชื่อ+สีไว้ที่เดียว → เลือกจากรายการ ไม่พิมพ์มั่ว · record ยังเก็บ fruit เป็นชื่อ (string)
+// สี lookup จาก library ด้วยชื่อ (ไม่แตะ record)
+const FRUIT_KEY = 'thodsapon_fruit_names_v1';
+window.fruitNames = [];  // [{id, name, color}]
+const FRUIT_PALETTE = ['#e8b923','#d64545','#5c9e3f','#3f8fc2','#7b4fc2','#c2683f','#c23f8f','#3d8e8a','#a88b2a','#d4864a'];
+function fruitNewId() { return 'fr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6); }
+function loadFruitNames() {
+  try { const a = JSON.parse(localStorage.getItem(FRUIT_KEY) || '[]'); window.fruitNames = Array.isArray(a) ? a : []; }
+  catch (e) { window.fruitNames = []; }
+}
+function saveFruitNames() {
+  try { localStorage.setItem(FRUIT_KEY, JSON.stringify(window.fruitNames)); } catch (e) {}
+}
+window.loadFruitNames = loadFruitNames;
+window.saveFruitNames = saveFruitNames;
+// หาสีของผลไม้จากชื่อ (ไม่เจอ → สีกลาง)
+function fruitColor(name) {
+  if (!name) return '#b0a07a';
+  const nm = String(name).trim();
+  const f = (window.fruitNames || []).find(x => x.name === nm);
+  return (f && f.color) ? f.color : '#b0a07a';
+}
+window.fruitColor = fruitColor;
+// รายชื่อผลไม้ (จาก library) — ใช้ป้อน datalist
+function fruitNameList() {
+  return (window.fruitNames || []).map(f => f.name).filter(Boolean);
+}
+window.fruitNameList = fruitNameList;
+// เติม <option> ใน datalist จากคลังชื่อผลไม้
+function fruitFillDatalist(id) {
+  const dl = document.getElementById(id); if (!dl) return;
+  dl.innerHTML = fruitNameList().map(n => '<option value="' + String(n).replace(/"/g, '&quot;') + '">').join('');
+}
+window.fruitFillDatalist = fruitFillDatalist;
+loadFruitNames();
+
 function pfLoad() {
   try { priceForms = JSON.parse(localStorage.getItem(PF_KEY) || '[]'); if (!Array.isArray(priceForms)) priceForms = []; }
   catch (e) { priceForms = []; }
@@ -14172,6 +14323,8 @@ function pfDateLabel(iso) {
 }
 function pfAllFruits() {
   const s = new Set(priceForms.map(f => (f.fruit || '').trim()).filter(Boolean));
+  // รวมชื่อจากคลังชื่อผลไม้ด้วย (ให้ suggest ครบ)
+  try { (window.fruitNames || []).forEach(f => { if (f.name) s.add(String(f.name).trim()); }); } catch (e) {}
   return [...s];
 }
 function pfByFruit(fruit) {
@@ -16839,6 +16992,7 @@ function resetForm() {
     if (el) el.value = 0;
   });
   document.getElementById('f-fruit').value = 'ลำไย';
+  try { if (window.fruitFillDatalist) window.fruitFillDatalist('f-fruit-list'); } catch (e) {}
   document.getElementById('f-date').value = todayISO();
   rows = [makeRow(), makeRow(), makeRow(), makeRow(), makeRow()];
   applyFormType();
@@ -17006,6 +17160,7 @@ function loadQuote(id) {
   document.getElementById('f-customer').value = q.customer || '';
   document.getElementById('f-market').value = q.market || '';
   document.getElementById('f-fruit').value = q.fruit || 'ลำไย';
+  try { if (window.fruitFillDatalist) window.fruitFillDatalist('f-fruit-list'); } catch (e) {}
   document.getElementById('f-date').value = q.date || todayISO();
 
   if (q.type === 'orchard') {
@@ -17465,7 +17620,40 @@ function computeQuoteStamp(q) {
   } catch (e) { return null; }
 }
 
+function dedupPendingBills() {
+  // ล้างบิล "รอตรวจ" ซ้ำของสวนเดียวกัน — เก็บใบล่าสุด ลบที่เหลือ (จัดการของเก่าก่อน dedup ตอนส่ง)
+  if (!state || !Array.isArray(state.quotes)) return false;
+  const byGarden = {};
+  state.quotes.forEach(q => {
+    if (q && q.gardenId && q.pendingReview && !q.reviewed) {
+      (byGarden[q.gardenId] = byGarden[q.gardenId] || []).push(q);
+    }
+  });
+  const remove = new Set();
+  Object.keys(byGarden).forEach(gid => {
+    const list = byGarden[gid];
+    if (list.length > 1) {
+      list.sort((a, b) => (b.sentAt || b.updatedAt || 0) - (a.sentAt || a.updatedAt || 0));
+      list.slice(1).forEach(q => remove.add(q.id));
+    }
+  });
+  if (remove.size) {
+    state.quotes = state.quotes.filter(q => !remove.has(q.id));
+    persist(); // → cloudOnLocalChange ทำ tombstone ให้เอง
+    return true;
+  }
+  return false;
+}
+function billStatusStamp(q) {
+  // ตราสถานะสวนบนการ์ดบิล — ใช้ค่าที่ล็อกตอนส่ง (gardenStatusSnap) ถ้าไม่มี fallback สถานะสวนปัจจุบัน
+  let st = q.gardenStatusSnap || '';
+  if (!st && q.gardenId && typeof window.gbGardenStatusSnap === 'function') { try { st = window.gbGardenStatusSnap(q.gardenId) || ''; } catch (e) {} }
+  const lbl = { opened: 'เปิดสวน', closed: 'ปิดสวน', waiting: 'รอเปิดสวน', nocontract: 'ยังไม่ทำสัญญา' }[st];
+  if (!lbl) return '';
+  return `<span class="lc-status ${st}">${lbl}</span>`;
+}
 function renderList() {
+  dedupPendingBills();
   const c = document.getElementById('quote-list-container');
   if (state.quotes.length === 0) {
     c.innerHTML = `
@@ -17502,7 +17690,7 @@ function renderList() {
           <div class="lc-date">${fmtDate(q.date)}</div>
         </div>
         <div class="list-card-bot">
-          <div class="lc-amt">${typeBadge} <span style="margin-left: 6px;">${fmt(s.quoted)} ฿</span><span class="lc-kg">${fmt(s.totalKg)} กก.</span></div>
+          <div class="lc-amt">${typeBadge} ${billStatusStamp(q)}<span class="lc-kg">${fmt(s.totalKg)} กก.</span></div>
           <div class="lc-profit ${profitClass}">${profitText}</div>
         </div>
       </div>`;
@@ -17602,15 +17790,40 @@ function importData(ev) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = async (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) throw new Error('format');
+    let data;
+    try { data = JSON.parse(e.target.result); }
+    catch (err) { toast('ไฟล์ไม่ถูกต้อง'); return; }
+
+    // ── ไฟล์สำรองแบบใหม่ (รวม 2 เล่ม / เฉพาะสวน) → กู้คืนแบบปลอดภัย (ใช้ engine ร่วม) ──
+    const parsed = (typeof window.gvBsetParseBackup === 'function') ? window.gvBsetParseBackup(data) : null;
+    if (parsed && typeof window.gvBsetRestoreApply === 'function') {
+      const exQ = new Set(state.quotes.map(q => q.id));
+      const missQ = parsed.quotes.filter(q => q && q.id && !exQ.has(q.id)).length;
+      let curPf = []; try { curPf = JSON.parse(localStorage.getItem('thodsapon_price_forms_v1') || '[]'); if (!Array.isArray(curPf)) curPf = []; } catch (e2) {}
+      const exPf = new Set(curPf.map(f => f.id));
+      const missPf = parsed.priceForms.filter(f => f && f.id && !exPf.has(f.id)).length;
+      const missG = parsed.gardens.length;
+      const exLbl = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString('th-TH', { day:'numeric', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+      const ok = await confirmAction({
+        title: '📥 กู้คืนจากไฟล์สำรอง',
+        body: `สำรองเมื่อ ${exLbl}<br>จะ<b>เพิ่มเฉพาะที่หายไป</b> (ไม่ทับของเดิม):<br>🧾 ${missQ} ใบตีราคา · 📚 ${missPf} คลังราคา${parsed.hasQuote ? ` · 🌳 ${missG} สวน (ในไฟล์)` : ''}`,
+        okLabel: '✓ กู้คืน', cancelLabel: 'ยกเลิก', danger: false,
+      });
+      if (!ok) return;
+      const pending = { gardens: parsed.gardens, notes: parsed.notes, quotes: parsed.quotes, priceForms: parsed.priceForms };
+      const res = window.gvBsetRestoreApply(pending, 'all');
+      if (typeof renderList === 'function') renderList();
+      if (typeof renderListView === 'function') { try { renderListView(); } catch (e3) {} }
+      toast(typeof window.gvBsetRestoreSummary === 'function' ? window.gvBsetRestoreSummary(res) : '✓ กู้คืนแล้ว');
+      return;
+    }
+
+    // ── legacy: ไฟล์ใบตีราคาแบบ array ดิบ (จาก Export เก่า) ──
+    if (Array.isArray(data)) {
       const ok = await confirmAction({
         title: 'นำเข้าข้อมูล?',
         body: `จะนำเข้า <b>${data.length} ใบ</b> ที่ยังไม่มีในระบบ`,
-        okLabel: '✓ นำเข้า',
-        cancelLabel: 'ยกเลิก',
-        danger: false,
+        okLabel: '✓ นำเข้า', cancelLabel: 'ยกเลิก', danger: false,
       });
       if (!ok) return;
       const existing = new Set(state.quotes.map(q => q.id));
@@ -17618,7 +17831,10 @@ function importData(ev) {
       persist();
       toast('Import แล้ว');
       renderList();
-    } catch(err) { toast('ไฟล์ไม่ถูกต้อง'); }
+      return;
+    }
+
+    toast('ไฟล์ไม่ถูกต้อง');
   };
   reader.readAsText(file);
   ev.target.value = '';
@@ -17723,7 +17939,7 @@ function provinceToRegion(p) {
 }
 
 function loadGardens() {
-  try { return JSON.parse(localStorage.getItem(KEY_GARDENS)) || []; }
+  try { return migrateGardens(JSON.parse(localStorage.getItem(KEY_GARDENS)) || []); }
   catch(e) { return []; }
 }
 function saveGardens(g) {
@@ -17741,6 +17957,45 @@ function saveGardens(g) {
   // Mark all current gardens as dirty (sync engine จะตัดสินเองว่า push อันไหน ตาม updated_at)
   if (typeof cloudOnLocalChange === 'function') cloudOnLocalChange('gardens');
 }
+
+// ════════════════════════════════════════════
+//  SCHEMA MIGRATION · normalize garden records — build 1042
+//  เหตุผล: ของใช้ 10 ปี schema เปลี่ยนแน่ · ชั้นนี้เติม field ที่ขาด + (อนาคต) แปลงของเก่า ตอน "โหลดเข้า memory"
+//  กฎความปลอดภัย:
+//   • idempotent — รันซ้ำกี่ครั้งก็ได้ผลเดิม
+//   • เติมเฉพาะ default ที่ปลอดภัย: array→[] · เลขที่ใช้คำนวณ→0 (กัน NaN) · ไม่เดา field เชิงตรรกะ (status/dealType)
+//   • ไม่แตะ updated_at และไม่ mark dirty → ไม่ force push ขึ้น cloud (persist เองตอนเซฟปกติ)
+// ════════════════════════════════════════════
+const GARDEN_SCHEMA_VERSION = 1;
+function migrateGarden(g) {
+  if (!g || typeof g !== 'object') return g;
+  // โครงสร้างที่โค้ดวน (.forEach/.length/.map) — ถ้าไม่มีจะพังตอน render/คำนวณ
+  if (!Array.isArray(g.collections))  g.collections = [];
+  if (!Array.isArray(g.expenses))     g.expenses = [];
+  if (!Array.isArray(g.payments))     g.payments = [];
+  if (!Array.isArray(g.gradePrices))  g.gradePrices = [];
+  // เลขที่เอาไปบวก/คูณ — undefined จะทำให้ยอดกลายเป็น NaN
+  if (typeof g.deposit        !== 'number') g.deposit        = Number(g.deposit)        || 0;
+  if (typeof g.lumpTotal      !== 'number') g.lumpTotal      = Number(g.lumpTotal)      || 0;
+  if (typeof g.kgPrice        !== 'number') g.kgPrice        = Number(g.kgPrice)        || 0;
+  if (typeof g.expectedKg     !== 'number') g.expectedKg     = Number(g.expectedKg)     || 0;
+  if (typeof g.pricePerBasket !== 'number') g.pricePerBasket = Number(g.pricePerBasket) || 0;
+  // owner = ชื่อที่แสดง (โค้ดตอนสร้างตั้งเป็น nickname||firstname) — เติมให้ของเก่าที่ยังไม่มี
+  if (g.owner == null) g.owner = g.nickname || g.firstname || '';
+  //
+  // ── จุดเพิ่ม migration เวอร์ชันถัดไป (version-gated) ──
+  //    เวลาจะเปลี่ยนโครงสร้างในอนาคต เพิ่มตรงนี้ แล้วบวก GARDEN_SCHEMA_VERSION:
+  //    if ((g._sv||0) < 2) { g.newField = แปลง(g.oldField); delete g.oldField; }   // idempotent เพราะเช็ค _sv
+  //
+  g._sv = GARDEN_SCHEMA_VERSION; // ประทับเวอร์ชัน (persist ตอนเซฟปกติ · ไม่ force push · ~8 byte/record)
+  return g;
+}
+function migrateGardens(arr) {
+  if (!Array.isArray(arr)) return [];
+  for (let i = 0; i < arr.length; i++) migrateGarden(arr[i]);
+  return arr;
+}
+
 function loadNotes() {
   try { return JSON.parse(localStorage.getItem(KEY_NOTES)) || []; }
   catch(e) { return []; }
@@ -17769,6 +18024,7 @@ let _cloudSyncTimer = null;
 let _cloudLastFullPull = 0; // เวลาที่ full-pull ล่าสุด (สำหรับดึงเต็มเป็นระยะ)
 let _cloudSyncInProgress = false;
 let _cloudSyncStartedAt = 0;
+let _cloudSyncPaused = false;   // ← หยุด sync ชั่วคราวตอนกู้คืน (กันชนกับ push/pull)
 let _cloudKnownIds = null; // Set ของ id ที่เคยเห็นใน cloud (ตรวจ delete)
 
 function cloudGetLastSync() {
@@ -17912,6 +18168,13 @@ function cloudScheduleSync(delayMs) {
 let _cloudSyncLoopHandle = null;
 function cloudStartSyncLoop() {
   if (!window.SUPA_CONFIG.enabled) return;
+  // ── ผูก listener ครั้งเดียว: กลับมาที่แท็บ / โฟกัสหน้าต่าง → ดึงข้อมูลทันที ──
+  //    (แก้อาการ: สวนใหม่จากเครื่องอื่นไม่ขึ้นบนคอมจนต้องกดดึงเอง)
+  if (!window.__cloudEngageHooked) {
+    window.__cloudEngageHooked = true;
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) cloudPullOnEngage(false); });
+    window.addEventListener('focus', () => cloudPullOnEngage(false));
+  }
   // ป้องกัน duplicate (ถ้าเรียกซ้ำ — clear ของเก่าก่อน)
   if (_cloudSyncLoopHandle) {
     clearInterval(_cloudSyncLoopHandle);
@@ -17935,8 +18198,27 @@ function cloudStartSyncLoop() {
   }, window.SUPA_CONFIG.syncIntervalMs);
 }
 
+// ── ดึงข้อมูลทันทีเมื่อผู้ใช้ "กลับมามอง" (เปิดเล่มสวน / กลับเข้าแท็บ / โฟกัสหน้าต่าง) ──
+//    บังคับให้ sync รอบถัดไปเป็น full pull → กัน incremental พลาดแถวที่ updated_at เหลื่อมนาฬิกาเครื่อง
+//    วิ่งผ่าน cloudScheduleSync → cloudSyncOnce (มี lock อยู่แล้ว) จึงไม่ชนกับ loop
+let _lastEngagePull = 0;
+function cloudPullOnEngage(force) {
+  try {
+    if (!window.SUPA_CONFIG || !window.SUPA_CONFIG.enabled || !window.supaReady) return;
+    if (!navigator.onLine) return;
+    if (typeof currentUser === 'undefined' || !currentUser) return;
+    const now = Date.now();
+    if (!force && now - _lastEngagePull < 15000) return; // กันยิงถี่เกิน (โฟกัสรัวๆ)
+    _lastEngagePull = now;
+    _cloudLastFullPull = 0;   // → cloudSyncOnce รอบนี้จะ full pull (ดึงทุกแถว)
+    cloudScheduleSync(0);
+  } catch (e) { console.error('[cloud] engage pull', e); }
+}
+window.cloudPullOnEngage = cloudPullOnEngage;
+
 // ── Sync once · push dirty + pull updated ──
 async function cloudSyncOnce() {
+  if (_cloudSyncPaused) return;   // ← กำลังกู้คืนอยู่ → ไม่ sync (กันชน)
   if (_cloudSyncInProgress) {
     // safety: ถ้า lock ค้าง > 60 วิ → force release
     if (_cloudSyncStartedAt && Date.now() - _cloudSyncStartedAt > 60000) {
@@ -18424,14 +18706,19 @@ async function cloudPullUpdates() {
       const idx = gardens.findIndex(x => x.id === row.id);
       if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; }
     } else {
+      const incoming = migrateGarden({ ...(row.data || {}), id: row.id });
       const idx = gardens.findIndex(x => x.id === row.id);
-      const incoming = { ...(row.data || {}), id: row.id };
-      if (idx >= 0) {
+      if (incoming.archived) {
+        // เก็บเข้าคลังแล้ว → อยู่บน cloud อย่างเดียว ไม่ดึงลงเครื่อง
+        // (กัน localStorage บวม + กันสวนที่ archive โผล่กลับตอน full-pull)
+        if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; }
+      } else if (idx >= 0) {
         gardens[idx] = incoming;
+        gardensChanged = true;
       } else {
         gardens.push(incoming);
+        gardensChanged = true;
       }
-      gardensChanged = true;
     }
   });
 
@@ -19432,13 +19719,25 @@ function totalExpenses(g) {
 // estimate profit: revenue (totalBaskets × pricePerBasket) - deposit - expenses
 // note: "ราคา/ตก." = ราคาที่ซื้อจากเจ้าของสวน
 // แต่นี่คำนวณค่าใช้จ่ายที่จ่ายไปจริง — ไม่ใช่กำไรขาย ที่ต้องไปดูสมุดตีราคา
-// สำหรับใช้กรอง "กำไร/ขาดทุน" จะใช้ field: profitStatus ตั้งเอง หรือ flag
-function isProfitable(g) {
-  // ถ้ามีระบุไว้ตรงๆ ใช้เลย
-  if (g.profitStatus === 'profit') return true;
-  if (g.profitStatus === 'loss') return false;
-  // ไม่ระบุ = unknown
+// ── สถานะกำไร/ขาดทุน "ที่แท้จริง" ของสวน (ใช้ร่วมกันทั้งตัวกรองและ isProfitable) ──
+// เหตุผล: กำไร/ขาดทุนมาได้ 2 ทาง และก่อนหน้านี้ตัวกรองอ่านแค่ profitStatus ทำให้
+//   สวนที่ถูก "ประทับบิล" (g.stamp) หายจากตัวกรอง 📈/📉 (bug build ≤1050)
+//   • g.stamp.amount  = ประทับจากบิล/ใบเสนอราคา (แหล่งจริง · การ์ดโชว์ · หน้าสรุปนับตัวนี้)
+//   • g.profitStatus  = ปุ่มกดเองในหน้ารายละเอียด
+// ลำดับความสำคัญ: ยึด stamp ก่อน (ให้ตรงกับหน้าสรุป+การ์ด) แล้วค่อย fallback ไป profitStatus
+// คืน 'profit' | 'loss' | null(ไม่ทราบ) — 0 = เท่าทุน นับเป็น 'profit' (ตรงกับการ์ดที่ใช้ amount>=0)
+function effectiveProfitStatus(g) {
+  if (!g) return null;
+  if (g.stamp && typeof g.stamp.amount === 'number') return g.stamp.amount >= 0 ? 'profit' : 'loss';
+  if (g.profitStatus === 'profit' || g.profitStatus === 'loss') return g.profitStatus;
   return null;
+}
+// สำหรับใช้กรอง "กำไร/ขาดทุน" — อิง effectiveProfitStatus (stamp + profitStatus)
+function isProfitable(g) {
+  const ps = effectiveProfitStatus(g);
+  if (ps === 'profit') return true;
+  if (ps === 'loss') return false;
+  return null; // ไม่ทราบ
 }
 
 /* toast() uses tospon's global */
@@ -19700,10 +19999,10 @@ function matchesFilters(g) {
     ].filter(Boolean).join(' ').toLowerCase();
     if (!fields.includes(searchQuery)) return false;
   }
-  // profit (multi)
+  // profit (multi) — อิง effectiveProfitStatus เพื่อรวมสวนที่กำไร/ขาดทุนจากบิล (g.stamp) ด้วย
   if (filters.profit.size > 0) {
-    if (!g.profitStatus) return false;
-    if (!filters.profit.has(g.profitStatus)) return false;
+    const ps = effectiveProfitStatus(g);
+    if (!ps || !filters.profit.has(ps)) return false;
   }
   // care (multi)
   if (filters.care.size > 0) {
@@ -21027,6 +21326,7 @@ function openGardenForm(id) {
   const g = id ? gardens.find(x => x.id === id) : {};
   const isEdit = !!id;
   window._editingGardenId = id || '';
+  try { if (typeof fruitSeedIfEmpty === 'function') fruitSeedIfEmpty(); } catch (e) {}  // เติมคลังชื่อผลไม้ให้ datalist
 
   document.getElementById('garden-form-screen').innerHTML = `
     <div class="gfs-topbar">
@@ -21060,7 +21360,8 @@ function openGardenForm(id) {
           <label>ชื่อสวน *</label>
           <input id="gf-name" value="${gbEscapeHtml(g.name||'')}" placeholder="ชื่อสวน">
           <label>ผลไม้ *</label>
-          <input id="gf-fruit" value="${gbEscapeHtml(g.fruit||'')}" placeholder="เช่น ลำไย">
+          <input id="gf-fruit" value="${gbEscapeHtml(g.fruit||'')}" placeholder="เช่น ลำไย" list="gf-fruit-list" autocomplete="off">
+          <datalist id="gf-fruit-list">${(window.fruitNameList ? window.fruitNameList() : []).map(n => '<option value="' + gbEscapeHtml(n) + '">').join('')}</datalist>
         </div>
 
         <div class="d-subheader">เจ้าของ</div>
@@ -21708,6 +22009,13 @@ window.closeLaborWeightPopup = function () {
   if (bg) { bg.classList.remove('show'); setTimeout(() => { if (bg.parentNode) bg.remove(); }, 200); }
 };
 // ── ประทับผลกำไร/ขาดทุนจากบิล ลงการ์ดสวน (เรียกจาก saveQuote คนละ scope) ──
+window.gbGardenStatusSnap = function (id) {
+  const g = gardens.find(x => x.id === id);
+  if (!g) return '';
+  const isClosed = (g.status === 'done' || !!g.closedAt);
+  const isOpened = (g.status === 'collecting' || !!g.openedAt);
+  return isClosed ? 'closed' : (isOpened ? 'opened' : (g.status === 'waiting' ? 'waiting' : (g.status === 'no-contract' ? 'nocontract' : '')));
+};
 window.stampGardenFromBill = function (gardenId, stamp) {
   try {
     const g = gardens.find(x => x.id === gardenId);
@@ -24040,6 +24348,8 @@ function _initGardenBookInternal() {
   if (_fab) { _fab.style.display = ''; _fab.classList.remove('lifted'); }
   // ล้างแบนเนอร์ "ดูอย่างเดียว" ถ้าค้าง
   if (_dv) { const _ro = _dv.querySelector('.gv-ro-banner'); if (_ro) _ro.remove(); }
+  // เปิดเล่มสวน → ดึงข้อมูลล่าสุดจาก cloud ทันที (กันสวนใหม่จากเครื่องอื่นไม่ขึ้นจนต้องกดดึงเอง)
+  try { if (typeof cloudPullOnEngage === 'function') cloudPullOnEngage(true); } catch (e) {}
   if (_gbInited) { renderListView(); return; }
   _gbInited = true;
   renderListView();
@@ -25479,15 +25789,17 @@ function gvBsetRender() {
   const body = document.getElementById('gv-bset-body'); if (!body) return;
   const ttlEl = document.getElementById('gv-bset-ttl');
   const backEl = document.getElementById('gv-bset-back');
-  if (_gvBsetPage === 'backup') { if (ttlEl) ttlEl.textContent = '💾 แบ็คอัพข้อมูล'; if (backEl) backEl.style.display = ''; gvBsetRenderBackup(); return; }
+  if (_gvBsetPage === 'backup') { if (ttlEl) ttlEl.textContent = '💾 ข้อมูล & สำรอง'; if (backEl) backEl.style.display = ''; gvBsetRenderBackup(); return; }
   if (_gvBsetPage === 'profit') { if (ttlEl) ttlEl.textContent = '📊 สรุป กำไร/ขาดทุน'; if (backEl) backEl.style.display = ''; gvBsetRenderProfit(); return; }
+  if (_gvBsetPage === 'fruit') { if (ttlEl) ttlEl.textContent = '🍎 ชื่อผลไม้'; if (backEl) backEl.style.display = ''; gvBsetRenderFruit(); return; }
   if (ttlEl) ttlEl.textContent = '⚙ ตั้งค่าเล่มสวน';
   if (backEl) backEl.style.display = 'none';
   const showProfit = (typeof profitVisible === 'function' && profitVisible());
   const showBackup = !!(currentUser && currentUser.role === 'admin');
   body.innerHTML = `
     ${showProfit ? `<div class="gv-menu-item" onclick="gvBsetGo('profit')"><span class="gmi-ic">📊</span><div class="gmi-tx"><div class="gmi-t">สรุป กำไร / ขาดทุน</div><div class="gmi-d">ผลรวมต่อช่วงเวลา · เลือกสวนได้</div></div><span class="gmi-arr">›</span></div>` : ''}
-    ${showBackup ? `<div class="gv-menu-item" onclick="gvBsetGo('backup')"><span class="gmi-ic">💾</span><div class="gmi-tx"><div class="gmi-t">แบ็คอัพข้อมูล</div><div class="gmi-d">ดาวน์โหลด · กู้คืน · พื้นที่ · cloud</div></div><span class="gmi-arr">›</span></div>` : ''}
+    ${showBackup ? `<div class="gv-menu-item" onclick="gvBsetGo('backup')"><span class="gmi-ic">💾</span><div class="gmi-tx"><div class="gmi-t">ข้อมูล & สำรอง</div><div class="gmi-d">เช็คสุขภาพ · สำรอง · คลังสวน · รูป</div></div><span class="gmi-arr">›</span></div>` : ''}
+    <div class="gv-menu-item" onclick="gvBsetGo('fruit')"><span class="gmi-ic">🍎</span><div class="gmi-tx"><div class="gmi-t">ชื่อผลไม้</div><div class="gmi-d">เพิ่ม/แก้/ลบ · เลือกสีเอง · เลือกไม่ต้องพิมพ์</div></div><span class="gmi-arr">›</span></div>
     ${(!showProfit && !showBackup) ? '<div class="gv-prof-empty">ไม่มีเมนูที่ใช้ได้</div>' : ''}`;
 }
 window.gvBsetGo = function (p) {
@@ -25592,6 +25904,33 @@ window.gvProfChooseYear = function (y) { _gvProfitRange = 'year'; _gvProfitSelYe
 window.gvProfChooseMonth = function (mk) { _gvProfitRange = 'month'; _gvProfitSelMonthKey = mk; _gvProfitExcl = {}; _gvProfitPicker = null; gvBsetRenderProfit(); };
 window.gvProfToggle = function (id) { if (_gvProfitExcl[id]) delete _gvProfitExcl[id]; else _gvProfitExcl[id] = 1; gvBsetRenderProfit(); };
 
+// ── เช็คสุขภาพข้อมูล (ระบบเตือน) — build 1044 ──
+function gvBsetHealthCheck(st, pct, lastBk) {
+  const online = !!(navigator.onLine && window.supaReady);
+  const dirtyCount = (typeof _cloudDirty !== 'undefined' && _cloudDirty && _cloudDirty.gardens) ? _cloudDirty.gardens.size : 0;
+  const items = [];
+  // 1) cloud
+  if (!online) items.push({ level: 'warn', title: 'ตอนนี้ออฟไลน์', hint: 'การแก้ไขจะเชื่อมขึ้น cloud เมื่อกลับมาออนไลน์' });
+  else if (dirtyCount > 0) items.push({ level: 'warn', title: 'มีข้อมูล ' + dirtyCount + ' รายการรอเชื่อม', hint: 'กำลังทยอยซิงค์ขึ้น cloud' });
+  else items.push({ level: 'ok', title: 'ข้อมูลขึ้น cloud แล้ว', hint: 'ปลอดภัย ดูได้ทุกเครื่อง' });
+  // 2) storage
+  if (pct >= 90) items.push({ level: 'warn', title: 'พื้นที่ใกล้เต็ม', hint: 'ใช้ไป ' + pct + '% — ควรเก็บสวนปิดเข้าคลัง (ด้านล่าง)' });
+  else if (pct >= 70) items.push({ level: 'warn', title: 'พื้นที่เริ่มเยอะ', hint: 'ใช้ไป ' + pct + '% จาก 5 MB' });
+  else items.push({ level: 'ok', title: 'พื้นที่เหลือเยอะ', hint: 'ใช้ ' + gvBsetFmtBytes(st.total) + ' จาก 5 MB — ใช้ได้อีกนาน' });
+  // 3) backup
+  const DAY = 86400000;
+  if (!lastBk) items.push({ level: 'warn', title: 'ยังไม่เคยสำรองข้อมูล', hint: 'ถ้าเผลอลบ หรือ cloud มีปัญหา จะกู้ยาก', action: { label: 'สำรองเลย', fn: 'gvBsetExportPick()' } });
+  else if (Date.now() - lastBk > 30 * DAY) items.push({ level: 'warn', title: 'สำรองครั้งล่าสุดนานแล้ว', hint: 'แนะนำสำรองใหม่', action: { label: 'สำรอง', fn: 'gvBsetExportPick()' } });
+  else items.push({ level: 'ok', title: 'สำรองข้อมูลแล้ว', hint: 'ล่าสุด ' + fmtDateTime(lastBk) });
+  const warnCount = items.filter(i => i.level === 'warn').length;
+  const overall = warnCount === 0
+    ? { cls: '', title: 'เยี่ยม — ทุกอย่างเรียบร้อย', sub: 'ข้อมูลปลอดภัยครบ' }
+    : { cls: 'warn', title: 'ดี — มี ' + warnCount + ' เรื่องควรทำ', sub: 'ดูรายการด้านล่าง' };
+  return { overall, items };
+}
+function gvBsetToggleHowto(el) { if (el && el.parentElement) el.parentElement.classList.toggle('open'); }
+window.gvBsetToggleHowto = gvBsetToggleHowto;
+
 function gvBsetRenderBackup() {
   const body = document.getElementById('gv-bset-body');
   if (!body) return;
@@ -25602,146 +25941,434 @@ function gvBsetRenderBackup() {
   const closedPhotoBytes = closedPhoto.reduce((a, g) =>
     a + (g.albumPhotos || []).reduce((s, p) => s + gvBsetByteLen(p.dataUrl) + 32, 0), 0);
   const closedPhotoCount = closedPhoto.reduce((a, g) => a + (g.albumPhotos || []).length, 0);
-
-  // ── รูปเก่าที่ใหญ่กว่ามาตรฐาน (ต้อง re-compress) ──
   const oversize = gvBsetCountOversizedPhotos();
 
   const pct = Math.min(100, Math.round((st.total / BSET_QUOTA_BYTES) * 100));
-  let barCls = '';
-  let valCls = 'ok';
-  let warnLbl = '';
-  if (pct >= 90) { barCls = 'crit'; valCls = 'warn'; warnLbl = '⚠ ใกล้เต็ม'; }
-  else if (pct >= 70) { barCls = 'warn'; valCls = ''; warnLbl = 'เริ่มเยอะ'; }
+  let barCls = '', valCls = 'ok';
+  if (pct >= 90) { barCls = 'crit'; valCls = 'warn'; }
+  else if (pct >= 70) { barCls = 'warn'; valCls = 'warn'; }
 
-  const incPhotos = gvBsetReadIncludePhotos();
   const lastBk = gvBsetReadLastBackup();
-  const lastBkLbl = lastBk
-    ? 'Backup ล่าสุด: ' + fmtDateTime(lastBk)
-    : 'ยังไม่เคย backup';
-
+  const lastBkLbl = lastBk ? 'สำรองล่าสุด: ' + fmtDateTime(lastBk) : 'ยังไม่เคยสำรอง';
   const noClosed = closed.length === 0;
   const noPhotos = closedPhoto.length === 0;
+  const photoCount = gardens.reduce((a, g) => a + ((g.albumPhotos || []).length), 0);
+  const online = !!(navigator.onLine && window.supaReady);
+
+  const hc = gvBsetHealthCheck(st, pct, lastBk);
+  const checksHtml = hc.items.map(it => `
+      <div class="gvh-chk ${it.level}">
+        <span class="ic">${it.level === 'ok' ? '✓' : '!'}</span>
+        <span class="tx"><b>${it.title}</b><span class="hint">${it.hint}</span></span>
+        ${it.action ? `<span class="go" onclick="${it.action.fn}">${it.action.label}</span>` : ''}
+      </div>`).join('');
 
   body.innerHTML = `
-    <div class="gv-bset-store">
-      <div class="gv-bset-store-row">
-        <span class="gv-bset-store-lbl">📊 พื้นที่ใช้งาน</span>
-        <span class="gv-bset-store-val ${valCls}">${gvBsetFmtBytes(st.total)} / ~${gvBsetFmtBytes(BSET_QUOTA_BYTES)}${warnLbl ? ' · ' + warnLbl : ''}</span>
+    <div class="gvh-sec-lbl">🔔 เช็คสุขภาพข้อมูล</div>
+    <div class="gvh-card gvh-health ${hc.overall.cls}">
+      <div class="gvh-h-top">
+        <div class="gvh-h-badge">🌿</div>
+        <div><div class="gvh-h-ttl">สุขภาพข้อมูล: ${hc.overall.cls === 'warn' ? 'ดี' : 'เยี่ยม'}</div><div class="gvh-h-sub">${hc.overall.sub}</div></div>
       </div>
-      <div class="gv-bset-bar ${barCls}"><div style="width: ${pct}%;"></div></div>
-      <div class="gv-bset-store-detail">
-        <span>🖼 รูปอัลบั้ม: ${gvBsetFmtBytes(st.photoBytes)}</span>
-        <span>📒 ข้อมูล: ${gvBsetFmtBytes(st.dataBytes + st.notesBytes)}</span>
+      <div class="gvh-checks">${checksHtml}</div>
+    </div>
+
+    <div class="gvh-sec-lbl">📊 ภาพรวม</div>
+    <div class="gvh-card">
+      <div class="gvh-use-row"><span class="lbl">พื้นที่ในเครื่อง</span><span class="val ${valCls}">${gvBsetFmtBytes(st.total)} / 5 MB</span></div>
+      <div class="gvh-bar ${barCls}"><i style="width:${Math.max(2, pct)}%"></i></div>
+      <div class="gvh-what" style="margin:0">ข้อมูลสวนเก็บใน<b>เครื่องนี้</b> · รูปเก็บบน <b>cloud</b> (ไม่กินพื้นที่เครื่อง)</div>
+      <div class="gvh-chips">
+        <span class="gvh-chip">🌳 <b>${gardens.length}</b> สวน</span>
+        <span class="gvh-chip">🖼 ${photoCount} รูป</span>
+        <span class="gvh-chip">${online ? '☁ ซิงค์แล้ว' : '📴 ออฟไลน์'}</span>
       </div>
     </div>
 
-    <div class="gv-bset-sec">— สำรองข้อมูล (Backup) —</div>
-    <div class="gv-bset-2col">
-      <button class="gv-bset-bbtn export" onclick="gvBsetExportPick()">
-        <span class="ic">⬇</span>
-        <span>ดาวน์โหลด</span>
-        <span class="sub">เลือก format</span>
-      </button>
-      <button class="gv-bset-bbtn import" onclick="gvBsetImportPick()">
-        <span class="ic">⬆</span>
-        <span>กู้คืน</span>
-        <span class="sub">เลือกไฟล์</span>
-      </button>
+    <div class="gvh-sec-lbl">💾 สำรองข้อมูล</div>
+    <div class="gvh-card">
+      <div class="gvh-row-ttl">เก็บสำเนาไว้กันหาย</div>
+      <div class="gvh-what">ดาวน์โหลดไฟล์เก็บไว้ในเครื่อง/Google Drive — เผื่อ<b>เผลอลบ</b> หรือ <b>cloud มีปัญหา</b> เอาไฟล์นี้มากู้คืนได้</div>
+      <div class="gvh-acts">
+        <button class="gvh-btn primary" onclick="gvBsetExportPick()"><b>⬇ ดาวน์โหลด</b><small>เลือกรูปแบบไฟล์</small></button>
+        <button class="gvh-btn gold" onclick="gvBsetImportPick()"><b>⬆ กู้คืน</b><small>เลือกไฟล์เดิม</small></button>
+      </div>
+      <div class="gvh-laststamp">${lastBkLbl}</div>
+      <div class="gvh-howto">
+        <div class="gvh-ht-h" onclick="gvBsetToggleHowto(this)">ℹ️ วิธีสำรอง &amp; กู้คืน <span class="cv">▾</span></div>
+        <div class="gvh-ht-body">
+          <ol class="gvh-steps">
+            <li>กด <b>ดาวน์โหลด</b> แล้วเลือกรูปแบบ (แนะนำ <b>.json</b> — ครบสุด)</li>
+            <li>ไฟล์เซฟลงเครื่อง — เก็บซ้ำใน <b>Google Drive / LINE</b> ยิ่งปลอดภัย</li>
+            <li>อยากกู้กลับ: กด <b>กู้คืน</b> → เลือกไฟล์ที่เคยเซฟ</li>
+            <li>ควรสำรอง <b>เดือนละครั้ง</b> หรือหลังบันทึกสวนสำคัญ</li>
+          </ol>
+        </div>
+      </div>
     </div>
-    <div class="gv-bset-laststamp">${lastBkLbl}</div>
 
-    <div class="gv-bset-sec" style="margin-top: 14px;">— ที่เก็บรูป (Cloud) —</div>
-    <div class="gv-bset-store" id="gv-bset-cloud-info" style="margin-bottom: 8px;">
-      <div class="gv-bset-store-row">
-        <span class="gv-bset-store-lbl">☁ Supabase Storage</span>
-        <span class="gv-bset-store-val" id="gv-bset-cloud-val">กำลังตรวจ...</span>
+    <div class="gvh-sec-lbl">📦 คลังสวน</div>
+    <div class="gvh-card">
+      <div class="gvh-row-ttl">สวนที่ปิดจบแล้ว</div>
+      <div class="gvh-what">ย้ายสวนที่จบแล้วเข้า "คลัง" ให้หน้าหลักโล่ง เหลือเฉพาะสวนที่กำลังทำ — <b>ข้อมูลไม่หาย</b> ยังอยู่บน cloud เปิดดู/เอากลับได้ตลอด</div>
+      <div class="gvh-stack">
+        <button class="gvh-line ${noClosed ? 'disabled' : ''}" onclick="${noClosed ? '' : 'gvBsetArchiveConfirm()'}">
+          <span class="dot amber"></span>
+          <div><div class="t">เก็บสวนปิด ${closed.length} สวน เข้าคลัง</div><div class="s">${noClosed ? 'ยังไม่มีสวนปิด' : 'ย้ายขึ้นคลัง → ออกจากหน้าหลัก'}</div></div>
+          <span class="arr">›</span>
+        </button>
+        <button class="gvh-line" onclick="gvBsetArchiveViewOpen()">
+          <span class="dot walnut"></span>
+          <div><div class="t">📦 เปิดดูคลัง</div><div class="s">ดู/เอาสวนในคลังกลับมา (ต้องออนไลน์)</div></div>
+          <span class="arr">›</span>
+        </button>
       </div>
-      <div class="gv-bset-store-detail" id="gv-bset-cloud-detail" style="font-size:9.5px;">โหลด...</div>
     </div>
-    <button class="gv-bset-clean" onclick="gvBsetCloudMigrateConfirm()">
-      <div class="gv-bset-clean-row">
-        <div class="gv-bset-clean-l">
-          <span class="gv-bset-clean-dot" style="background:#3a7eb5;box-shadow:0 0 0 2px rgba(58,126,181,0.18);"></span>
-          <div>
-            <div class="gv-bset-clean-ttl">📤 ย้ายรูปไป Cloud</div>
-            <div class="gv-bset-clean-sub" id="gv-bset-cloud-mig-sub">กำลังตรวจ...</div>
-          </div>
-        </div>
-        <span class="gv-bset-clean-arr">›</span>
-      </div>
-    </button>
 
-    <div class="gv-bset-sec" style="margin-top: 14px;">— ที่เก็บรูป (IndexedDB) —</div>
-    <div class="gv-bset-store" id="gv-bset-idb-info" style="margin-bottom: 8px;">
-      <div class="gv-bset-store-row">
-        <span class="gv-bset-store-lbl">🗄 IndexedDB</span>
-        <span class="gv-bset-store-val" id="gv-bset-idb-val">กำลังตรวจ...</span>
+    <div class="gvh-sec-lbl">🖼 รูปภาพ</div>
+    <div class="gvh-card">
+      <div class="gvh-photo-line">
+        <div class="pic">☁</div>
+        <div>
+          <div class="t">${photoCount} รูป · <b class="ok">เก็บบน cloud ✓</b></div>
+          <div class="gvh-what" style="margin:2px 0 0">ถ่าย/ใส่รูปในสวน → ขึ้น cloud เองอัตโนมัติ ไม่กินพื้นที่เครื่อง</div>
+        </div>
       </div>
-      <div class="gv-bset-store-detail" id="gv-bset-idb-detail" style="font-size:9.5px;">โหลด...</div>
     </div>
-    <button class="gv-bset-clean" onclick="gvBsetMigrateConfirm()">
-      <div class="gv-bset-clean-row">
-        <div class="gv-bset-clean-l">
-          <span class="gv-bset-clean-dot" style="background:#5a7eb5;box-shadow:0 0 0 2px rgba(90,126,181,0.18);"></span>
-          <div>
-            <div class="gv-bset-clean-ttl">🗄 ย้ายรูปไป IndexedDB</div>
-            <div class="gv-bset-clean-sub" id="gv-bset-mig-sub">กำลังตรวจ...</div>
-          </div>
-        </div>
-        <span class="gv-bset-clean-arr">›</span>
-      </div>
-    </button>
 
-    <div class="gv-bset-sec" style="margin-top: 14px;">— ปรับปรุงรูป —</div>
-    <button class="gv-bset-clean ${oversize.count === 0 ? 'disabled' : ''}" onclick="${oversize.count === 0 ? '' : 'gvBsetRecompressConfirm()'}">
-      <div class="gv-bset-clean-row">
-        <div class="gv-bset-clean-l">
-          <span class="gv-bset-clean-dot" style="background:#3a7eb5;box-shadow:0 0 0 2px rgba(58,126,181,0.18);"></span>
-          <div>
-            <div class="gv-bset-clean-ttl">🗜 บีบรูปเก่า</div>
-            <div class="gv-bset-clean-sub">${oversize.count === 0
-              ? 'รูปทั้งหมดบีบดีแล้ว'
-              : `${oversize.count} รูปใหญ่กว่ามาตรฐาน · ประหยัดได้ ~${gvBsetFmtBytes(oversize.estSave)}`}</div>
-          </div>
+    <div class="gvh-adv">
+      <div class="gvh-adv-h" onclick="gvBsetToggleHowto(this)">🔧 สำหรับผู้ดูแล — จัดการรูป &amp; ที่เก็บ <span style="font-size:10px;color:#9a8a63;font-weight:600">(ปกติไม่ต้องแตะ)</span> <span class="cv">▾</span></div>
+      <div class="gvh-adv-body">
+        <div class="gv-bset-store" id="gv-bset-cloud-info" style="margin:0">
+          <div class="gv-bset-store-row"><span class="gv-bset-store-lbl">☁ Supabase Storage</span><span class="gv-bset-store-val" id="gv-bset-cloud-val">กำลังตรวจ...</span></div>
+          <div class="gv-bset-store-detail" id="gv-bset-cloud-detail" style="font-size:9.5px;">โหลด...</div>
         </div>
-        <span class="gv-bset-clean-arr">›</span>
-      </div>
-    </button>
-
-    <div class="gv-bset-sec" style="margin-top: 14px;">— ล้างข้อมูล (สวนปิดแล้วเท่านั้น) —</div>
-    <button class="gv-bset-clean ${noPhotos ? 'disabled' : ''}" onclick="${noPhotos ? '' : 'gvBsetCleanPhotosConfirm()'}">
-      <div class="gv-bset-clean-row">
-        <div class="gv-bset-clean-l">
-          <span class="gv-bset-clean-dot green"></span>
-          <div>
-            <div class="gv-bset-clean-ttl">ลบรูป สวนปิดแล้ว</div>
-            <div class="gv-bset-clean-sub">${noPhotos
-              ? 'ไม่มีรูปให้ลบ'
-              : `${closedPhoto.length} สวน · ${closedPhotoCount} รูป · ประหยัด ${gvBsetFmtBytes(closedPhotoBytes)}`}</div>
-          </div>
+        <button class="gv-bset-clean" onclick="gvBsetCloudMigrateConfirm()">
+          <div class="gv-bset-clean-row"><div class="gv-bset-clean-l"><span class="gv-bset-clean-dot" style="background:#3a7eb5;box-shadow:0 0 0 2px rgba(58,126,181,0.18);"></span><div><div class="gv-bset-clean-ttl">📤 ย้ายรูปค้างขึ้น Cloud</div><div class="gv-bset-clean-sub" id="gv-bset-cloud-mig-sub">กำลังตรวจ...</div></div></div><span class="gv-bset-clean-arr">›</span></div>
+        </button>
+        <div class="gv-bset-store" id="gv-bset-idb-info" style="margin:0">
+          <div class="gv-bset-store-row"><span class="gv-bset-store-lbl">🗄 IndexedDB</span><span class="gv-bset-store-val" id="gv-bset-idb-val">กำลังตรวจ...</span></div>
+          <div class="gv-bset-store-detail" id="gv-bset-idb-detail" style="font-size:9.5px;">โหลด...</div>
         </div>
-        <span class="gv-bset-clean-arr">›</span>
+        <button class="gv-bset-clean" onclick="gvBsetIdbPurgeConfirm()">
+          <div class="gv-bset-clean-row"><div class="gv-bset-clean-l"><span class="gv-bset-clean-dot" style="background:#b5723a;box-shadow:0 0 0 2px rgba(181,114,58,0.18);"></span><div><div class="gv-bset-clean-ttl">🧹 ล้าง IndexedDB</div><div class="gv-bset-clean-sub" id="gv-bset-mig-sub">กำลังตรวจ...</div></div></div><span class="gv-bset-clean-arr">›</span></div>
+        </button>
+        <button class="gv-bset-clean ${oversize.count === 0 ? 'disabled' : ''}" onclick="${oversize.count === 0 ? '' : 'gvBsetRecompressConfirm()'}">
+          <div class="gv-bset-clean-row"><div class="gv-bset-clean-l"><span class="gv-bset-clean-dot" style="background:#3a7eb5;box-shadow:0 0 0 2px rgba(58,126,181,0.18);"></span><div><div class="gv-bset-clean-ttl">🗜 บีบรูปเก่า</div><div class="gv-bset-clean-sub">${oversize.count === 0 ? 'รูปทั้งหมดบีบดีแล้ว' : oversize.count + ' รูปใหญ่กว่ามาตรฐาน · ประหยัด ~' + gvBsetFmtBytes(oversize.estSave)}</div></div></div><span class="gv-bset-clean-arr">›</span></div>
+        </button>
+        <button class="gv-bset-clean ${noPhotos ? 'disabled' : ''}" onclick="${noPhotos ? '' : 'gvBsetCleanPhotosConfirm()'}">
+          <div class="gv-bset-clean-row"><div class="gv-bset-clean-l"><span class="gv-bset-clean-dot green"></span><div><div class="gv-bset-clean-ttl">🗑 ลบรูป สวนปิดแล้ว</div><div class="gv-bset-clean-sub">${noPhotos ? 'ไม่มีรูปให้ลบ' : closedPhoto.length + ' สวน · ' + closedPhotoCount + ' รูป · ประหยัด ' + gvBsetFmtBytes(closedPhotoBytes)}</div></div></div><span class="gv-bset-clean-arr">›</span></div>
+        </button>
       </div>
-    </button>
-    <button class="gv-bset-clean ${noClosed ? 'disabled' : ''}" onclick="${noClosed ? '' : 'gvBsetArchiveConfirm()'}">
-      <div class="gv-bset-clean-row">
-        <div class="gv-bset-clean-l">
-          <span class="gv-bset-clean-dot amber"></span>
-          <div>
-            <div class="gv-bset-clean-ttl">เก็บเข้าคลัง สวนปิดแล้ว</div>
-            <div class="gv-bset-clean-sub">${noClosed
-              ? 'ไม่มีสวนปิด'
-              : `download .json → ลบ ${closed.length} สวนออกจากระบบ`}</div>
-          </div>
-        </div>
-        <span class="gv-bset-clean-arr">›</span>
-      </div>
-    </button>
+    </div>
   `;
   // อัปเดต IDB info + Cloud info แบบ async (ไม่ block render)
   setTimeout(gvBsetUpdateIdbInfo, 0);
   setTimeout(gvBsetUpdateCloudInfo, 0);
 }
+
+// ═══════════════════ FRUIT NAME MANAGER (หน้าจัดการชื่อผลไม้) — build 1048 ═══════════════════
+// seed จากผลไม้ที่มีอยู่ (สวน+บิล+คลังราคา) ครั้งแรก — กันเริ่มจากศูนย์
+function fruitSeedIfEmpty() {
+  if ((window.fruitNames || []).length > 0) return;
+  const set = new Set();
+  try { gardens.forEach(g => { if (g.fruit && String(g.fruit).trim()) set.add(String(g.fruit).trim()); }); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(q => { if (q.fruit && String(q.fruit).trim()) set.add(String(q.fruit).trim()); }); } catch (e) {}
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (f.fruit && String(f.fruit).trim()) set.add(String(f.fruit).trim()); }); } catch (e) {}
+  if (!set.size) return;
+  let i = 0;
+  set.forEach(nm => { window.fruitNames.push({ id: fruitNewId(), name: nm, color: FRUIT_PALETTE[i % FRUIT_PALETTE.length] }); i++; });
+  saveFruitNames();
+}
+window.fruitSeedIfEmpty = fruitSeedIfEmpty;
+
+// นับการใช้งานของชื่อผลไม้
+function fruitUsage(name) {
+  const nm = String(name || '').trim();
+  let g = 0, q = 0;
+  try { gardens.forEach(x => { if (String(x.fruit || '').trim() === nm) g++; }); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(x => { if (String(x.fruit || '').trim() === nm) q++; }); } catch (e) {}
+  return { g, q };
+}
+
+function gvBsetRenderFruit() {
+  fruitSeedIfEmpty();
+  const body = document.getElementById('gv-bset-body'); if (!body) return;
+  const list = (window.fruitNames || []).slice();
+  const grpCount = (typeof fruitFindGroups === 'function') ? fruitFindGroups().length : 0;
+  const rows = list.map(f => {
+    const u = fruitUsage(f.name);
+    const used = u.g || u.q;
+    const useLbl = used ? `${u.g} สวน${u.q ? ' · ' + u.q + ' บิล' : ''}` : 'ยังไม่มีใครใช้ · ลบได้';
+    return `<div class="gvh-frow ${used ? '' : 'unused'}">
+      <span class="gvh-fdot" style="background:${gbEscapeHtml(f.color || '#b0a07a')}"></span>
+      <div class="gvh-fmeta"><div class="gvh-fname">${gbEscapeHtml(f.name)}</div><div class="gvh-fuse">${useLbl}</div></div>
+      <div class="gvh-facts">
+        <button class="gvh-fbtn" onclick="fruitMgrEditOpen('${f.id}')">✎</button>
+        <button class="gvh-fbtn del" onclick="fruitMgrDelete('${f.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="gvh-sec-lbl">🍎 ชื่อผลไม้ (${list.length})</div>
+    <div class="gvh-what" style="margin:2px 2px 11px;">เลือกจากรายการนี้ตอนกรอกสวน/บิล → ค้นหา &amp; กราฟไม่มั่ว · แก้/ลบ/เลือกสีได้อิสระ</div>
+    <button class="gvh-add-fruit" onclick="fruitMgrAddOpen()">＋ เพิ่มชื่อผลไม้</button>
+    ${grpCount ? `<button class="gvh-merge-btn" onclick="fruitMergeOpen()">🔗 รวมชื่อซ้ำ · พบ ${grpCount} กลุ่ม</button>` : ''}
+    <div class="gvh-flist">${rows || '<div class="gvh-what" style="text-align:center;padding:18px;">ยังไม่มีชื่อผลไม้ · กด ＋ เพิ่ม</div>'}</div>
+  `;
+}
+window.gvBsetRenderFruit = gvBsetRenderFruit;
+
+// ── modal เพิ่ม/แก้ (มี color picker อิสระ) ──
+function _fruitEditModal(id) {
+  const f = id ? (window.fruitNames || []).find(x => x.id === id) : null;
+  const name = f ? f.name : '';
+  const color = f ? (f.color || FRUIT_PALETTE[0]) : FRUIT_PALETTE[0];
+  window.__fruitEditColor = color;
+  const sw = FRUIT_PALETTE.map(c => `<span class="gvh-sw ${c === color ? 'sel' : ''}" style="background:${c}" onclick="fruitMgrPickSwatch(this,'${c}')"></span>`).join('');
+  gvBsetCmOpen(`
+    <div class="gv-bset-cm-h"><div class="ttl">${f ? '✎ แก้ชื่อผลไม้' : '＋ เพิ่มชื่อผลไม้'}</div></div>
+    <div class="gv-bset-cm-body">
+      <div class="gvh-fld-lbl">ชื่อ</div>
+      <input id="fruit-mgr-name" class="gvh-txt" value="${gbEscapeHtml(name)}" placeholder="เช่น ลำไย" maxlength="40" autocomplete="off">
+      <div class="gvh-fld-lbl">สีไอคอน — เลือกจานด่วน หรือกำหนดเอง</div>
+      <div class="gvh-swatches" id="fruit-sw-row">${sw}</div>
+      <div class="gvh-color-custom">
+        <input type="color" id="fruit-mgr-color" value="${color}" oninput="fruitMgrPickCustom(this.value)">
+        <span class="gvh-cc-lbl">🎨 กำหนดสีเอง (ทุกเฉด)</span>
+        <span class="gvh-fdot" id="fruit-preview-dot" style="background:${color};margin-left:auto;"></span>
+      </div>
+    </div>
+    <div class="gv-bset-cm-acts">
+      <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button>
+      <button class="gv-bset-cm-btn confirm" onclick="fruitMgrSave('${id || ''}')">บันทึก</button>
+    </div>
+  `);
+}
+function fruitMgrAddOpen() { _fruitEditModal(null); }
+function fruitMgrEditOpen(id) { _fruitEditModal(id); }
+function fruitMgrPickSwatch(el, color) {
+  window.__fruitEditColor = color;
+  const ci = document.getElementById('fruit-mgr-color'); if (ci) ci.value = color;
+  const dot = document.getElementById('fruit-preview-dot'); if (dot) dot.style.background = color;
+  const row = document.getElementById('fruit-sw-row'); if (row) row.querySelectorAll('.gvh-sw').forEach(s => s.classList.remove('sel'));
+  if (el) el.classList.add('sel');
+}
+function fruitMgrPickCustom(color) {
+  window.__fruitEditColor = color;
+  const dot = document.getElementById('fruit-preview-dot'); if (dot) dot.style.background = color;
+  const row = document.getElementById('fruit-sw-row'); if (row) row.querySelectorAll('.gvh-sw').forEach(s => s.classList.remove('sel'));
+}
+function fruitMgrSave(id) {
+  const nameEl = document.getElementById('fruit-mgr-name');
+  const name = (nameEl && nameEl.value || '').trim();
+  const color = window.__fruitEditColor || FRUIT_PALETTE[0];
+  if (!name) { toast('ใส่ชื่อผลไม้ก่อน'); return; }
+  const dup = (window.fruitNames || []).find(x => x.name === name && x.id !== id);
+  if (dup) { toast('มีชื่อนี้อยู่แล้ว'); return; }
+  let oldName = null;
+  if (id) {
+    const f = (window.fruitNames || []).find(x => x.id === id);
+    oldName = f ? f.name : null;
+    if (f) { f.name = name; f.color = color; }
+  } else {
+    window.fruitNames.push({ id: fruitNewId(), name, color });
+  }
+  saveFruitNames();
+  gvBsetCmClose();
+  // เปลี่ยนชื่อ + มี record ใช้ชื่อเดิม → ถามแก้ของเก่าด้วยไหม
+  if (id && oldName && oldName !== name && typeof fruitCountUses === 'function') {
+    const uses = fruitCountUses(oldName);
+    if (uses > 0) {
+      gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">แก้ในของเก่าด้วยไหม?</div></div>
+        <div class="gv-bset-cm-body"><div class="gv-bset-cm-info">มี <b>${uses} รายการ</b> (สวน/บิล/คลังราคา) ที่ยังใช้ชื่อ "<b>${gbEscapeHtml(oldName)}</b>" — แก้เป็น "<b>${gbEscapeHtml(name)}</b>" ทั้งหมดไหม?</div></div>
+        <div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose(); gvBsetRenderFruit();">ไม่ต้อง</button><button class="gv-bset-cm-btn confirm" onclick="fruitDoPropagate('${String(oldName).replace(/'/g, "\\'")}','${String(name).replace(/'/g, "\\'")}')">แก้ให้ตรงกัน</button></div>`);
+      return;
+    }
+  }
+  gvBsetRenderFruit();
+  toast(id ? 'แก้แล้ว' : 'เพิ่มแล้ว');
+  if (typeof haptic === 'function') haptic(12);
+}
+function fruitMgrDelete(id) {
+  const f = (window.fruitNames || []).find(x => x.id === id); if (!f) return;
+  const u = fruitUsage(f.name);
+  const used = u.g || u.q;
+  gvBsetCmOpen(`
+    <div class="gv-bset-cm-h"><div class="ttl">🗑 ลบ "${gbEscapeHtml(f.name)}"?</div></div>
+    <div class="gv-bset-cm-body"><div class="gv-bset-cm-warn">${used
+      ? `ผลไม้นี้ใช้ใน <b>${u.g} สวน${u.q ? ' · ' + u.q + ' บิล' : ''}</b> — ลบออกจากรายการได้ แต่ของเดิม<b>ยังแสดงชื่อเดิม</b> (แค่หายจากตัวเลือก + สี)`
+      : 'ผลไม้นี้ยังไม่มีใครใช้ · ลบได้ปลอดภัย'}</div></div>
+    <div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button><button class="gv-bset-cm-btn danger" onclick="fruitMgrDeleteConfirm('${id}')">ลบ</button></div>
+  `);
+}
+function fruitMgrDeleteConfirm(id) {
+  window.fruitNames = (window.fruitNames || []).filter(x => x.id !== id);
+  saveFruitNames();
+  gvBsetCmClose();
+  gvBsetRenderFruit();
+  toast('ลบแล้ว');
+  if (typeof haptic === 'function') haptic(12);
+}
+window.fruitMgrAddOpen = fruitMgrAddOpen;
+window.fruitMgrEditOpen = fruitMgrEditOpen;
+window.fruitMgrPickSwatch = fruitMgrPickSwatch;
+window.fruitMgrPickCustom = fruitMgrPickCustom;
+window.fruitMgrSave = fruitMgrSave;
+window.fruitMgrDelete = fruitMgrDelete;
+window.fruitMgrDeleteConfirm = fruitMgrDeleteConfirm;
+
+// ═══════════════════ FRUIT MERGE + RENAME PROPAGATION — build 1049 ═══════════════════
+// normalize: รวมสระอำไทย (ลำไย=ำ vs ลําไย=ํ+า) + NFC + lowercase (longan/Longan) + ตัดช่องว่าง
+function fruitNormalize(name) {
+  return String(name || '').trim()
+    .replace(/\u0E4D\u0E32/g, '\u0E33')  // ํา (นิคหิต+สระอา) → ำ (สระอำ) — แก้ ลำไย/ลําไย
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+// edit distance (จับพิมพ์ผิด 1 ตัว เช่น ลำไย/ลำใย) — early-out ถ้าต่างกันมาก
+function fruitEditDist(a, b) {
+  a = String(a); b = String(b);
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  if (Math.abs(m - n) > 1) return 9;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+// รวมชื่อผลไม้ที่ใช้จริง (จากสวน+บิล+คลังราคา+library)
+function fruitAllUsedNames() {
+  const s = new Set();
+  try { gardens.forEach(g => { if (g.fruit) s.add(String(g.fruit).trim()); }); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(q => { if (q.fruit) s.add(String(q.fruit).trim()); }); } catch (e) {}
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (f.fruit) s.add(String(f.fruit).trim()); }); } catch (e) {}
+  try { (window.fruitNames || []).forEach(f => { if (f.name) s.add(String(f.name).trim()); }); } catch (e) {}
+  return [...s].filter(Boolean);
+}
+// นับจำนวน record ที่ใช้ชื่อนี้
+function fruitCountUses(name) {
+  const nm = String(name || '').trim();
+  const u = fruitUsage(nm);
+  let pf = 0;
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (String(f.fruit || '').trim() === nm) pf++; }); } catch (e) {}
+  return u.g + u.q + pf;
+}
+// จัดกลุ่มชื่อที่น่าจะซ้ำ/คล้ายกัน
+function fruitFindGroups() {
+  const arr = fruitAllUsedNames();
+  const groups = [];
+  arr.forEach(nm => {
+    const k = fruitNormalize(nm);
+    const g = groups.find(gr => gr._keys.some(kk => kk === k || (Math.min(kk.length, k.length) >= 4 && fruitEditDist(kk, k) <= 1)));
+    if (g) { g.variants.push(nm); g._keys.push(k); }
+    else groups.push({ variants: [nm], _keys: [k] });
+  });
+  return groups.filter(g => new Set(g.variants).size > 1).map(g => ({ variants: [...new Set(g.variants)] }));
+}
+function fruitSuggestCanonical(variants) {
+  const inLib = variants.filter(v => (window.fruitNames || []).some(f => f.name === v));
+  const pool = inLib.length ? inLib : variants;
+  let best = pool[0], bestCount = -1;
+  pool.forEach(v => { const c = fruitCountUses(v); if (c > bestCount) { bestCount = c; best = v; } });
+  return best;
+}
+
+// ── อัปเดต fruit ในทุก record (pure — ไม่ save) ──
+function _fruitRenameInRecords(oldName, newName) {
+  let changed = 0;
+  try { gardens.forEach(g => { if (String(g.fruit || '').trim() === oldName) { g.fruit = newName; changed++; } }); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(q => { if (String(q.fruit || '').trim() === oldName) { q.fruit = newName; changed++; } }); } catch (e) {}
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (String(f.fruit || '').trim() === oldName) { f.fruit = newName; changed++; } }); } catch (e) {}
+  // remap filter ชนิดผลไม้ที่เลือกอยู่ (กันค้างชื่อเก่า → สวนหาย)
+  try { if (typeof filters !== 'undefined' && filters.fruit && filters.fruit.has(oldName)) { filters.fruit.delete(oldName); filters.fruit.add(newName); } } catch (e) {}
+  return changed;
+}
+function _fruitSaveAllRecords() {
+  try { saveGardens(gardens); } catch (e) {}
+  try { if (typeof persist === 'function') persist(); } catch (e) {}
+  try { if (typeof pfPersist === 'function') pfPersist(); } catch (e) {}
+  try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}  // รีเฟรชลิสต์ให้ชื่อ+filter ตรง
+}
+function fruitPropagateRename(oldName, newName) {
+  const c = _fruitRenameInRecords(oldName, newName);
+  if (c) _fruitSaveAllRecords();
+  return c;
+}
+window.fruitPropagateRename = fruitPropagateRename;
+
+function fruitDoPropagate(oldName, newName) {
+  const changed = fruitPropagateRename(oldName, newName);
+  gvBsetCmClose();
+  gvBsetRenderFruit();
+  toast(`✓ แก้ ${changed} รายการเป็น "${newName}"`);
+  if (typeof haptic === 'function') haptic(15);
+}
+window.fruitDoPropagate = fruitDoPropagate;
+
+// ── merge: รวม variant → canonical (แก้ record + ลบชื่อ variant ออกจาก library) ──
+function fruitMergeApply(canonical, variants) {
+  let changed = 0;
+  const others = variants.filter(v => v !== canonical);
+  others.forEach(v => { changed += _fruitRenameInRecords(v, canonical); });
+  if (changed) _fruitSaveAllRecords();
+  const varSet = new Set(others);
+  window.fruitNames = (window.fruitNames || []).filter(f => !varSet.has(f.name));
+  if (!(window.fruitNames || []).some(f => f.name === canonical)) window.fruitNames.push({ id: fruitNewId(), name: canonical, color: FRUIT_PALETTE[0] });
+  saveFruitNames();
+  return changed;
+}
+
+function fruitMergeOpen() {
+  const groups = fruitFindGroups();
+  if (!groups.length) {
+    gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">🔗 รวมชื่อซ้ำ</div></div><div class="gv-bset-cm-body"><div class="gv-bset-cm-info">✓ ไม่พบชื่อที่ซ้ำหรือคล้ายกัน — รายการสะอาดดีอยู่แล้ว</div></div><div class="gv-bset-cm-acts" style="grid-template-columns:1fr;"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button></div>`);
+    return;
+  }
+  window.__fruitGroups = groups.map(g => ({ variants: g.variants, canonical: fruitSuggestCanonical(g.variants) }));
+  _renderMergeGroups();
+}
+function _renderMergeGroups() {
+  const groups = window.__fruitGroups || [];
+  if (!groups.length) { gvBsetCmClose(); gvBsetRenderFruit(); return; }
+  const html = groups.map((g, gi) => {
+    const chips = g.variants.map(v => {
+      const c = fruitCountUses(v);
+      const isC = v === g.canonical;
+      return `<span class="gvh-mg-chip ${isC ? 'canon' : ''}" onclick="fruitMergeSetCanon(${gi},'${String(v).replace(/'/g, "\\'")}')">${gbEscapeHtml(v)}${c ? ` <b>${c}</b>` : ''}${isC ? ' ✓' : ''}</span>`;
+    }).join('');
+    const total = g.variants.reduce((a, v) => a + fruitCountUses(v), 0);
+    return `<div class="gvh-mg-grp">
+      <div class="gvh-mg-chips">${chips}</div>
+      <div class="gvh-mg-foot"><span>→ <b>${gbEscapeHtml(g.canonical)}</b> · แก้ ${total} รายการ</span><button class="gvh-mg-btn" onclick="fruitMergeApplyGroup(${gi})">รวม</button></div>
+    </div>`;
+  }).join('');
+  gvBsetCmOpen(`
+    <div class="gv-bset-cm-h"><div class="ttl">🔗 รวมชื่อซ้ำ (${groups.length} กลุ่ม)</div><div class="sub">แตะเลือกชื่อที่ถูก (มี ✓) → กดรวม</div></div>
+    <div class="gv-bset-cm-body">${html}</div>
+    <div class="gv-bset-cm-acts" style="grid-template-columns:1fr;"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button></div>
+  `);
+}
+function fruitMergeSetCanon(gi, name) {
+  if (window.__fruitGroups && window.__fruitGroups[gi]) { window.__fruitGroups[gi].canonical = name; _renderMergeGroups(); }
+}
+function fruitMergeApplyGroup(gi) {
+  const g = (window.__fruitGroups || [])[gi]; if (!g) return;
+  const changed = fruitMergeApply(g.canonical, g.variants);
+  window.__fruitGroups.splice(gi, 1);
+  toast(`✓ รวมเป็น "${g.canonical}" · แก้ ${changed} รายการ`);
+  if (typeof haptic === 'function') haptic(15);
+  _renderMergeGroups();
+}
+window.fruitMergeOpen = fruitMergeOpen;
+window.fruitMergeSetCanon = fruitMergeSetCanon;
+window.fruitMergeApplyGroup = fruitMergeApplyGroup;
+window.fruitFindGroups = fruitFindGroups;
 
 // ── อัปเดต Cloud info badge ใน sheet (async) ──
 async function gvBsetUpdateCloudInfo() {
@@ -25929,6 +26556,159 @@ async function gvBsetCloudMigrateApply() {
   }, 300);
 }
 
+// ════════════════════════════════════════════
+//  IDB CLEANUP · รื้อที่เก็บเก่า (IndexedDB) ทิ้ง — build 1040
+//  ปรัชญา: cloud เป็นแหล่งหลัก · IDB คือสำเนาตายที่ render ไม่อ่าน
+//  ขั้นตอนปลอดภัย: กู้รูปที่ค้างใน IDB ที่เดียวก่อน → แล้วค่อยลบ store ทิ้ง
+// ════════════════════════════════════════════
+
+// ลบ IndexedDB store ทั้งก้อน (ปิด connection ก่อน)
+function pstoreDropAll() {
+  return new Promise((resolve) => {
+    try { if (_pstoreDb) { _pstoreDb.close(); _pstoreDb = null; } } catch (e) {}
+    _pstoreOpening = null;
+    if (typeof indexedDB === 'undefined') { resolve(false); return; }
+    try {
+      const req = indexedDB.deleteDatabase(PSTORE_DB_NAME);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
+      req.onblocked = () => resolve(false); // มีแท็บอื่นเปิดค้าง — ไม่ลบ
+    } catch (e) { resolve(false); }
+  });
+}
+
+// สแกนสถานะรูปทุกใบเทียบกับ IDB (อ่านอย่างเดียว ไม่แตะอะไร)
+//  relyOnIdb = รูปที่มีแต่ photoRef (ไม่มี url/dataUrl) → พึ่ง IDB ที่เดียว = ต้องกู้ก่อนลบ
+//  redundant = รูปที่มี photoRef แต่ก็มี url/dataUrl ด้วย → สำเนา IDB ซ้ำ ลบ ref ได้เลย
+function gvBsetIdbScan() {
+  let relyOnIdb = 0, redundant = 0, cloudSafe = 0, localSafe = 0, refCount = 0;
+  gardens.forEach(g => {
+    if (!Array.isArray(g.albumPhotos)) return;
+    g.albumPhotos.forEach(p => {
+      if (!p) return;
+      const hasUrl = !!p.url, hasData = !!p.dataUrl, hasRef = !!p.photoRef;
+      if (hasRef) refCount++;
+      if (hasRef && !hasUrl && !hasData) relyOnIdb++;
+      else if (hasRef && (hasUrl || hasData)) redundant++;
+      if (hasUrl) cloudSafe++; else if (hasData) localSafe++;
+    });
+  });
+  return { relyOnIdb, redundant, cloudSafe, localSafe, refCount };
+}
+
+// ── Confirm modal: โชว์แผนก่อนล้าง ──
+async function gvBsetIdbPurgeConfirm() {
+  if (typeof indexedDB === 'undefined') { toast('เบราว์เซอร์นี้ไม่รองรับ IndexedDB'); return; }
+  const s = gvBsetIdbScan();
+  let idbCount = 0, idbBytes = 0;
+  try { const info = await pstoreTotalBytes(); idbCount = info.count; idbBytes = info.bytes; } catch (e) {}
+
+  // ไม่มีอะไรให้ล้าง
+  if (idbCount === 0 && s.relyOnIdb === 0 && s.redundant === 0 && s.refCount === 0) {
+    toast('✓ IndexedDB สะอาดอยู่แล้ว ไม่มีอะไรต้องล้าง');
+    return;
+  }
+
+  const useCloud = !!(window.supaReady && window.supaClient && navigator.onLine);
+  const ghostLine = s.relyOnIdb > 0
+    ? `<div class="gv-bset-cm-warn">⚠ มี <b>${s.relyOnIdb} รูป</b> ที่อยู่ใน IndexedDB ที่เดียว — ระบบจะกู้กลับมา${useCloud ? 'แล้วดันขึ้น cloud ให้' : ' (เก็บใน localStorage ชั่วคราว — ควรกด “ย้ายรูปไป Cloud” ต่อเมื่อออนไลน์)'} ก่อนลบ</div>`
+    : '';
+  const cloudHint = useCloud ? '' : `<div class="gv-bset-cm-warn">📴 ตอนนี้ออฟไลน์/ยังไม่ได้ต่อ cloud — รูปที่กู้จะเก็บใน localStorage ก่อน</div>`;
+
+  gvBsetCmOpen(`
+    <div class="gv-bset-cm-h">
+      <div class="ttl">🧹 ล้าง IndexedDB (ที่เก็บเก่า)</div>
+      <div class="sub">รื้อสำเนารูปที่ render ไม่อ่าน · คืนพื้นที่</div>
+    </div>
+    <div class="gv-bset-cm-body">
+      <div class="gv-bset-cm-info">
+        IndexedDB มี <b>${idbCount} รูป</b> (~${gvBsetFmtBytes(idbBytes)})<br>
+        • ปลอดภัยบน cloud แล้ว: <b>${s.cloudSafe}</b> รูป<br>
+        • สำเนาซ้ำที่ลบได้เลย: <b>${s.redundant}</b> รูป<br>
+        ${s.relyOnIdb > 0 ? `• ต้องกู้ก่อนลบ: <b>${s.relyOnIdb}</b> รูป<br>` : ''}
+      </div>
+      ${ghostLine}
+      ${cloudHint}
+      <div class="gv-bset-cm-warn">หลังล้าง แอปจะเลิกใช้ IndexedDB — เก็บรูปบน cloud อย่างเดียว</div>
+    </div>
+    <div class="gv-bset-cm-acts">
+      <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button>
+      <button class="gv-bset-cm-btn confirm" onclick="gvBsetIdbPurgeApply()">เริ่มล้าง</button>
+    </div>
+  `);
+}
+
+// ── ลงมือล้าง: กู้ ghost → เคลียร์ flag → ลบ IDB store ──
+async function gvBsetIdbPurgeApply() {
+  gvBsetCmClose();
+  const useCloud = !!(window.supaReady && window.supaClient && navigator.onLine);
+
+  // รวมรูปที่มี photoRef
+  const refPhotos = [];
+  gardens.forEach(g => {
+    if (!Array.isArray(g.albumPhotos)) return;
+    g.albumPhotos.forEach(p => { if (p && p.photoRef) refPhotos.push(p); });
+  });
+
+  gvBsetProgressOpen('🧹 กำลังล้าง IndexedDB');
+  await new Promise(r => requestAnimationFrame(r));
+
+  let rescued = 0, uploaded = 0, lost = 0, cleared = 0;
+  const total = Math.max(1, refPhotos.length);
+  let i = 0;
+
+  for (const p of refPhotos) {
+    gvBsetProgressUpdate(Math.round((i / total) * 80), `ตรวจ ${i + 1}/${refPhotos.length}`);
+    const hasUrl = !!p.url, hasData = !!p.dataUrl;
+
+    // ghost — พึ่ง IDB ที่เดียว → กู้กลับมาก่อน
+    if (!hasUrl && !hasData) {
+      try {
+        const url = await pstoreGet(p.photoRef);
+        if (url) {
+          p.dataUrl = url; // กู้กลับ localStorage
+          rescued++;
+          if (useCloud) {
+            try {
+              const u = await cloudUploadPhoto(p.dataUrl, p.id);
+              p.url = u; p.uploaded = true; delete p.dataUrl; uploaded++;
+            } catch (e) { console.error('[idbpurge] rescue upload fail', e); }
+          }
+        } else { lost++; } // IDB ไม่มีจริง → รูปหายไปแล้ว รายงานไว้ ไม่ลบอะไร
+      } catch (e) { console.error('[idbpurge] pstoreGet fail', e); lost++; }
+    }
+
+    // ถ้ารูปปลอดภัยแล้ว (มี url หรือ dataUrl) → ลบ pointer ทิ้งได้
+    if (p.url || p.dataUrl) { delete p.photoRef; delete p.migrated; cleared++; }
+    i++;
+    if (i % 3 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+
+  // ถ้าไม่มีรูปไหนพึ่ง IDB แล้ว → รื้อ store ทิ้งทั้งก้อน
+  const stillRef = gardens.some(g => Array.isArray(g.albumPhotos) && g.albumPhotos.some(p => p && p.photoRef));
+  gvBsetProgressUpdate(88, 'เคลียร์ IndexedDB...');
+  let dropped = false;
+  if (!stillRef) { dropped = await pstoreDropAll(); }
+
+  gvBsetProgressUpdate(95, 'บันทึก...');
+  try { saveGardens(gardens); } catch (e) { console.error('[idbpurge] save', e); }
+
+  gvBsetProgressUpdate(100, 'เสร็จ!');
+  setTimeout(() => {
+    gvBsetProgressClose();
+    if (typeof renderListView === 'function') renderListView();
+    gvBsetRender();
+    let msg = cleared > 0 ? `✓ เคลียร์ ${cleared} รูป` : '✓ เสร็จ';
+    if (uploaded) msg += ` · ขึ้น cloud ${uploaded}`;
+    else if (rescued) msg += ` · กู้ ${rescued}`;
+    if (dropped) msg += ' · ลบ IDB แล้ว';
+    if (lost) msg += ` · ⚠ หาย ${lost}`;
+    if (stillRef && !dropped) msg += ' · ยังมีรูปค้าง (ลองใหม่)';
+    toast(msg);
+    if (typeof haptic === 'function') haptic(20);
+  }, 300);
+}
+
 // ── อัปเดต IDB info badge ใน sheet (async) ──
 async function gvBsetUpdateIdbInfo() {
   const valEl = document.getElementById('gv-bset-idb-val');
@@ -25952,17 +26732,16 @@ async function gvBsetUpdateIdbInfo() {
     valEl.textContent = `${info.count} รูป · ${gvBsetFmtBytes(info.bytes)}`;
     valEl.classList.remove('warn');
     if (detailEl) {
-      detailEl.innerHTML = `<span>เพดาน ~${quotaLbl}</span><span>migrated: ${status.migrated} · pending: ${status.pending}</span>`;
+      detailEl.innerHTML = `<span>เพดาน ~${quotaLbl}</span><span>สำเนาเก่าที่ยังค้าง: ${status.migrated}</span>`;
     }
     if (subEl) {
-      if (status.pending === 0 && status.migrated === 0) {
-        subEl.textContent = 'ยังไม่มีรูปอัลบั้ม';
-      } else if (status.pending === 0) {
-        subEl.textContent = `✓ ย้ายแล้ว ${status.migrated} รูป · กดเพื่อย้อนกลับ`;
-      } else if (status.migrated === 0) {
-        subEl.textContent = `${status.pending} รูปยังอยู่ใน localStorage · กดเพื่อย้าย`;
+      const scan = gvBsetIdbScan();
+      if (info.count === 0 && scan.refCount === 0) {
+        subEl.textContent = '✓ สะอาดแล้ว · ไม่มีสำเนาเก่าค้าง';
+      } else if (scan.relyOnIdb > 0) {
+        subEl.textContent = `⚠ ${scan.relyOnIdb} รูปอยู่ใน IDB ที่เดียว · กดเพื่อกู้+ล้าง`;
       } else {
-        subEl.textContent = `ย้ายแล้ว ${status.migrated} · เหลือ ${status.pending} รูป`;
+        subEl.textContent = `${info.count} สำเนาเก่าใน IDB (~${gvBsetFmtBytes(info.bytes)}) · กดเพื่อล้าง`;
       }
     }
   } catch (err) {
@@ -26157,6 +26936,63 @@ function gvBsetExport() {
   return true;
 }
 
+// ── อ่านข้อมูลตีราคาแบบปลอดภัย (scope-independent) — build 1045 ──
+function gvBsetReadQuoteData() {
+  let quotes = [], priceForms = [];
+  try {
+    quotes = (window.state && Array.isArray(window.state.quotes))
+      ? window.state.quotes
+      : JSON.parse(localStorage.getItem('tospon_quotes_v1') || '[]');
+    if (!Array.isArray(quotes)) quotes = [];
+  } catch (e) { quotes = []; }
+  try {
+    priceForms = JSON.parse(localStorage.getItem('thodsapon_price_forms_v1') || '[]');
+    if (!Array.isArray(priceForms)) priceForms = [];
+  } catch (e) { priceForms = []; }
+  return { quotes, priceForms };
+}
+
+// ── สำรองรวมทั้ง 2 เล่ม (ตีราคา + สวน) เป็นไฟล์เดียว ── (Phase 2a — export only)
+function gvBsetExportAll() {
+  const q = gvBsetReadQuoteData();
+  const hasData = gardens.length || notes.length || q.quotes.length || q.priceForms.length;
+  if (!hasData) { toast('ไม่มีข้อมูลให้สำรอง'); return; }
+  const incPhotos = gvBsetReadIncludePhotos();
+  const exportGardens = incPhotos ? gardens : gardens.map(g => ({ ...g, albumPhotos: [] }));
+
+  const payload = {
+    app: 'thodsapon',
+    book: 'all',                        // ← สำรองรวม (ตัวบ่งชี้ว่ามีทั้ง 2 เล่ม)
+    version: BSET_BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    includesPhotos: !!incPhotos,
+    garden: { gardens: exportGardens, notes: notes },
+    quote:  { quotes: q.quotes, priceForms: q.priceForms },
+    fruitNames: (window.fruitNames || []),
+    counts: { gardens: gardens.length, notes: notes.length, quotes: q.quotes.length, priceForms: q.priceForms.length },
+  };
+
+  let json;
+  try { json = JSON.stringify(payload); }
+  catch (e) { toast('สร้างไฟล์ไม่สำเร็จ'); console.error('[bset] export all', e); return; }
+
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ทศพร_สำรองทั้งหมด_${new Date().toISOString().slice(0,10)}${incPhotos ? '' : '_nophoto'}.json`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 100);
+
+  gvBsetWriteLastBackup();
+  toast(`✓ สำรองทั้งหมด · ${gardens.length} สวน · ${q.quotes.length} ใบตีราคา`);
+  if (typeof haptic === 'function') haptic(15);
+  setTimeout(gvBsetRender, 50);
+  return true;
+}
+window.gvBsetExportAll = gvBsetExportAll;
+window.gvBsetReadQuoteData = gvBsetReadQuoteData;
+
 // ── Action: Import (Pick file) ──
 function gvBsetImportPick() {
   const inp = document.getElementById('gv-bset-import-input');
@@ -26183,132 +27019,209 @@ function gvBsetImportFile(ev) {
   reader.readAsText(file);
 }
 
-// preview ก่อน merge
+// preview ก่อนกู้คืน — รองรับไฟล์รวม (book:'all') และเฉพาะสวน (book:'garden')
 function gvBsetImportPreview(payload, fileName) {
-  // schema validate
-  if (!payload || payload.app !== 'thodsapon' || payload.book !== 'garden') {
+  if (!payload || payload.app !== 'thodsapon' || (payload.book !== 'all' && payload.book !== 'garden')) {
     gvBsetCmOpen(`
-      <div class="gv-bset-cm-h">
-        <div class="ttl">⚠ ไฟล์ไม่ตรงกับเล่มสวน</div>
-        <div class="sub">${gbEscapeHtml(fileName || '')}</div>
-      </div>
-      <div class="gv-bset-cm-body">
-        <div class="gv-bset-cm-warn">
-          ไฟล์นี้ไม่ใช่ Backup ของเล่มสวน · ระบบไม่นำเข้าเพื่อความปลอดภัย
-          <div style="margin-top:6px; font-size:10px; opacity:0.85;">app: ${gbEscapeHtml(String(payload && payload.app || '—'))} · book: ${gbEscapeHtml(String(payload && payload.book || '—'))}</div>
-        </div>
-      </div>
-      <div class="gv-bset-cm-acts" style="grid-template-columns: 1fr;">
-        <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button>
-      </div>
+      <div class="gv-bset-cm-h"><div class="ttl">⚠ ไฟล์ไม่ใช่ Backup ของทศพร</div><div class="sub">${gbEscapeHtml(fileName || '')}</div></div>
+      <div class="gv-bset-cm-body"><div class="gv-bset-cm-warn">ไฟล์นี้ไม่ใช่ไฟล์สำรองของแอป · ไม่นำเข้าเพื่อความปลอดภัย<div style="margin-top:6px;font-size:10px;opacity:0.85;">app: ${gbEscapeHtml(String(payload && payload.app || '—'))} · book: ${gbEscapeHtml(String(payload && payload.book || '—'))}</div></div></div>
+      <div class="gv-bset-cm-acts" style="grid-template-columns: 1fr;"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button></div>
     `);
     return;
   }
 
-  const incomingGardens = Array.isArray(payload.gardens) ? payload.gardens : [];
-  const incomingNotes = Array.isArray(payload.notes) ? payload.notes : [];
-  const existingGIds = new Set(gardens.map(g => g.id));
-  const existingNIds = new Set(notes.map(n => n.id));
-  const dupG = incomingGardens.filter(g => existingGIds.has(g.id)).length;
-  const dupN = incomingNotes.filter(n => existingNIds.has(n.id)).length;
-  const newG = incomingGardens.length - dupG;
-  const newN = incomingNotes.length - dupN;
-  const incPhotos = !!payload.includesPhotos;
+  const isAll = payload.book === 'all';
+  const inGardens = isAll ? ((payload.garden && payload.garden.gardens) || []) : (Array.isArray(payload.gardens) ? payload.gardens : []);
+  const inNotes   = isAll ? ((payload.garden && payload.garden.notes) || [])   : (Array.isArray(payload.notes) ? payload.notes : []);
+  const inQuotes  = isAll ? ((payload.quote && payload.quote.quotes) || []) : [];
+  const inPf      = isAll ? ((payload.quote && payload.quote.priceForms) || []) : [];
+  const hasQuote  = isAll;
+
+  // นับเฉพาะ "ที่หายไป" (id ยังไม่มีในเครื่อง) — ของที่มีอยู่จะไม่ถูกแตะ
+  const exG = new Set(gardens.map(g => g.id));
+  const exN = new Set(notes.map(n => n.id));
+  const stQ = (window.state && Array.isArray(window.state.quotes)) ? window.state.quotes : [];
+  const exQ = new Set(stQ.map(q => q.id));
+  let curPf = []; try { curPf = JSON.parse(localStorage.getItem('thodsapon_price_forms_v1') || '[]'); if (!Array.isArray(curPf)) curPf = []; } catch (e) {}
+  const exPf = new Set(curPf.map(f => f.id));
+  const missG = inGardens.filter(g => g && g.id && !exG.has(g.id)).length;
+  const missN = inNotes.filter(n => n && n.id && !exN.has(n.id)).length;
+  const missQ = inQuotes.filter(q => q && q.id && !exQ.has(q.id)).length;
+  const missPf = inPf.filter(f => f && f.id && !exPf.has(f.id)).length;
+
   const exAt = payload.exportedAt ? new Date(payload.exportedAt) : null;
   const exLbl = exAt && !isNaN(exAt.getTime())
     ? exAt.toLocaleString('th-TH', { day:'numeric', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' })
     : '—';
 
-  // เก็บ payload ไว้ใน window ชั่วคราว เพื่อให้ปุ่ม confirm เรียกได้
-  window.__gvBsetPendingImport = { gardens: incomingGardens, notes: incomingNotes };
+  window.__gvBsetPendingImport = { gardens: inGardens, notes: inNotes, quotes: inQuotes, priceForms: inPf, hasQuote };
+  window.__gvRestoreScope = hasQuote ? 'all' : 'garden';
+
+  const scopeRow = hasQuote ? `
+      <div class="gvh-scope-row">
+        <div class="gvh-scope-pill active" onclick="gvBsetSetRestoreScope(this,'all')">ทั้งหมด</div>
+        <div class="gvh-scope-pill" onclick="gvBsetSetRestoreScope(this,'garden')">เฉพาะสวน</div>
+        <div class="gvh-scope-pill" onclick="gvBsetSetRestoreScope(this,'quote')">เฉพาะตีราคา</div>
+      </div>` : '';
+
+  const listRows = [
+    `<div class="gv-bset-cm-item"><span class="name">🌳 สวนที่หายไป</span><span class="meta">${missG} สวน</span></div>`,
+    `<div class="gv-bset-cm-item"><span class="name">📝 โน้ตที่หายไป</span><span class="meta">${missN} โน้ต</span></div>`,
+    hasQuote ? `<div class="gv-bset-cm-item"><span class="name">🧾 ใบตีราคาที่หายไป</span><span class="meta">${missQ} ใบ</span></div>` : '',
+    hasQuote ? `<div class="gv-bset-cm-item"><span class="name">📚 คลังราคาที่หายไป</span><span class="meta">${missPf} รายการ</span></div>` : '',
+  ].join('');
 
   gvBsetCmOpen(`
     <div class="gv-bset-cm-h">
-      <div class="ttl">📥 พรีวิวไฟล์ที่จะนำเข้า</div>
+      <div class="ttl">📥 กู้คืนจากไฟล์สำรอง</div>
       <div class="sub">${gbEscapeHtml(fileName || '')} · สำรองเมื่อ ${gbEscapeHtml(exLbl)}</div>
     </div>
     <div class="gv-bset-cm-body">
-      <div class="gv-bset-cm-info">
-        พบในไฟล์: <b>${incomingGardens.length} สวน</b> · <b>${incomingNotes.length} โน้ต</b>
-        ${incPhotos ? ' · รวมรูปอัลบั้ม' : ' · ไม่รวมรูป'}
-      </div>
-      <div class="gv-bset-cm-list">
-        <div class="gv-bset-cm-item"><span class="name">🌳 สวนใหม่ (เพิ่มเข้าระบบ)</span><span class="meta">${newG} สวน</span></div>
-        <div class="gv-bset-cm-item"><span class="name">🌳 สวนซ้ำ id (จะตั้ง id ใหม่)</span><span class="meta">${dupG} สวน</span></div>
-        <div class="gv-bset-cm-item"><span class="name">📝 โน้ตใหม่</span><span class="meta">${newN} โน้ต</span></div>
-        <div class="gv-bset-cm-item"><span class="name">📝 โน้ตซ้ำ id (จะตั้ง id ใหม่)</span><span class="meta">${dupN} โน้ต</span></div>
-      </div>
-      ${(dupG + dupN) > 0 ? `<div class="gv-bset-cm-warn">รายการที่ id ซ้ำจะถูกตั้ง id ใหม่ — ของเก่าไม่ถูกทับ</div>` : ''}
+      <div class="gv-bset-cm-info">ระบบจะ<b>เพิ่มเฉพาะรายการที่หายไป</b>กลับเข้าเครื่อง — ของที่มีอยู่แล้ว<b>ไม่ถูกแตะ/ไม่ถูกทับ</b></div>
+      ${hasQuote ? '<div style="font-size:11.5px;color:#736446;margin-top:8px;">เลือกเล่มที่จะกู้:</div>' : ''}
+      ${scopeRow}
+      <div class="gv-bset-cm-list">${listRows}</div>
+      <div class="gv-bset-cm-warn">💡 ใช้สำหรับกู้ของที่เผลอลบ · ไม่ลบ ไม่ทับของปัจจุบัน · ต้องออนไลน์เพื่อเชื่อมขึ้น cloud</div>
     </div>
     <div class="gv-bset-cm-acts">
       <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button>
-      <button class="gv-bset-cm-btn confirm" onclick="gvBsetImportApply()">นำเข้า</button>
+      <button class="gv-bset-cm-btn confirm" onclick="gvBsetImportApply()">กู้คืน</button>
     </div>
   `);
 }
 
+function gvBsetSetRestoreScope(el, scope) {
+  window.__gvRestoreScope = scope;
+  const wrap = el.parentElement;
+  if (wrap) wrap.querySelectorAll('.gvh-scope-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+window.gvBsetSetRestoreScope = gvBsetSetRestoreScope;
+
+// ── parse ไฟล์สำรอง → ข้อมูลมาตรฐาน (reusable จากทั้ง 2 เล่ม) ── build 1047
+function gvBsetParseBackup(payload) {
+  if (!payload || payload.app !== 'thodsapon' || (payload.book !== 'all' && payload.book !== 'garden')) return null;
+  const isAll = payload.book === 'all';
+  return {
+    hasQuote: isAll,
+    exportedAt: payload.exportedAt || null,
+    gardens: isAll ? ((payload.garden && payload.garden.gardens) || []) : (Array.isArray(payload.gardens) ? payload.gardens : []),
+    notes:   isAll ? ((payload.garden && payload.garden.notes) || [])   : (Array.isArray(payload.notes) ? payload.notes : []),
+    quotes:  isAll ? ((payload.quote && payload.quote.quotes) || []) : [],
+    priceForms: isAll ? ((payload.quote && payload.quote.priceForms) || []) : [],
+    fruitNames: Array.isArray(payload.fruitNames) ? payload.fruitNames : [],
+  };
+}
+window.gvBsetParseBackup = gvBsetParseBackup;
+
+// ── apply กู้คืน (ไม่มี modal — เรียกได้จากทั้งหน้าสวนและหน้าตีราคา) ──
+// "เพิ่มเฉพาะที่หายไป" + un-tombstone + หยุด sync ตอนกู้ · คืน counts
+function gvBsetRestoreApply(pending, scope) {
+  scope = scope || 'all';
+  const doGarden = (scope === 'all' || scope === 'garden');
+  const doQuote  = (scope === 'all' || scope === 'quote');
+  let addedG = 0, addedN = 0, addedQ = 0, addedPf = 0, quotaError = false;
+
+  _cloudSyncPaused = true;   // หยุด sync ระหว่างกู้ (กัน pull ทับ / push ครึ่งทาง)
+  try {
+    if (doGarden) {
+      const exG = new Set(gardens.map(g => g.id));
+      (pending.gardens || []).forEach(g => {
+        if (!g || !g.id || exG.has(g.id)) return;
+        try { _cloudDeleted.gardens.delete(g.id); } catch (e) {}
+        try { _cloudDirty.deleted_gardens.delete(g.id); } catch (e) {}
+        gardens.push(migrateGarden({ ...g })); exG.add(g.id); addedG++;
+      });
+      const exN = new Set(notes.map(n => n.id));
+      (pending.notes || []).forEach(n => {
+        if (!n || !n.id || exN.has(n.id)) return;
+        try { _cloudDeleted.notes.delete(n.id); } catch (e) {}
+        try { _cloudDirty.deleted_notes.delete(n.id); } catch (e) {}
+        notes.push({ ...n }); exN.add(n.id); addedN++;
+      });
+      if (addedG || addedN) {
+        try { cloudSaveDeleted(); } catch (e) {}
+        try { saveGardens(gardens); saveNotes(notes); } catch (e) { console.error('[restore] save g/n', e); }
+      }
+    }
+    if (doQuote) {
+      const st = window.state;
+      if (st && Array.isArray(st.quotes)) {
+        const exQ = new Set(st.quotes.map(q => q.id));
+        (pending.quotes || []).forEach(q => {
+          if (!q || !q.id || exQ.has(q.id)) return;
+          try { _cloudDeleted.quotes.delete(q.id); } catch (e) {}
+          try { _cloudDirty.deleted_quotes.delete(q.id); } catch (e) {}
+          const c = { ...q }; delete c._localUpdatedAt;
+          st.quotes.push(c); exQ.add(q.id); addedQ++;
+        });
+        if (addedQ) {
+          try { cloudSaveDeleted(); } catch (e) {}
+          try { if (typeof persist === 'function') persist(); } catch (e) { console.error('[restore] persist q', e); }
+        }
+      }
+      try {
+        if (typeof priceForms !== 'undefined' && Array.isArray(priceForms) && typeof pfPersist === 'function') {
+          const exPf = new Set(priceForms.map(f => f.id));
+          (pending.priceForms || []).forEach(f => { if (f && f.id && !exPf.has(f.id)) { priceForms.push(f); exPf.add(f.id); addedPf++; } });
+          if (addedPf) pfPersist();
+        } else {
+          let cur = JSON.parse(localStorage.getItem('thodsapon_price_forms_v1') || '[]'); if (!Array.isArray(cur)) cur = [];
+          const exPf = new Set(cur.map(f => f.id));
+          (pending.priceForms || []).forEach(f => { if (f && f.id && !exPf.has(f.id)) { cur.push(f); exPf.add(f.id); addedPf++; } });
+          if (addedPf) localStorage.setItem('thodsapon_price_forms_v1', JSON.stringify(cur));
+        }
+      } catch (e) { console.error('[restore] pf', e); }
+    }
+    // คลังชื่อผลไม้ (shared) — merge ที่หายไป (ตาม id + ชื่อ)
+    try {
+      if (Array.isArray(pending.fruitNames) && pending.fruitNames.length && window.fruitNames) {
+        const exF = new Set(window.fruitNames.map(f => f.id));
+        const exNm = new Set(window.fruitNames.map(f => f.name));
+        pending.fruitNames.forEach(f => {
+          if (f && f.id && !exF.has(f.id) && !exNm.has(f.name)) { window.fruitNames.push(f); exF.add(f.id); exNm.add(f.name); }
+        });
+        if (typeof saveFruitNames === 'function') saveFruitNames();
+      }
+    } catch (e) { console.error('[restore] fruitNames', e); }
+  } catch (e) {
+    console.error('[restore] apply', e);
+    if (e && (e.name === 'QuotaExceededError' || /quota/i.test(String(e.message || '')))) quotaError = true;
+  } finally {
+    _cloudSyncPaused = false;   // เปิด sync กลับเสมอ
+  }
+  try { if (typeof cloudScheduleSync === 'function') cloudScheduleSync(0); } catch (e) {}
+  return { addedG, addedN, addedQ, addedPf, quotaError };
+}
+window.gvBsetRestoreApply = gvBsetRestoreApply;
+
+// summary ข้อความกู้คืน (ใช้ร่วม)
+function gvBsetRestoreSummary(res) {
+  const parts = [];
+  if (res.addedG) parts.push(res.addedG + ' สวน');
+  if (res.addedN) parts.push(res.addedN + ' โน้ต');
+  if (res.addedQ) parts.push(res.addedQ + ' ใบตีราคา');
+  if (res.addedPf) parts.push(res.addedPf + ' คลังราคา');
+  return parts.length ? '✓ กู้คืน: ' + parts.join(' · ') : '✓ ไม่มีรายการที่หายไป (ครบอยู่แล้ว)';
+}
+window.gvBsetRestoreSummary = gvBsetRestoreSummary;
+
 function gvBsetImportApply() {
   const pending = window.__gvBsetPendingImport;
   if (!pending) { gvBsetCmClose(); return; }
-  const existingGIds = new Set(gardens.map(g => g.id));
-  const existingNIds = new Set(notes.map(n => n.id));
-  const newId = (prefix) => prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,6);
-
-  let addedG = 0, addedN = 0, renamedG = 0, renamedN = 0;
-  pending.gardens.forEach(g => {
-    if (!g || typeof g !== 'object') return;
-    let id = g.id;
-    if (!id || existingGIds.has(id)) { id = newId('g'); renamedG++; }
-    const clone = { ...g, id };
-    gardens.push(clone);
-    existingGIds.add(id);
-    addedG++;
-  });
-  pending.notes.forEach(n => {
-    if (!n || typeof n !== 'object') return;
-    let id = n.id;
-    if (!id || existingNIds.has(id)) { id = newId('n'); renamedN++; }
-    const clone = { ...n, id };
-    notes.push(clone);
-    existingNIds.add(id);
-    addedN++;
-  });
-
-  // Save with quota safety
-  try {
-    saveGardens(gardens);
-    saveNotes(notes);
-  } catch (e) {
-    // rollback memory state by removing what we just added
-    if (e && (e.name === 'QuotaExceededError' || /quota/i.test(String(e.message || '')))) {
-      // simple rollback: re-load from storage (existing data unchanged)
-      gardens = loadGardens();
-      notes = loadNotes();
-      gvBsetCmClose();
-      gvBsetCmOpen(`
-        <div class="gv-bset-cm-h">
-          <div class="ttl">⚠ พื้นที่ไม่พอ</div>
-        </div>
-        <div class="gv-bset-cm-body">
-          <div class="gv-bset-cm-warn">
-            พื้นที่เก็บข้อมูลเต็ม · นำเข้าไม่สำเร็จ<br>
-            ลองลบรูปสวนปิดแล้ว หรือเก็บเข้าคลังก่อน แล้วค่อยนำเข้าใหม่
-          </div>
-        </div>
-        <div class="gv-bset-cm-acts" style="grid-template-columns: 1fr;">
-          <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button>
-        </div>
-      `);
-      return;
-    }
-    console.error('[bset] import save', e);
+  const scope = window.__gvRestoreScope || 'all';
+  const res = gvBsetRestoreApply(pending, scope);
+  if (res.quotaError) {
+    gvBsetCmClose();
+    gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">⚠ พื้นที่ไม่พอ</div></div><div class="gv-bset-cm-body"><div class="gv-bset-cm-warn">พื้นที่เต็ม · กู้คืนไม่สำเร็จ · ลองเก็บสวนปิดเข้าคลังก่อน</div></div><div class="gv-bset-cm-acts" style="grid-template-columns: 1fr;"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button></div>`);
+    return;
   }
-
   delete window.__gvBsetPendingImport;
   gvBsetCmClose();
   if (typeof renderListView === 'function') renderListView();
+  if (typeof renderList === 'function') { try { renderList(); } catch (e) {} }
   gvBsetRender();
-  toast(`✓ นำเข้า: ${addedG} สวน${renamedG ? ` (id ใหม่ ${renamedG})` : ''} · ${addedN} โน้ต${renamedN ? ` (id ใหม่ ${renamedN})` : ''}`);
+  toast(gvBsetRestoreSummary(res));
   if (typeof haptic === 'function') haptic(20);
 }
 
@@ -26530,84 +27443,183 @@ function gvBsetArchiveConfirm() {
 
   gvBsetCmOpen(`
     <div class="gv-bset-cm-h">
-      <div class="ttl">🟡 เก็บเข้าคลัง สวนปิดแล้ว</div>
-      <div class="sub">ดาวน์โหลด .json ก่อน → ลบออกจากระบบ</div>
+      <div class="ttl">📦 เก็บเข้าคลัง สวนปิดแล้ว</div>
+      <div class="sub">ย้ายขึ้นคลัง cloud → ออกจากหน้าหลัก (ยังเปิดดู/กู้คืนได้)</div>
     </div>
     <div class="gv-bset-cm-body">
       <div class="gv-bset-cm-info">
-        จะ export <b>${closed.length} สวน</b>${totalPhotos ? ` · ${totalPhotos} รูป` : ''} เป็นไฟล์ .json
-        แล้วลบสวนเหล่านี้ออกจากระบบ (โน้ตไม่ถูกแตะ)
+        จะย้าย <b>${closed.length} สวน</b>${totalPhotos ? ` · ${totalPhotos} รูป` : ''} ขึ้นคลังบน cloud
+        แล้วเอาออกจากหน้าหลัก (โน้ตไม่ถูกแตะ) — <b>ข้อมูลไม่หาย</b> ยังอยู่บน cloud ครบ
       </div>
       <div class="gv-bset-cm-list">${itemsHtml}</div>
-      <div class="gv-bset-cm-warn">⚠ ระบบจะดาวน์โหลดไฟล์ก่อน ถ้าไฟล์โหลดไม่สำเร็จ จะไม่ลบ · กู้คืนได้ด้วยปุ่ม "กู้คืน"</div>
+      <div class="gv-bset-cm-warn">💾 ดาวน์โหลด .json เป็นสำเนาสำรองด้วย · เปิดดูภายหลังที่ "📦 คลังสวนที่เก็บ" (ต้องออนไลน์)</div>
     </div>
     <div class="gv-bset-cm-acts">
       <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button>
-      <button class="gv-bset-cm-btn danger" onclick="gvBsetArchiveApply()">ยืนยัน export+ลบ</button>
+      <button class="gv-bset-cm-btn confirm" onclick="gvBsetArchiveApply()">ย้ายขึ้นคลัง</button>
     </div>
   `);
 }
 
-function gvBsetArchiveApply() {
+async function gvBsetArchiveApply() {
   const closed = gvBsetClosedGardens();
   if (closed.length === 0) { gvBsetCmClose(); return; }
-  const ids = new Set(closed.map(g => g.id));
-
-  // 1) เตรียม payload (เก็บรูปด้วยเสมอ — เพราะเป็น archive)
-  const payload = {
-    app: 'thodsapon',
-    book: 'garden',
-    version: BSET_BACKUP_VERSION,
-    exportedAt: new Date().toISOString(),
-    archived: true,
-    includesPhotos: true,
-    gardens: closed,
-    notes: [],
-  };
-
-  let json;
-  try {
-    json = JSON.stringify(payload);
-  } catch (e) {
-    console.error('[bset] archive stringify', e);
-    toast('❌ สร้างไฟล์ไม่สำเร็จ · ยังไม่ลบ');
+  const useCloud = !!(window.supaReady && window.supaClient && navigator.onLine);
+  if (!useCloud) {
+    toast('📴 ต้องออนไลน์เพื่อย้ายขึ้นคลัง cloud');
     return;
   }
+  const ids = new Set(closed.map(g => g.id));
 
-  // 2) trigger download
-  let downloadOk = false;
+  // 1) สำเนาสำรอง .json (เก็บไว้เหมือนเดิม เป็น safety net เพิ่ม — ข้อมูลจริงยังอยู่บน cloud)
   try {
+    const payload = {
+      app: 'thodsapon', book: 'garden', version: BSET_BACKUP_VERSION,
+      exportedAt: new Date().toISOString(), archived: true, includesPhotos: true,
+      gardens: closed, notes: [],
+    };
+    const json = JSON.stringify(payload);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const stamp = new Date().toISOString().slice(0,10);
     a.href = url;
-    a.download = `สวน_archive_${stamp}.json`;
-    document.body.appendChild(a);
-    a.click();
+    a.download = `สวน_archive_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click();
     setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 100);
-    downloadOk = true;
   } catch (e) {
-    console.error('[bset] archive download', e);
+    console.error('[archive] backup json', e);
+    // ถ้า .json fail ไม่ถือว่า fatal — cloud คือแหล่งหลัก แต่เตือนไว้
+    toast('⚠ สำเนา .json ไม่สำเร็จ · จะย้ายขึ้น cloud ต่อ');
   }
 
-  if (!downloadOk) {
-    toast('❌ ดาวน์โหลดไม่สำเร็จ · ยังไม่ลบสวน');
-    return;
+  // 2) ตั้ง archived=true แล้ว upsert ขึ้น cloud ทีละใบ (updated_at ใหม่ → pull จะรับรู้)
+  gvBsetCmClose();
+  gvBsetProgressOpen('📦 กำลังย้ายขึ้นคลัง');
+  await new Promise(r => requestAnimationFrame(r));
+  const nowIso = new Date().toISOString();
+  const successIds = new Set();
+  let failed = 0, i = 0;
+  for (const g of closed) {
+    gvBsetProgressUpdate(Math.round((i / closed.length) * 90), `ย้าย ${i + 1}/${closed.length}`);
+    const archivedData = { ...g, archived: true, archivedAt: Date.now() };
+    delete archivedData._localUpdatedAt;
+    try {
+      const { error } = await window.supaClient
+        .from('gardens')
+        .upsert({ id: g.id, data: archivedData, updated_at: nowIso, deleted: false });
+      if (error) { failed++; console.error('[archive] upsert', g.id, error); }
+      else { successIds.add(g.id); }
+    } catch (e) { failed++; console.error('[archive] upsert ex', e); }
+    i++;
+    if (i % 3 === 0) await new Promise(r => setTimeout(r, 0));
   }
 
-  // 3) ลบสวนปิดออก (delay สั้นๆ ให้ download trigger)
+  // 3) เอาเฉพาะสวนที่ย้ายสำเร็จออกจากเครื่อง (ที่ fail คงไว้ในเครื่อง ไม่หาย)
+  gvBsetProgressUpdate(95, 'อัปเดตเครื่อง...');
+  if (successIds.size > 0) {
+    gardens = gardens.filter(g => !successIds.has(g.id));
+    successIds.forEach(id => { try { _cloudDirty.gardens.delete(id); } catch (e) {} }); // เพิ่งเขียน cloud แล้ว
+    try { saveGardens(gardens); } catch (e) { console.error('[archive] save', e); }
+  }
+
+  gvBsetProgressUpdate(100, 'เสร็จ!');
   setTimeout(() => {
-    gardens = gardens.filter(g => !ids.has(g.id));
-    try { saveGardens(gardens); }
-    catch (e) { console.error('[bset] archive save', e); }
-    gvBsetCmClose();
+    gvBsetProgressClose();
     if (typeof renderListView === 'function') renderListView();
     gvBsetRender();
     gvBsetWriteLastBackup();
-    toast(`✓ เก็บเข้าคลัง ${closed.length} สวน · ดาวน์โหลดแล้ว`);
+    let msg = `✓ ย้ายขึ้นคลัง ${successIds.size} สวน`;
+    if (failed) msg += ` · ⚠ ไม่สำเร็จ ${failed} (คงไว้ในเครื่อง)`;
+    toast(msg);
     if (typeof haptic === 'function') haptic(25);
-  }, 250);
+  }, 300);
+}
+
+// ── คลังสวนที่เก็บ (archived · อยู่บน cloud) ──
+let _archiveViewCache = [];
+async function cloudFetchArchived() {
+  if (!(window.supaReady && window.supaClient && navigator.onLine)) throw new Error('offline');
+  let rows;
+  try {
+    const { data, error } = await window.supaClient
+      .from('gardens')
+      .select('id,data,updated_at')
+      .eq('deleted', false)
+      .eq('data->>archived', 'true')
+      .order('updated_at', { ascending: false });
+    if (error) throw error;
+    rows = data || [];
+  } catch (e) {
+    // fallback: ดึงทั้งหมดที่ยังไม่ลบ แล้วกรองฝั่ง client (กันกรณี filter JSONB ใช้ไม่ได้)
+    console.warn('[archive] jsonb filter fallback', e);
+    const { data, error } = await window.supaClient
+      .from('gardens').select('id,data,updated_at').eq('deleted', false);
+    if (error) throw error;
+    rows = (data || []).filter(r => r.data && r.data.archived);
+  }
+  return rows.map(r => migrateGarden({ ...(r.data || {}), id: r.id }));
+}
+
+function _renderArchiveList() {
+  const b = document.getElementById('gv-arch-view-body');
+  if (!b) return;
+  if (_archiveViewCache.length === 0) { b.textContent = 'ยังไม่มีสวนในคลัง'; return; }
+  b.innerHTML = _archiveViewCache.map(g => {
+    let when = '';
+    try { if (g.archivedAt) when = new Date(g.archivedAt).toLocaleDateString('th-TH'); } catch (e) {}
+    return `<div class="gv-bset-cm-item" style="gap:8px;align-items:center;">
+      <span class="name">🌳 ${gbEscapeHtml(g.name || '—')}${g.owner ? ' · ' + gbEscapeHtml(g.owner) : ''}${when ? ' · เก็บ ' + when : ''}</span>
+      <button class="gv-bset-cm-btn" style="padding:4px 12px;font-size:12px;flex:0 0 auto;" onclick="gvBsetRestoreArchived('${g.id}')">กู้คืน</button>
+    </div>`;
+  }).join('');
+}
+
+async function gvBsetArchiveViewOpen() {
+  gvBsetCmOpen(`
+    <div class="gv-bset-cm-h">
+      <div class="ttl">📦 คลังสวนที่เก็บ</div>
+      <div class="sub">สวนปิดที่ย้ายขึ้น cloud · แตะกู้คืนเพื่อดึงกลับหน้าหลัก</div>
+    </div>
+    <div class="gv-bset-cm-body"><div class="gv-bset-cm-info" id="gv-arch-view-body">⏳ กำลังโหลดจาก cloud...</div></div>
+    <div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ปิด</button></div>
+  `);
+  if (!(window.supaReady && window.supaClient && navigator.onLine)) {
+    const b = document.getElementById('gv-arch-view-body'); if (b) b.textContent = '📴 ต้องออนไลน์เพื่อดูคลัง';
+    return;
+  }
+  try {
+    _archiveViewCache = await cloudFetchArchived();
+  } catch (e) {
+    console.error('[archive] fetch', e);
+    const b = document.getElementById('gv-arch-view-body'); if (b) b.textContent = '❌ โหลดคลังไม่สำเร็จ · ลองใหม่';
+    return;
+  }
+  _renderArchiveList();
+}
+
+async function gvBsetRestoreArchived(id) {
+  const arch = _archiveViewCache.find(g => g.id === id);
+  if (!arch) return;
+  if (!(window.supaReady && window.supaClient && navigator.onLine)) { toast('📴 ต้องออนไลน์'); return; }
+  const restored = { ...arch };
+  delete restored.archived; delete restored.archivedAt; delete restored._localUpdatedAt;
+  const nowIso = new Date().toISOString();
+  try {
+    const { error } = await window.supaClient
+      .from('gardens')
+      .upsert({ id, data: restored, updated_at: nowIso, deleted: false });
+    if (error) { console.error('[archive] restore', error); toast('กู้คืนไม่สำเร็จ'); return; }
+  } catch (e) { console.error('[archive] restore ex', e); toast('กู้คืนไม่สำเร็จ'); return; }
+  migrateGarden(restored);
+  const idx = gardens.findIndex(x => x.id === id);
+  if (idx >= 0) gardens[idx] = restored; else gardens.push(restored);
+  try { saveGardens(gardens); } catch (e) {}
+  try { _cloudDirty.gardens.delete(id); } catch (e) {}
+  _archiveViewCache = _archiveViewCache.filter(g => g.id !== id);
+  _renderArchiveList();
+  if (typeof renderListView === 'function') renderListView();
+  toast('✓ กู้คืนแล้ว · กลับมาหน้าหลัก');
+  if (typeof haptic === 'function') haptic(15);
 }
 
 // ════════════════════════════════════════════
@@ -26639,7 +27651,8 @@ function gvBsetProgressClose() {
 
 // ── Format Picker Modal ──
 function gvBsetExportPick() {
-  if (gardens.length === 0 && notes.length === 0) {
+  const q = gvBsetReadQuoteData();
+  if (gardens.length === 0 && notes.length === 0 && q.quotes.length === 0 && q.priceForms.length === 0) {
     toast('ไม่มีข้อมูลให้สำรอง');
     return;
   }
@@ -26648,16 +27661,26 @@ function gvBsetExportPick() {
 
   gvBsetCmOpen(`
     <div class="gv-bset-cm-h">
-      <div class="ttl">⬇ เลือก Format ที่จะดาวน์โหลด</div>
-      <div class="sub">${gardens.length} สวน · ${notes.length} โน้ต · ${totalPhotos} รูป</div>
+      <div class="ttl">⬇ เลือกสิ่งที่จะดาวน์โหลด</div>
+      <div class="sub">${q.quotes.length} ตีราคา · ${gardens.length} สวน · ${notes.length} โน้ต</div>
     </div>
     <div class="gv-bset-cm-body">
+
+      <button class="gv-bset-fmt-opt json" style="border:1.5px solid #a7c06d;background:linear-gradient(180deg,#eef3df,#e2ecc9);" onclick="gvBsetCmClose(); gvBsetExportAll();">
+        <div class="gv-bset-fmt-ic" style="background:#5c862f;color:#fff;">ALL</div>
+        <div class="gv-bset-fmt-body">
+          <div class="gv-bset-fmt-ttl">📦 สำรองทั้งหมด (แนะนำ)</div>
+          <div class="gv-bset-fmt-desc">ตีราคา + สวน ในไฟล์เดียว · กันลืมเล่มใดเล่มหนึ่ง<br>
+            <span class="gv-bset-fmt-meta">${q.quotes.length} ใบตีราคา · ${gardens.length} สวน · ${notes.length} โน้ต</span>
+          </div>
+        </div>
+      </button>
 
       <button class="gv-bset-fmt-opt json" onclick="gvBsetCmClose(); gvBsetExport();">
         <div class="gv-bset-fmt-ic">.JSON</div>
         <div class="gv-bset-fmt-body">
-          <div class="gv-bset-fmt-ttl">📦 Backup สำรอง (.json)</div>
-          <div class="gv-bset-fmt-desc">สำรองไว้เพื่อกู้คืนกลับมาในแอป · ไฟล์เล็กที่สุด<br>
+          <div class="gv-bset-fmt-ttl">🌳 เฉพาะเล่มสวน (.json)</div>
+          <div class="gv-bset-fmt-desc">สำรองเฉพาะสวน + โน้ต · ไฟล์เล็กที่สุด<br>
             <span class="gv-bset-fmt-meta">รวมรูป: ${incPhotos ? 'เปิด ✓' : 'ปิด ✗'}</span>
           </div>
         </div>
@@ -27201,6 +28224,8 @@ window.gvBsetCleanPhotosConfirm = gvBsetCleanPhotosConfirm;
 window.gvBsetCleanPhotosApply = gvBsetCleanPhotosApply;
 window.gvBsetArchiveConfirm = gvBsetArchiveConfirm;
 window.gvBsetArchiveApply = gvBsetArchiveApply;
+window.gvBsetArchiveViewOpen = gvBsetArchiveViewOpen;
+window.gvBsetRestoreArchived = gvBsetRestoreArchived;
 window.gvBsetToggleIncPhotos = gvBsetToggleIncPhotos;
 window.gvBsetExportPick = gvBsetExportPick;
 window.gvBsetExportHTML = gvBsetExportHTML;
@@ -27213,6 +28238,8 @@ window.gvBsetMigrateApply = gvBsetMigrateApply;
 window.gvBsetRollbackApply = gvBsetRollbackApply;
 window.gvBsetCloudMigrateConfirm = gvBsetCloudMigrateConfirm;
 window.gvBsetCloudMigrateApply = gvBsetCloudMigrateApply;
+window.gvBsetIdbPurgeConfirm = gvBsetIdbPurgeConfirm;
+window.gvBsetIdbPurgeApply = gvBsetIdbPurgeApply;
 
 
 })();
