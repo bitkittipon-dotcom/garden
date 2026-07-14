@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1052;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 14 ก.ค. 69 (52)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1057;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 14 ก.ค. 69 (57)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -10671,6 +10671,21 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     font-weight: 400;
   }
     #garden-view .d-grid > textarea { resize: vertical; min-height: 60px; }
+    /* ── ช่องบังคับกรอก: ดอกจันแดง + ไฮไลต์แดงบางๆ ── */
+    .req-star { color: #d6392e; font-weight: 800; margin-left: 1px; }
+    #garden-view .d-grid > input.req-field {
+      background: rgba(214,60,50,0.06);
+      border-color: rgba(214,60,50,0.45);
+    }
+    #garden-view .d-grid > input.req-field:focus {
+      border-color: #d6392e;
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(214,60,50,0.18);
+    }
+    #garden-view .req-fruit .fp-field {
+      background: rgba(214,60,50,0.06);
+      border-color: rgba(214,60,50,0.45);
+    }
   /* Sub-header inside section (เจ้าของ / ที่ตั้ง / ราคา) */
     #garden-view .d-subheader {
     font-size: 11px;
@@ -11300,6 +11315,8 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .pf-card-act button { background: #f0e8d2; border: 1px solid #d9c9a0; border-radius: 8px; width: 30px; height: 30px; font-size: 13px; cursor: pointer; }
 .pf-card-act button.del { color: #b5281b; }
 .pf-add-btn { width: 100%; margin-top: 14px; background: linear-gradient(180deg,#7a5318,#4a2f12); color: #f0d99a; border: 1.5px solid #d4af37; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 800; font-family: 'Sarabun',sans-serif; cursor: pointer; }
+.pf-purge-btn { width: 100%; margin-top: 10px; background: rgba(120,40,30,0.06); color: #9a4a3a; border: 1.3px solid rgba(154,74,58,0.4); border-radius: 11px; padding: 11px; font-size: 13px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; transition: background .15s; }
+.pf-purge-btn:active { background: rgba(120,40,30,0.14); }
 .pf-frow { display: flex; gap: 8px; margin-bottom: 14px; }
 .pf-frow #pf-fruit { flex: 1; }
 .pf-frow .pf-datefld { width: 140px; font-family: 'JetBrains Mono',monospace; }
@@ -11539,8 +11556,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
       <div class="slip-meta" style="border-bottom: 0; padding-bottom: 4px; margin-bottom: 8px;">
         <div class="meta-field">
           <span class="meta-label">ผลไม้</span>
-          <input class="meta-input" id="f-fruit" value="ลำไย" autocomplete="off" list="f-fruit-list">
-          <datalist id="f-fruit-list"></datalist>
+          <div id="f-fruit-mount" style="flex:1 1 auto;min-width:0"></div>
         </div>
         <div style="flex: 0.85; text-align: right; align-self: center;">
           <button class="type-tag" id="type-tag-btn" onclick="toggleType()" style="border: 0; cursor: pointer; font-family: inherit;">
@@ -13407,6 +13423,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const u = users.find(x => x.id === s.id);
     if (u) { currentUser = u; enterApp(); }
   }
+
+  // ── ปุ่มเฟือง (ตั้งค่าเล่มสวน): เสริม pointerup กันบางมือถือ tap แล้ว click ไม่ยิง ──
+  // (Playwright/บาง in-app browser: touchend ยิงแต่ synthesized click หาย → pointerup ช่วยได้)
+  try {
+    const _gearBtn = document.getElementById('gv-bset-btn-toggle');
+    if (_gearBtn && !_gearBtn._puBound) {
+      _gearBtn._puBound = true;
+      _gearBtn.addEventListener('pointerup', function (ev) {
+        // เมาส์ปุ่มซ้ายเท่านั้น · หรือ touch/pen ทุกกรณี (gvBsetOpen มี guard กันเด้งซ้ำอยู่แล้ว)
+        if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+        try { gvBsetOpen(); } catch (e) { console.error('[bset] open error', e); }
+      });
+    }
+  } catch (e) {}
+
+  // ── mount ช่องผลไม้บิล (f-fruit) เป็น picker ตั้งแต่โหลด → hidden input มีอยู่เสมอ ──
+  try {
+    const _ffm = document.getElementById('f-fruit-mount');
+    if (_ffm && window.fpFieldHtml && !document.getElementById('f-fruit')) {
+      _ffm.innerHTML = window.fpFieldHtml('f-fruit', 'ลำไย');
+    }
+  } catch (e) {}
 });
 
 // ════════════════════════════════════════════
@@ -14313,6 +14351,328 @@ function fruitFillDatalist(id) {
 window.fruitFillDatalist = fruitFillDatalist;
 loadFruitNames();
 
+// ═══════════════════ FRUIT PICKER — บังคับเลือกจากคลัง (bottom-sheet ชิปสี · แบบ B) ═══════════════════
+// ใช้ร่วม: สัญญา(gf-fruit) · บิล(f-fruit) · คลังราคา(pf-fruit)
+// หลักการ: คง id เดิมเป็น <input type=hidden> เก็บค่า → จุดอ่าน/เขียนเดิมไม่ต้องแก้
+// เพิ่ม/ลบ/แก้ผลไม้ = เฉพาะแอดมิน · ใช้คลังเดียวกับ ⚙ ตั้งค่า (window.fruitNames)
+(function () {
+  const PAL = (typeof FRUIT_PALETTE !== 'undefined') ? FRUIT_PALETTE
+    : ['#e8b923','#d64545','#5c9e3f','#3f8fc2','#7b4fc2','#c2683f','#c23f8f','#3d8e8a','#a88b2a','#d4864a'];
+  let _id = null, _manage = false;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+  function isAdmin() { return !!(typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'admin'); }
+  function fcolor(nm) { return (typeof fruitColor === 'function') ? fruitColor(nm) : '#b0a07a'; }
+
+  // ---- CSS (global · ไม่ผูก #garden-view เพราะใช้ในหน้าบิลด้วย) ----
+  const CSS = `
+  .fp-wrap{width:100%;min-width:0;flex:1 1 auto;}
+  .fp-field{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;
+    background:rgba(255,255,255,.9);border:1px solid rgba(107,68,35,.4);border-radius:3px;
+    padding:5px 5px 5px 9px;font-size:13px;color:#2a1810;font-weight:600;cursor:pointer;
+    transition:border-color .15s,box-shadow .15s;}
+  .fp-field:active{border-color:#6b8e3d;box-shadow:0 0 0 2px rgba(107,142,61,.2);}
+  .fp-field.fp-warn{border-color:#c9902a;box-shadow:0 0 0 2px rgba(201,144,42,.18);}
+  .fp-dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 1px rgba(0,0,0,.18);}
+  .fp-name{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fp-name.fp-ph{color:rgba(107,68,35,.55);font-style:italic;font-weight:400;}
+  .fp-badge{font-size:10px;font-weight:700;color:#a8791f;background:rgba(201,144,42,.15);
+    border:1px solid rgba(201,144,42,.4);border-radius:6px;padding:1px 5px;flex:0 0 auto;}
+  .fp-hint{font-size:11px;font-weight:400;color:rgba(107,68,35,.5);font-style:italic;flex:0 0 auto;}
+  .fp-pencil{flex:0 0 auto;width:27px;height:24px;border:1px solid rgba(107,68,35,.4);border-radius:4px;
+    background:linear-gradient(180deg,#fff,#efe6d2);color:#6b4423;display:flex;align-items:center;
+    justify-content:center;font-size:12px;cursor:pointer;box-shadow:0 1px 0 rgba(107,68,35,.15);}
+  .fp-pencil:active{background:linear-gradient(180deg,#efe6d2,#e2d6ba);}
+  /* overlay + sheet */
+  .fp-ov{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:9200;display:none;transition:background .25s;}
+  .fp-ov.open{display:block;background:rgba(0,0,0,.45);}
+  .fp-sheet{position:fixed;left:0;right:0;bottom:0;background:#faf6ee;border-radius:16px 16px 0 0;
+    border-top:2.5px solid #6b8e3d;box-shadow:0 -6px 24px rgba(0,0,0,.3);color:#2a2620;
+    font-family:'Sarabun',sans-serif;padding:8px 15px 22px;max-height:80vh;overflow-y:auto;
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);}
+  .fp-ov.open .fp-sheet{transform:translateY(0);}
+  .fp-grab{width:38px;height:4px;border-radius:2px;background:rgba(107,68,35,.25);margin:2px auto 12px;}
+  .fp-sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;}
+  .fp-sh-t{font-size:16px;font-weight:800;color:#2a1810;flex:1 1 auto;text-align:center;}
+  .fp-manage{font-size:12px;font-weight:800;color:#5c862f;border:1.5px solid #a7c06d;flex:0 0 auto;
+    background:linear-gradient(180deg,#eef3df,#e2ecc9);border-radius:9px;padding:7px 12px;cursor:pointer;}
+  .fp-back{font-size:13px;font-weight:800;color:#6b4423;background:transparent;border:0;cursor:pointer;
+    flex:0 0 auto;width:64px;text-align:left;padding:4px 0;}
+  .fp-chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .fp-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:22px;font-size:13.5px;
+    font-weight:700;border:1.5px solid rgba(107,68,35,.28);background:#fff;color:#2a1810;cursor:pointer;}
+  .fp-chip.sel{border-color:#2f7d1f;background:rgba(107,142,61,.16);box-shadow:0 0 0 2px rgba(107,142,61,.22);}
+  .fp-chip.warn{border-color:#c9902a;background:rgba(201,144,42,.12);}
+  .fp-chip .fp-dot{width:13px;height:13px;}
+  .fp-empty{padding:22px 8px;text-align:center;color:rgba(107,68,35,.6);font-size:13px;}
+  .fp-sec{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#6b4423;
+    margin:2px 2px 9px;padding-bottom:5px;border-bottom:1px dashed rgba(107,68,35,.22);}
+  .fp-sec.hot{color:#b5561b;}
+  .fp-sec .n{margin-left:auto;font-weight:700;font-size:11px;color:rgba(107,68,35,.5);}
+  .fp-sec2{margin-top:16px;}
+  /* manage list */
+  .fp-add{width:100%;background:linear-gradient(180deg,#eef3df,#e2ecc9);border:1.5px solid #a7c06d;
+    border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#5c862f;cursor:pointer;margin-bottom:11px;}
+  .fp-mrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid rgba(107,68,35,.14);
+    border-radius:9px;margin-bottom:7px;background:#fffdf8;}
+  .fp-mname{flex:1 1 auto;font-size:14px;font-weight:700;color:#2a1810;}
+  .fp-mbtn{width:30px;height:28px;border:1px solid rgba(107,68,35,.3);border-radius:6px;background:#fff;
+    color:#6b4423;font-size:13px;cursor:pointer;flex:0 0 auto;}
+  .fp-mbtn.del{color:#b5281b;border-color:rgba(181,40,27,.3);background:rgba(181,40,27,.05);}
+  /* edit modal (own overlay) */
+  .fp-edit-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9400;display:none;
+    align-items:center;justify-content:center;padding:22px;}
+  .fp-edit-bg.open{display:flex;}
+  .fp-edit-card{width:100%;max-width:340px;background:#faf6ee;border-radius:14px;border:2px solid #6b8e3d;
+    padding:16px 16px 14px;box-shadow:0 12px 40px rgba(0,0,0,.35);font-family:'Sarabun',sans-serif;}
+  .fp-edit-t{font-size:16px;font-weight:800;color:#2a1810;margin-bottom:11px;}
+  .fp-edit-inp{width:100%;box-sizing:border-box;background:#fff;border:1.5px solid rgba(107,68,35,.4);
+    border-radius:7px;padding:10px 11px;font-size:15px;font-weight:600;color:#2a1810;font-family:inherit;outline:none;}
+  .fp-edit-inp:focus{border-color:#6b8e3d;box-shadow:0 0 0 2px rgba(107,142,61,.2);}
+  .fp-edit-lbl{font-size:12px;font-weight:700;color:#5a3818;margin:11px 0 6px;}
+  .fp-sw-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .fp-sw{width:28px;height:28px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.15);}
+  .fp-sw.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px #2a2620;}
+  .fp-edit-acts{display:flex;gap:9px;margin-top:15px;}
+  .fp-edit-btn{flex:1;padding:11px;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;border:0;font-family:inherit;}
+  .fp-edit-btn.cancel{background:rgba(107,68,35,.1);color:#6b4423;}
+  .fp-edit-btn.ok{background:linear-gradient(180deg,#6b8e3d,#557030);color:#fff;}
+  `;
+
+  function ensureDom() {
+    if (document.getElementById('fp-style')) return;
+    const st = document.createElement('style'); st.id = 'fp-style'; st.textContent = CSS;
+    document.head.appendChild(st);
+    const ov = document.createElement('div'); ov.id = 'fp-ov'; ov.className = 'fp-ov';
+    ov.innerHTML = '<div class="fp-sheet" id="fp-sheet"></div>';
+    ov.addEventListener('click', e => { if (e.target === ov) fpClose(); });
+    document.body.appendChild(ov);
+    const em = document.createElement('div'); em.id = 'fp-edit'; em.className = 'fp-edit-bg';
+    em.addEventListener('click', e => { if (e.target === em) fpEditClose(); });
+    document.body.appendChild(em);
+  }
+
+  // ---- field markup (แทน <input> เดิม · คง id เป็น hidden) ----
+  window.fpFieldHtml = function (id, val) {
+    val = val || '';
+    const inLib = !!val && (window.fruitNames || []).some(f => f.name === val);
+    const warn = (val && !inLib) ? ' fp-warn' : '';
+    const inner = val
+      ? `<span class="fp-dot" style="background:${fcolor(val)}"></span><span class="fp-name">${esc(val)}</span>${!inLib ? '<span class="fp-badge">⚠ ไม่อยู่ในคลัง</span>' : ''}`
+      : `<span class="fp-name fp-ph">— เลือกผลไม้ —</span>`;
+    return `<div class="fp-wrap"><input type="hidden" id="${id}" value="${esc(val)}">`
+      + `<div class="fp-field${warn}" onclick="fpOpen('${id}')">${inner}`
+      + `<span class="fp-hint">แตะเลือก</span>`
+      + `<button type="button" class="fp-pencil" onclick="event.stopPropagation();fpOpen('${id}',true)" title="เพิ่ม/ลบผลไม้">✎</button>`
+      + `</div></div>`;
+  };
+
+  // ---- อัปเดตช่องจากค่าใน hidden input (เรียกหลัง set .value จากที่อื่น) ----
+  window.fpRefreshField = function (id) {
+    const inp = document.getElementById(id); if (!inp) return;
+    const wrap = inp.closest('.fp-wrap'); if (!wrap) return;
+    wrap.outerHTML = window.fpFieldHtml(id, inp.value || '');
+  };
+
+  window.fpOpen = function (id, manage) {
+    ensureDom();
+    _id = id; _manage = !!manage && isAdmin();
+    fpRenderSheet();
+    document.getElementById('fp-ov').classList.add('open');
+    if (typeof haptic === 'function') haptic(8);
+  };
+  window.fpClose = function () {
+    const ov = document.getElementById('fp-ov'); if (ov) ov.classList.remove('open');
+    _manage = false;
+  };
+  window.fpSetManage = function (on) { _manage = !!on && isAdmin(); fpRenderSheet(); };
+
+  // สถิติการใช้ผลไม้ (จาก localStorage · ไม่พึ่ง scope ของ gardens) → {name:{last, recent}}
+  // last = วันที่ล่าสุดที่ผลไม้นี้ถูกใช้ (ms) · recent = จำนวน record ใน 90 วันล่าสุด
+  function fpUsageStats() {
+    const _d0 = new Date(); _d0.setHours(0, 0, 0, 0);
+    const win = _d0.getTime() - 90 * 86400000;   // เที่ยงคืนของ 90 วันก่อน · inclusive (record วันที่ 90 วันพอดี = ยังนับ)
+    const stat = {};
+    function toMs(v) {
+      if (v == null || v === '') return null;
+      if (typeof v === 'number') return isFinite(v) ? v : null;
+      const s = String(v);
+      const d = new Date(s.length <= 10 ? (s + 'T00:00:00') : s);
+      const t = d.getTime();
+      return isNaN(t) ? null : t;
+    }
+    function bump(name, ms) {
+      const nm = String(name == null ? '' : name).trim();
+      if (!nm) return;
+      if (!stat[nm]) stat[nm] = { last: 0, recent: 0 };
+      if (ms != null) {
+        if (ms > stat[nm].last) stat[nm].last = ms;
+        if (ms >= win) stat[nm].recent++;
+      }
+    }
+    try {
+      const gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]');
+      (Array.isArray(gs) ? gs : []).forEach(g => {
+        let ms = toMs(g.openedAt);
+        if (ms == null) ms = toMs(g.stamp && g.stamp.date);
+        if (ms == null) ms = toMs(g.createdAt);
+        bump(g.fruit, ms);
+      });
+    } catch (e) {}
+    try {
+      const st = JSON.parse(localStorage.getItem('thodsapon_state_v1') || '{}');
+      (((st && st.quotes) || [])).forEach(q => {
+        let ms = toMs(q.date);
+        if (ms == null) ms = toMs(q.createdAt);
+        bump(q.fruit, ms);
+      });
+    } catch (e) {}
+    try {
+      const pf = JSON.parse(localStorage.getItem('thodsapon_price_forms_v1') || '[]');
+      (Array.isArray(pf) ? pf : []).forEach(f => {
+        let ms = toMs(f.date);
+        if (ms == null) ms = toMs(f.createdAt);
+        bump(f.fruit, ms);
+      });
+    } catch (e) {}
+    return stat;
+  }
+
+  window.fpRenderSheet = function () {
+    const sheet = document.getElementById('fp-sheet'); if (!sheet) return;
+    const inp = document.getElementById(_id); const cur = inp ? inp.value : '';
+    const list = (window.fruitNames || []).slice();
+    if (_manage) {
+      const rows = list.map(f =>
+        `<div class="fp-mrow"><span class="fp-dot" style="background:${f.color || '#b0a07a'}"></span>`
+        + `<span class="fp-mname">${esc(f.name)}</span>`
+        + `<button class="fp-mbtn" onclick="fpEditOpen('${f.id}')" title="แก้">✎</button>`
+        + `<button class="fp-mbtn del" onclick="fpDelete('${f.id}')" title="ลบ">🗑</button></div>`).join('');
+      sheet.innerHTML = `<div class="fp-grab"></div>`
+        + `<div class="fp-sh-h"><button class="fp-back" onclick="fpSetManage(false)">‹ เลือก</button>`
+        + `<div class="fp-sh-t">จัดการผลไม้ (${list.length})</div><span style="width:64px"></span></div>`
+        + `<button class="fp-add" onclick="fpEditOpen('')">＋ เพิ่มผลไม้</button>`
+        + `<div>${rows || '<div class="fp-empty">ยังไม่มีผลไม้ · กด ＋ เพิ่ม</div>'}</div>`;
+      return;
+    }
+    // ── จัดลำดับฉลาด: กลุ่ม "กำลังขาย" (มี record ใน 90 วัน) / "ผลไม้อื่น" ──
+    const stat = fpUsageStats();
+    const chipOf = (f) => `<span class="fp-chip ${f.name === cur ? 'sel' : ''}" onclick='fpPick(${JSON.stringify(f.name)})'>`
+      + `<span class="fp-dot" style="background:${f.color || '#b0a07a'}"></span>${esc(f.name)}</span>`;
+    const inLib = list.some(f => f.name === cur);
+    let topChip = '';
+    if (cur && !inLib) {
+      topChip = `<span class="fp-chip warn sel" onclick='fpPick(${JSON.stringify(cur)})'>`
+        + `<span class="fp-dot" style="background:#c9902a"></span>${esc(cur)} · ⚠ เก่า</span>`;
+    }
+    const active = [], others = [];
+    list.forEach(f => { const s = stat[f.name] || { last: 0, recent: 0 }; (s.recent > 0 ? active : others).push({ f, s }); });
+    active.sort((a, b) => (b.s.recent - a.s.recent) || (b.s.last - a.s.last) || a.f.name.localeCompare(b.f.name, 'th'));
+    others.sort((a, b) => (b.s.last - a.s.last) || a.f.name.localeCompare(b.f.name, 'th'));
+    const manageBtn = isAdmin() ? `<button class="fp-manage" onclick="fpSetManage(true)">✎ จัดการ</button>` : '';
+    let body;
+    if (!list.length) {
+      body = `<div class="fp-chips">${topChip}<div class="fp-empty">ยังไม่มีผลไม้ในคลัง${isAdmin() ? ' · กด ✎ จัดการ เพื่อเพิ่ม' : ''}</div></div>`;
+    } else if (active.length) {
+      body = (topChip ? `<div class="fp-chips">${topChip}</div>` : '')
+        + `<div class="fp-sec hot">🔥 กำลังขาย<span class="n">90 วันล่าสุด</span></div>`
+        + `<div class="fp-chips">${active.map(x => chipOf(x.f)).join('')}</div>`
+        + (others.length ? `<div class="fp-sec fp-sec2">ผลไม้อื่น</div><div class="fp-chips">${others.map(x => chipOf(x.f)).join('')}</div>` : '');
+    } else {
+      // ไม่มีตัวไหน active → แสดงเรียบ (เรียงใช้ล่าสุด) ไม่ต้องมีหัวข้อว่างๆ
+      body = `<div class="fp-chips">${topChip}${others.map(x => chipOf(x.f)).join('')}</div>`;
+    }
+    sheet.innerHTML = `<div class="fp-grab"></div>`
+      + `<div class="fp-sh-h"><span style="width:64px"></span><div class="fp-sh-t">🍎 เลือกผลไม้</div>${manageBtn || '<span style="width:64px"></span>'}</div>`
+      + body;
+  };
+
+  window.fpPick = function (name) {
+    const inp = document.getElementById(_id); if (inp) inp.value = name;
+    window.fpRefreshField(_id);
+    fpClose();
+    if (typeof haptic === 'function') haptic(10);
+  };
+
+  // ---- เพิ่ม/แก้ (modal ของ picker เอง) ----
+  window.fpEditOpen = function (id) {
+    if (!isAdmin()) return;
+    ensureDom();
+    const f = id ? (window.fruitNames || []).find(x => x.id === id) : null;
+    const name = f ? f.name : '';
+    const color = f ? (f.color || PAL[0]) : PAL[0];
+    window.__fpColor = color;
+    const sw = PAL.map(c => `<span class="fp-sw ${c === color ? 'sel' : ''}" style="background:${c}" onclick="fpPickSw(this,'${c}')"></span>`).join('');
+    const box = document.getElementById('fp-edit');
+    box.innerHTML = `<div class="fp-edit-card">`
+      + `<div class="fp-edit-t">${f ? '✎ แก้ผลไม้' : '＋ เพิ่มผลไม้'}</div>`
+      + `<input id="fp-ename" class="fp-edit-inp" value="${esc(name)}" placeholder="เช่น ลำไย" maxlength="40" autocomplete="off">`
+      + `<div class="fp-edit-lbl">สีไอคอน</div><div class="fp-sw-row">${sw}</div>`
+      + `<div class="fp-edit-acts"><button class="fp-edit-btn cancel" onclick="fpEditClose()">ยกเลิก</button>`
+      + `<button class="fp-edit-btn ok" onclick="fpEditSave('${id || ''}')">บันทึก</button></div></div>`;
+    box.classList.add('open');
+    setTimeout(() => { const el = document.getElementById('fp-ename'); if (el) el.focus(); }, 60);
+  };
+  window.fpPickSw = function (el, c) {
+    window.__fpColor = c;
+    const row = el && el.parentElement; if (row) row.querySelectorAll('.fp-sw').forEach(s => s.classList.remove('sel'));
+    if (el) el.classList.add('sel');
+  };
+  window.fpEditClose = function () { const b = document.getElementById('fp-edit'); if (b) b.classList.remove('open'); };
+  window.fpEditSave = function (id) {
+    if (!isAdmin()) return;
+    const el = document.getElementById('fp-ename');
+    const name = (el && el.value || '').trim();
+    const color = window.__fpColor || PAL[0];
+    if (!name) { if (typeof toast === 'function') toast('ใส่ชื่อผลไม้ก่อน'); return; }
+    const dup = (window.fruitNames || []).find(x => x.name === name && x.id !== id);
+    if (dup) { if (typeof toast === 'function') toast('มีชื่อนี้อยู่แล้ว'); return; }
+    let oldName = null;
+    if (id) {
+      const f = (window.fruitNames || []).find(x => x.id === id);
+      oldName = f ? f.name : null;
+      if (f) { f.name = name; f.color = color; }
+    } else {
+      if (!window.fruitNames) window.fruitNames = [];
+      window.fruitNames.push({ id: (typeof fruitNewId === 'function' ? fruitNewId() : 'fr_' + Date.now()), name, color });
+    }
+    if (typeof saveFruitNames === 'function') saveFruitNames();
+    // แก้ชื่อ + มี record ใช้ชื่อเดิม → อัปเดตให้ตรง (ใช้ helper กลางที่ไม่ผูก UI)
+    if (id && oldName && oldName !== name && typeof fruitPropagateRename === 'function') {
+      try { fruitPropagateRename(oldName, name); } catch (e) {}
+      // ถ้าค่าในช่องที่กำลังเลือกเป็นชื่อเก่า → อัปเดตช่องด้วย
+      const inp = document.getElementById(_id);
+      if (inp && inp.value === oldName) { inp.value = name; window.fpRefreshField(_id); }
+    }
+    fpEditClose();
+    fpRenderSheet();
+    if (typeof toast === 'function') toast(id ? 'บันทึกแล้ว' : 'เพิ่มผลไม้แล้ว');
+  };
+  window.fpDelete = function (id) {
+    if (!isAdmin()) return;
+    const f = (window.fruitNames || []).find(x => x.id === id); if (!f) return;
+    // เช็คว่ามีใครใช้อยู่ไหม — อ่านจาก localStorage ตรงๆ (ไม่พึ่ง scope ของ gardens)
+    const nm = String(f.name || '').trim();
+    let used = 0;
+    try {
+      const gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]');
+      (Array.isArray(gs) ? gs : []).forEach(g => { if (String(g.fruit || '').trim() === nm) used++; });
+    } catch (e) {}
+    try {
+      const st = JSON.parse(localStorage.getItem('thodsapon_state_v1') || '{}');
+      (((st && st.quotes) || [])).forEach(q => { if (String(q.fruit || '').trim() === nm) used++; });
+    } catch (e) {}
+    try {
+      const pf = JSON.parse(localStorage.getItem('thodsapon_pf_v1') || localStorage.getItem('thodsapon_price_forms_v1') || '[]');
+      (Array.isArray(pf) ? pf : []).forEach(x => { if (String(x.fruit || '').trim() === nm) used++; });
+    } catch (e) {}
+    if (used > 0) { if (typeof toast === 'function') toast('ลบไม่ได้ · มี ' + used + ' รายการใช้ "' + nm + '" อยู่'); return; }
+    window.fruitNames = (window.fruitNames || []).filter(x => x.id !== id);
+    if (typeof saveFruitNames === 'function') saveFruitNames();
+    fpRenderSheet();
+    if (typeof toast === 'function') toast('ลบแล้ว');
+  };
+})();
+
 function pfLoad() {
   try { priceForms = JSON.parse(localStorage.getItem(PF_KEY) || '[]'); if (!Array.isArray(priceForms)) priceForms = []; }
   catch (e) { priceForms = []; }
@@ -14364,6 +14724,7 @@ function renderPriceLib() {
   if (!scr) return;
   const fruits = pfAllFruits();
   const admin = pfIsAdmin();
+  const oldN = admin ? pfCountOld() : 0;
   const esc = s => pfEsc(s).replace(/'/g, "\\'");
   const tabs = ['<span class="pf-pill' + (_pfFruitFilter === null ? ' on' : '') + '" onclick="pfSetFilter(null)">ทั้งหมด</span>']
     .concat(fruits.map(f => '<span class="pf-pill' + (_pfFruitFilter === f ? ' on' : '') + '" onclick="pfSetFilter(\'' + esc(f) + '\')">' + pfEsc(f) + '</span>')).join('');
@@ -14382,9 +14743,46 @@ function renderPriceLib() {
     '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div></div>'
     + '<div class="pf-body"><div class="pf-tabs">' + tabs + '</div><div class="pf-list">' + listHtml + '</div>'
     + (admin && list.length ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
+    + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">🧹 ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '')
     + '</div>';
 }
 window.pfSetFilter = function (f) { _pfFruitFilter = f; renderPriceLib(); };
+
+// ── ลบรายการคลังราคาที่เก่าเกิน 1 ปี ──
+// เกณฑ์อายุ: ใช้วันที่ราคา (f.date) เป็นหลัก · ถ้าไม่มีใช้ createdAt · ถ้าไม่รู้วันเลย = ไม่ลบ (ปลอดภัย)
+function pfCutoff1y() { const d = new Date(); d.setFullYear(d.getFullYear() - 1); d.setHours(0, 0, 0, 0); return d.getTime(); }
+function pfRecTime(f) {
+  if (f && f.date) { const d = new Date(f.date + 'T00:00:00'); if (!isNaN(d.getTime())) return d.getTime(); }
+  if (f && typeof f.createdAt === 'number') return f.createdAt;
+  return null;
+}
+function pfOldList() { const c = pfCutoff1y(); return (priceForms || []).filter(f => { const t = pfRecTime(f); return t != null && t < c; }); }
+function pfCountOld() { try { return pfOldList().length; } catch (e) { return 0; } }
+window.pfPurgeOld = async function () {
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมิน'); return; }
+  const old = pfOldList();
+  if (!old.length) { if (typeof toast === 'function') toast('ไม่มีรายการเก่าเกิน 1 ปี'); renderPriceLib(); return; }
+  const cutoffLbl = pfDateLabel(new Date(pfCutoff1y()).toISOString().slice(0, 10));
+  let ok;
+  if (typeof confirmAction === 'function') {
+    ok = await confirmAction({
+      title: 'ลบรายการเก่าเกิน 1 ปี?',
+      body: 'จะลบ <b>' + old.length + ' รายการ</b> ที่ลงวันที่ก่อน <b>' + cutoffLbl + '</b><br>ลบถาวร กู้คืนไม่ได้',
+      okLabel: '🧹 ลบ ' + old.length + ' รายการ', cancelLabel: 'ยกเลิก', danger: true
+    });
+  } else {
+    ok = (typeof confirm === 'function') ? confirm('ลบ ' + old.length + ' รายการเก่าเกิน 1 ปี?') : true;
+  }
+  if (!ok) return;
+  const ids = new Set(old.map(f => f.id));
+  priceForms = (priceForms || []).filter(f => !ids.has(f.id));
+  ids.forEach(id => { try { pfDeletedAdd(id); } catch (e) {} });  // ให้ cloud sync ลบตามด้วย
+  pfPersist();
+  renderPriceLib();
+  if (typeof toast === 'function') toast('ลบ ' + old.length + ' รายการแล้ว ✓');
+  if (typeof haptic === 'function') haptic(15);
+};
+
 
 window.pfOpenEdit = function (id) {
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมินแก้ได้'); return; }
@@ -14418,7 +14816,7 @@ function pfRenderEdit() {
     '<div class="pf-hd"><button class="pf-back" onclick="pfCloseEdit()">← กลับ</button><div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div></div>'
     + '<div class="pf-body">'
     + '<div class="pf-sub">เรียงจากเบอร์ใหญ่/แพงสุด → เล็กสุด · ชื่อเป็นแค่ตัวช่วยจำ</div>'
-    + '<div class="pf-frow"><input id="pf-fruit" class="pf-fld" list="pf-fruit-list" placeholder="ผลไม้ เช่น ลิ้นจี่ จักรพรรดิ" value="' + pfEsc(fruit) + '"><datalist id="pf-fruit-list">' + fruitOpts + '</datalist><input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '"></div>'
+    + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '"></div>'
     + '<div id="pf-rows">' + pfRowInputsHtml() + '</div>'
     + '<button class="pf-addrow" onclick="pfAddRow()">+ เพิ่มเบอร์</button>'
     + '<button class="pf-save" onclick="pfSaveForm()">💾 บันทึกฟอร์ม</button>'
@@ -17004,7 +17402,7 @@ function resetForm() {
     const el = document.getElementById(id);
     if (el) el.value = 0;
   });
-  document.getElementById('f-fruit').value = 'ลำไย';
+  { const _fe = document.getElementById('f-fruit'); if (_fe) { _fe.value = 'ลำไย'; if (window.fpRefreshField) window.fpRefreshField('f-fruit'); } }
   try { if (window.fruitFillDatalist) window.fruitFillDatalist('f-fruit-list'); } catch (e) {}
   document.getElementById('f-date').value = todayISO();
   rows = [makeRow(), makeRow(), makeRow(), makeRow(), makeRow()];
@@ -17172,7 +17570,7 @@ function loadQuote(id) {
   if (typeof setupOrigBillDrawer === 'function') setupOrigBillDrawer(q);
   document.getElementById('f-customer').value = q.customer || '';
   document.getElementById('f-market').value = q.market || '';
-  document.getElementById('f-fruit').value = q.fruit || 'ลำไย';
+  { const _fe = document.getElementById('f-fruit'); if (_fe) { _fe.value = q.fruit || 'ลำไย'; if (window.fpRefreshField) window.fpRefreshField('f-fruit'); } }
   try { if (window.fruitFillDatalist) window.fruitFillDatalist('f-fruit-list'); } catch (e) {}
   document.getElementById('f-date').value = q.date || todayISO();
 
@@ -21370,11 +21768,10 @@ function openGardenForm(id) {
           <span class="hint">จำเป็น</span>
         </div>
         <div class="d-grid">
-          <label>ชื่อสวน *</label>
-          <input id="gf-name" value="${gbEscapeHtml(g.name||'')}" placeholder="ชื่อสวน">
-          <label>ผลไม้ *</label>
-          <input id="gf-fruit" value="${gbEscapeHtml(g.fruit||'')}" placeholder="เช่น ลำไย" list="gf-fruit-list" autocomplete="off">
-          <datalist id="gf-fruit-list">${(window.fruitNameList ? window.fruitNameList() : []).map(n => '<option value="' + gbEscapeHtml(n) + '">').join('')}</datalist>
+          <label>ชื่อสวน <span class="req-star">*</span></label>
+          <input id="gf-name" class="req-field" value="${gbEscapeHtml(g.name||'')}" placeholder="ชื่อสวน">
+          <label>ผลไม้ <span class="req-star">*</span></label>
+          <div class="req-fruit">${window.fpFieldHtml ? window.fpFieldHtml('gf-fruit', g.fruit||'') : `<input id="gf-fruit" class="req-field" value="${gbEscapeHtml(g.fruit||'')}" placeholder="เช่น ลำไย">`}</div>
         </div>
 
         <div class="d-subheader">เจ้าของ</div>
@@ -21385,8 +21782,8 @@ function openGardenForm(id) {
           <input id="gf-lastname" value="${gbEscapeHtml(g.lastname||'')}" placeholder="ใจดี">
           <label>ชื่อเล่น</label>
           <input id="gf-nickname" value="${gbEscapeHtml(g.nickname||g.owner||'')}" placeholder="ชื่อเล่น">
-          <label>เบอร์</label>
-          <input id="gf-phone" type="tel" inputmode="tel" autocomplete="tel" value="${gbEscapeHtml(g.phone||'')}">
+          <label>เบอร์ <span class="req-star">*</span></label>
+          <input id="gf-phone" class="req-field" type="tel" inputmode="tel" autocomplete="tel" value="${gbEscapeHtml(g.phone||'')}" placeholder="เช่น 0812345678">
         </div>
 
         <div class="d-subheader">ที่ตั้ง</div>
@@ -21752,6 +22149,13 @@ function saveGarden() {
     if (el) { el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); }
     return;
   }
+  const phone = document.getElementById('gf-phone') ? document.getElementById('gf-phone').value.trim() : '';
+  if (!phone) {
+    toast('ใส่เบอร์โทร');
+    const el = document.getElementById('gf-phone');
+    if (el) { el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); }
+    return;
+  }
   const status = document.querySelector('.status-opt.selected')?.dataset.st || 'no-contract';
   const dealType = document.querySelector('.deal-opt.selected')?.dataset.dt || 'lump';
   const careRating = document.querySelector('#gf-care-grid .rating-opt.selected')?.dataset.v || '';
@@ -21787,7 +22191,7 @@ function saveGarden() {
     name, fruit,
     firstname, lastname, nickname,
     owner: nickname || firstname,
-    phone: document.getElementById('gf-phone').value.trim(),
+    phone: phone,
     mapUrl: document.getElementById('gf-mapurl').value.trim(),
     province: document.getElementById('gf-province').value.trim(),
     district: document.getElementById('gf-district').value.trim(),
@@ -25768,6 +26172,10 @@ function gvBsetWriteLastBackup() {
 
 // ── Open / Close ──
 function gvBsetOpen() {
+  // กันเด้งซ้ำ: onclick + pointerup อาจยิงคู่กัน → เปิดครั้งเดียวพอ
+  const _t = Date.now();
+  if (gvBsetOpen._last && _t - gvBsetOpen._last < 450) return;
+  gvBsetOpen._last = _t;
   // admin (แบ็คอัพ) หรือ ผู้มีสิทธิ์เห็นกำไร (สรุป) เท่านั้น
   const isAdmin = !!(currentUser && currentUser.role === 'admin');
   const canProfit = (typeof canViewProfit === 'function' && canViewProfit());
@@ -25778,8 +26186,8 @@ function gvBsetOpen() {
   const bg = document.getElementById('gv-bset-bg');
   if (!bg) return;
   _gvBsetPage = 'menu';
-  gvBsetRender();
-  bg.classList.add('open');
+  bg.classList.add('open');        // เปิด sheet ก่อน — กันกรณี render สะดุดแล้ว sheet ไม่โผล่
+  try { gvBsetRender(); } catch (e) { console.error('[bset] render error', e); }
   if (typeof haptic === 'function') haptic(10);
 }
 function gvBsetClose() {
