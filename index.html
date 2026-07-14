@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1051;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 13 ก.ค. 69 (51)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1052;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 14 ก.ค. 69 (52)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -4818,7 +4818,20 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .garden-card.no-contract { border-left-color: #c0392b; }
     #garden-view .garden-card.done { border-left-color: #888; opacity: 0.75; }
     #garden-view .garden-card.lc-v3.overdue { border-left-color: #c0392b; }
-    #garden-view .garden-card.lc-v3.closed { border-left-color: #6b4423; opacity: 0.75; }
+    /* สวนปิดแล้ว — พื้นหลังเขียวเซจอ่อน สื่อ "เก็บเกี่ยวสำเร็จ/ปิดจบ" (แบบ G3) */
+    #garden-view .garden-card.lc-v3.closed {
+      opacity: 1;
+      border-color: #7d9a48;
+      background:
+        radial-gradient(ellipse at 50% -12%, rgba(245,250,232,0.30), transparent 58%),
+        linear-gradient(180deg, #b2c08e 0%, #a5b57e 52%, #9aac72 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(120,150,60,0.30),
+        inset 0 -26px 34px -20px rgba(40,52,22,0.34),
+        0 2px 8px rgba(40,52,22,0.20);
+    }
+    #garden-view .garden-card.lc-v3.closed::before { opacity: 0.42; }
+    #garden-view .garden-card.lc-v3.closed .lc-dlabel { color: #5c6330; }
 
     /* V3 list card layout */
     #garden-view .lc-row1 {
