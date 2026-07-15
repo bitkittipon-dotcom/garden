@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1061;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (61)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1062;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (62)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -3156,13 +3156,18 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
     max-height: 85vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    /* iOS: ห้ามให้ element เดียวมีทั้ง transform + scroll (+ -webkit-overflow-scrolling)
+       → มันสร้าง compositing layer ซ้อนกัน ทำให้สกรอลล์ค้าง/แตะไม่ติด
+       วิธีถูก: transform อยู่ชั้นนอก · scroll ย้ายไปที่ .gv-bset-body ชั้นใน */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   #garden-view .gv-bset-bg.open .gv-bset-sheet { transform: translateY(0); }
   #garden-view .gv-bset-grab {
     display: flex; justify-content: center;
     padding: 8px 0 4px;
+    flex: 0 0 auto;
   }
   #garden-view .gv-bset-grab > div {
     width: 40px; height: 4px;
@@ -3174,6 +3179,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     padding: 4px 16px 12px;
     border-bottom: 1px solid #e5dfd0;
     position: relative;
+    flex: 0 0 auto;
   }
   #garden-view .gv-bset-head .ttl {
     font-size: 15px; font-weight: 700;
@@ -3366,6 +3372,9 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .gv-prof-empty { text-align: center; color: #8a7a5a; font-size: 12.5px; padding: 24px 10px; }
   #garden-view .gv-bset-body {
     padding: 14px 16px 24px;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;   /* กันสกรอลล์ทะลุไปหน้าหลัง */
   }
 
   /* ── Storage card ── */
@@ -14401,11 +14410,14 @@ loadFruitNames();
   .fp-ov.open{display:block;background:rgba(0,0,0,.45);}
   .fp-sheet{position:fixed;left:0;right:0;bottom:0;background:#faf6ee;border-radius:16px 16px 0 0;
     border-top:2.5px solid #6b8e3d;box-shadow:0 -6px 24px rgba(0,0,0,.3);color:#2a2620;
-    font-family:'Sarabun',sans-serif;padding:8px 15px 22px;max-height:80vh;overflow-y:auto;
+    font-family:'Sarabun',sans-serif;padding:8px 15px 0;max-height:80vh;
+    /* iOS: transform ชั้นนอก · scroll ชั้นใน (.fp-scroll) — ห้ามรวมกัน */
+    display:flex;flex-direction:column;overflow:hidden;
     transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);}
+  .fp-scroll{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;padding-bottom:22px;}
   .fp-ov.open .fp-sheet{transform:translateY(0);}
-  .fp-grab{width:38px;height:4px;border-radius:2px;background:rgba(107,68,35,.25);margin:2px auto 12px;}
-  .fp-sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;}
+  .fp-grab{width:38px;height:4px;border-radius:2px;background:rgba(107,68,35,.25);margin:2px auto 12px;flex:0 0 auto;}
+  .fp-sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;flex:0 0 auto;}
   .fp-sh-t{font-size:16px;font-weight:800;color:#2a1810;flex:1 1 auto;text-align:center;}
   .fp-manage{font-size:12px;font-weight:800;color:#5c862f;border:1.5px solid #a7c06d;flex:0 0 auto;
     background:linear-gradient(180deg,#eef3df,#e2ecc9);border-radius:9px;padding:7px 12px;cursor:pointer;}
@@ -14573,8 +14585,10 @@ loadFruitNames();
       sheet.innerHTML = `<div class="fp-grab"></div>`
         + `<div class="fp-sh-h"><button class="fp-back" onclick="fpSetManage(false)">‹ เลือก</button>`
         + `<div class="fp-sh-t">จัดการผลไม้ (${list.length})</div><span style="width:64px"></span></div>`
+        + `<div class="fp-scroll">`
         + `<button class="fp-add" onclick="fpEditOpen('')">＋ เพิ่มผลไม้</button>`
-        + `<div>${rows || '<div class="fp-empty">ยังไม่มีผลไม้ · กด ＋ เพิ่ม</div>'}</div>`;
+        + `<div>${rows || '<div class="fp-empty">ยังไม่มีผลไม้ · กด ＋ เพิ่ม</div>'}</div>`
+        + `</div>`;
       return;
     }
     // ── จัดลำดับฉลาด: กลุ่ม "กำลังขาย" (มี record ใน 90 วัน) / "ผลไม้อื่น" ──
@@ -14606,7 +14620,7 @@ loadFruitNames();
     }
     sheet.innerHTML = `<div class="fp-grab"></div>`
       + `<div class="fp-sh-h"><span style="width:64px"></span><div class="fp-sh-t">🍎 เลือกผลไม้</div>${manageBtn || '<span style="width:64px"></span>'}</div>`
-      + body;
+      + `<div class="fp-scroll">${body}</div>`;
   };
 
   window.fpPick = function (name) {
