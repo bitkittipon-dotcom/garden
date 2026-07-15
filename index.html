@@ -30,8 +30,39 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1063;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (63)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1064;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (64)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+
+// ═══════════ ตัววัดวินิจฉัย (ชั่วคราว · ใช้หาสาเหตุอาการค้างบนมือถือ) ═══════════
+// เก็บ: งานที่บล็อกจอ (long task) · touchmove ที่ถูกบล็อก · FPS · error · หน่วยความจำ
+(function () {
+  const D = window.__DIAG = {
+    longN: 0, longMax: 0, longSum: 0,   // long task = งานที่กินเวลา >50ms (จอค้างช่วงนั้น)
+    tm: 0, tmBlocked: 0,                // touchmove ทั้งหมด / ที่ถูก preventDefault
+    fps: 60, fpsMin: 60,
+    err: [], openMs: 0, deferMs: 0, rows: 0
+  };
+  try {
+    if (window.PerformanceObserver) {
+      const po = new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) {
+          D.longN++; D.longSum += e.duration;
+          if (e.duration > D.longMax) D.longMax = Math.round(e.duration);
+        }
+      });
+      po.observe({ entryTypes: ['longtask'] });
+    }
+  } catch (e) { D.longMax = -1; }   // -1 = เบราว์เซอร์ไม่รองรับการวัดนี้ (Safari)
+  window.addEventListener('error', (e) => { if (D.err.length < 3) D.err.push(String(e.message || '').slice(0, 30)); });
+  let _last = 0, _frames = 0;
+  function _tick(t) {
+    _frames++;
+    if (!_last) _last = t;
+    if (t - _last >= 1000) { D.fps = _frames; if (_frames < D.fpsMin) D.fpsMin = _frames; _frames = 0; _last = t; }
+    requestAnimationFrame(_tick);
+  }
+  requestAnimationFrame(_tick);
+})();
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -13437,6 +13468,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sy <= 0) e.preventDefault();
     }
   }, { passive: false });
+
+  // ── ตัวนับวินิจฉัย: ต้องผูกทีหลัง handler ด้านบน → จะได้เห็นว่าถูกบล็อกจริงไหม ──
+  document.addEventListener('touchmove', (e) => {
+    const D = window.__DIAG; if (!D) return;
+    D.tm++; if (e.defaultPrevented) D.tmBlocked++;
+  }, { passive: true });
   // auto-login from session
   const s = getSession();
   if (s) {
@@ -26593,11 +26630,15 @@ window.fruitMgrSearch = function (v) { _fruitMgrQuery = v || ''; fruitMgrRenderL
 window.fruitMgrShowAll = function () { _fruitMgrShowAll = true; fruitMgrRenderList(); };
 
 function gvBsetRenderFruit() {
+  const _t0 = performance.now();
   fruitSeedIfEmpty();
   const body = document.getElementById('gv-bset-body'); if (!body) return;
   const total = (window.fruitNames || []).length;
   // ── โครงเบา render ทันที → ชีตเปิดไม่หน่วง แตะไม่ค้าง ──
   body.innerHTML = `
+    <div id="diag-hud" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;
+      background:#1c1a17;color:#7fe27f;border:1px solid #3a5a3a;border-radius:8px;padding:7px 9px;margin-bottom:10px;
+      white-space:pre-wrap;word-break:break-all;">กำลังวัด…</div>
     <div class="gvh-sec-lbl">🍎 ชื่อผลไม้ (${total})</div>
     <div class="gvh-what" style="margin:2px 2px 11px;">เลือกจากรายการนี้ตอนกรอกสวน/บิล → ค้นหา &amp; กราฟไม่มั่ว · แก้/ลบ/เลือกสีได้อิสระ</div>
     <button class="gvh-add-fruit" onclick="fruitMgrAddOpen()">＋ เพิ่มชื่อผลไม้</button>
@@ -26605,11 +26646,14 @@ function gvBsetRenderFruit() {
     ${total > 12 ? `<input id="gvh-fsearch" class="gvh-fsearch" placeholder="🔍 ค้นหาชื่อผลไม้..." value="${gbEscapeHtml(_fruitMgrQuery || '')}" oninput="fruitMgrSearch(this.value)" autocomplete="off">` : ''}
     <div class="gvh-flist" id="gvh-flist"><div class="gvh-what" style="text-align:center;padding:16px;">กำลังโหลด…</div></div>
   `;
+  if (window.__DIAG) window.__DIAG.openMs = +(performance.now() - _t0).toFixed(1);
+  gvDiagStart();
   // ── งานหนัก (usage map + list + หา duplicate) เลื่อนไปหลัง paint → ไม่บล็อกการเปิด ──
   const _tok = (gvBsetRenderFruit._tok = (gvBsetRenderFruit._tok || 0) + 1);
   setTimeout(() => {
     if (gvBsetRenderFruit._tok !== _tok) return;       // ถ้าเปลี่ยนหน้าไปแล้ว ยกเลิก
     if (_gvBsetPage !== 'fruit') return;
+    const _t1 = performance.now();
     try { _fruitUsageMapCache = fruitBuildUsageMap(); } catch (e) { _fruitUsageMapCache = {}; }
     fruitMgrRenderList();
     try {
@@ -26617,9 +26661,39 @@ function gvBsetRenderFruit() {
       const slot = document.getElementById('gvh-mergeslot');
       if (slot && grpCount) slot.innerHTML = `<button class="gvh-merge-btn" onclick="fruitMergeOpen()">🔗 รวมชื่อซ้ำ · พบ ${grpCount} กลุ่ม</button>`;
     } catch (e) {}
+    if (window.__DIAG) {
+      window.__DIAG.deferMs = +(performance.now() - _t1).toFixed(1);
+      window.__DIAG.rows = document.querySelectorAll('.gvh-frow').length;
+    }
   }, 0);
 }
 window.gvBsetRenderFruit = gvBsetRenderFruit;
+
+// ── HUD วินิจฉัย: อัปเดตทุก 400ms ขณะเปิดหน้าชื่อผลไม้ ──
+let _gvDiagTimer = null;
+function gvDiagStart() {
+  clearInterval(_gvDiagTimer);
+  _gvDiagTimer = setInterval(() => {
+    const el = document.getElementById('diag-hud');
+    if (!el || _gvBsetPage !== 'fruit') { clearInterval(_gvDiagTimer); _gvDiagTimer = null; return; }
+    const D = window.__DIAG; if (!D) return;
+    const bd = document.getElementById('gv-bset-body');
+    const sh = document.querySelector('.gv-bset-sheet');
+    let mem = '-';
+    try { if (performance.memory) mem = Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB'; } catch (e) {}
+    const scrollInfo = bd ? (bd.scrollTop + '/' + (bd.scrollHeight - bd.clientHeight)) : '-';
+    const sheetScrolls = sh ? (sh.scrollHeight > sh.clientHeight + 1 ? 'YES(ผิด!)' : 'no') : '-';
+    el.textContent =
+      `build ${window.__APP_BUILD}  ผลไม้ ${(window.fruitNames || []).length}  แถว ${D.rows}\n`
+      + `เปิดหน้า ${D.openMs}ms  งานตามหลัง ${D.deferMs}ms\n`
+      + `LONGTASK ${D.longMax < 0 ? 'n/a(Safari)' : D.longN + ' ครั้ง · นานสุด ' + D.longMax + 'ms'}\n`
+      + `FPS ${D.fps} (ต่ำสุด ${D.fpsMin})   RAM ${mem}\n`
+      + `TOUCHMOVE ${D.tm}  ถูกบล็อก ${D.tmBlocked}\n`
+      + `scroll body ${scrollInfo}   sheet เลื่อนเอง: ${sheetScrolls}\n`
+      + `error ${D.err.length ? D.err.join(' | ') : '-'}`;
+  }, 400);
+}
+window.gvDiagStart = gvDiagStart;
 
 // ── modal เพิ่ม/แก้ (มี color picker อิสระ) ──
 function _fruitEditModal(id) {
