@@ -30,39 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1064;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (64)';  // ← ข้อความเวอร์ชันโชว์ในแอป
-
-// ═══════════ ตัววัดวินิจฉัย (ชั่วคราว · ใช้หาสาเหตุอาการค้างบนมือถือ) ═══════════
-// เก็บ: งานที่บล็อกจอ (long task) · touchmove ที่ถูกบล็อก · FPS · error · หน่วยความจำ
-(function () {
-  const D = window.__DIAG = {
-    longN: 0, longMax: 0, longSum: 0,   // long task = งานที่กินเวลา >50ms (จอค้างช่วงนั้น)
-    tm: 0, tmBlocked: 0,                // touchmove ทั้งหมด / ที่ถูก preventDefault
-    fps: 60, fpsMin: 60,
-    err: [], openMs: 0, deferMs: 0, rows: 0
-  };
-  try {
-    if (window.PerformanceObserver) {
-      const po = new PerformanceObserver((list) => {
-        for (const e of list.getEntries()) {
-          D.longN++; D.longSum += e.duration;
-          if (e.duration > D.longMax) D.longMax = Math.round(e.duration);
-        }
-      });
-      po.observe({ entryTypes: ['longtask'] });
-    }
-  } catch (e) { D.longMax = -1; }   // -1 = เบราว์เซอร์ไม่รองรับการวัดนี้ (Safari)
-  window.addEventListener('error', (e) => { if (D.err.length < 3) D.err.push(String(e.message || '').slice(0, 30)); });
-  let _last = 0, _frames = 0;
-  function _tick(t) {
-    _frames++;
-    if (!_last) _last = t;
-    if (t - _last >= 1000) { D.fps = _frames; if (_frames < D.fpsMin) D.fpsMin = _frames; _frames = 0; _last = t; }
-    requestAnimationFrame(_tick);
-  }
-  requestAnimationFrame(_tick);
-})();
+window.__APP_BUILD = 1068;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (68)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -3377,6 +3346,26 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .gvh-fsearch:focus{border-color:#6b8e3d;box-shadow:0 0 0 2px rgba(107,142,61,.18)}
   #garden-view .gvh-fsearch::placeholder{color:rgba(107,68,35,.5);font-weight:400}
   #garden-view .gvh-showall-btn{width:100%;background:transparent;border:1.3px dashed rgba(107,68,35,.35);border-radius:11px;padding:10px;text-align:center;font-size:13px;font-weight:700;color:#6b4423;cursor:pointer;font-family:inherit;margin-top:2px}
+  /* ── รวมผลไม้แบบเลือกเอง ── */
+  #garden-view .gvh-manual-merge{width:100%;background:#f4e6c6;border:1.5px solid #e3c98a;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:800;color:#8a5a12;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  #garden-view .fm-box{background:#fffdf8;border:1px solid #d8c9a6;border-radius:12px;padding:11px;margin-bottom:9px}
+  #garden-view .fm-h{font-size:12.5px;font-weight:800;color:#6b4423;margin-bottom:9px}
+  #garden-view .fm-row{display:flex;align-items:center;gap:10px;background:#f6efdd;border:1px solid #d8c9a6;border-radius:11px;padding:10px 11px;margin-bottom:7px;cursor:pointer;touch-action:manipulation}
+  #garden-view .fm-row.picked{border-color:#6b8e3d;background:#eef3df;box-shadow:0 0 0 2px rgba(107,142,61,.25)}
+  #garden-view .fm-cb{width:24px;height:24px;border-radius:7px;border:2px solid #b6a582;background:#fff;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff}
+  #garden-view .fm-cb.on{background:#6b8e3d;border-color:#4e6b28}
+  #garden-view .fm-meta{flex:1 1 auto;min-width:0}
+  #garden-view .fm-name{font-size:14px;font-weight:700;color:#2a1810;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #garden-view .fm-use{font-size:11px;color:rgba(107,68,35,.6)}
+  #garden-view .fm-arrow{text-align:center;font-size:12px;color:#8a5a12;font-weight:800;margin:9px 0}
+  #garden-view .fm-opt{display:flex;align-items:center;gap:9px;padding:10px;border:1.5px solid rgba(107,68,35,.2);border-radius:9px;margin-bottom:6px;background:#fff;cursor:pointer;touch-action:manipulation}
+  #garden-view .fm-opt.sel{border-color:#2f7d1f;background:rgba(107,142,61,.14);box-shadow:0 0 0 2px rgba(107,142,61,.18)}
+  #garden-view .fm-radio{width:19px;height:19px;border-radius:50%;border:2px solid #b6a582;flex:0 0 auto}
+  #garden-view .fm-opt.sel .fm-radio{border-color:#2f7d1f;background:radial-gradient(circle,#2f7d1f 42%,transparent 46%)}
+  #garden-view .fm-onm{flex:1 1 auto;min-width:0;font-size:14px;font-weight:700;color:#2a1810;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #garden-view .fm-ouse{font-size:11px;color:rgba(107,68,35,.6);flex:0 0 auto}
+  #garden-view .fm-go{width:100%;background:linear-gradient(180deg,#6b8e3d,#557030);color:#fff;border:1.5px solid #4e6b28;border-radius:12px;padding:13px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:4px}
+  #garden-view .fm-hint{text-align:center;font-size:12.5px;color:rgba(107,68,35,.6);padding:12px;font-style:italic}
   #garden-view .gvh-mg-grp{background:#f0e7d1;border:1px solid #d8c9a6;border-radius:12px;padding:11px 12px;margin-bottom:10px}
   #garden-view .gvh-mg-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
   #garden-view .gvh-mg-chip{font-size:13px;font-weight:600;background:#fff;border:1.5px solid #d8c9a6;border-radius:16px;padding:4px 11px;color:#5f4a2a;cursor:pointer}
@@ -11348,15 +11337,19 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .pf-list { display: flex; flex-direction: column; gap: 10px; }
 .pf-empty { text-align: center; color: #8a7a55; font-size: 13px; padding: 30px 0 16px; }
 .pf-card { position: relative; background: #fdfaf0; border: 1px solid #e0d3ad; border-radius: 12px; padding: 11px 13px; }
-.pf-card-top { display: flex; justify-content: space-between; align-items: center; }
+.pf-card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+/* การ์ดของแอดมินมีปุ่ม ✎/🗑 ลอยอยู่มุมขวาบน → เว้นที่ให้ ไม่งั้นทับวันที่ */
+.pf-card.has-act .pf-card-top { padding-right: 76px; }
+.pf-card-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pf-card-name { font-size: 14.5px; font-weight: 800; color: #3a2812; }
-.pf-card-date { font-size: 11.5px; color: #8a7a55; font-weight: 700; font-family: 'JetBrains Mono',monospace; }
+.pf-card-date { font-size: 11.5px; color: #8a7a55; font-weight: 700; font-family: 'JetBrains Mono',monospace; flex: 0 0 auto; white-space: nowrap; }
 .pf-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
 .pf-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1px solid #d9c9a0; border-radius: 7px; padding: 2px 8px; font-size: 11.5px; color: #5a4a2c; }
 .pf-chip .o { background: #5a3a1c; color: #f0c860; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; font-family: 'JetBrains Mono',monospace; margin-right: 2px; }
 .pf-chip b { color: #3c6018; font-family: 'JetBrains Mono',monospace; font-weight: 800; }
 .pf-card-act { position: absolute; top: 8px; right: 10px; display: flex; gap: 6px; }
-.pf-card-act button { background: #f0e8d2; border: 1px solid #d9c9a0; border-radius: 8px; width: 30px; height: 30px; font-size: 13px; cursor: pointer; }
+.pf-card-act button { position: relative; background: #f0e8d2; border: 1px solid #d9c9a0; border-radius: 8px; width: 34px; height: 34px; font-size: 14px; cursor: pointer; touch-action: manipulation; }
+.pf-card-act button::after { content: ''; position: absolute; inset: -5px; }
 .pf-card-act button.del { color: #b5281b; }
 .pf-add-btn { width: 100%; margin-top: 14px; background: linear-gradient(180deg,#7a5318,#4a2f12); color: #f0d99a; border: 1.5px solid #d4af37; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 800; font-family: 'Sarabun',sans-serif; cursor: pointer; }
 .pf-purge-btn { width: 100%; margin-top: 10px; background: rgba(120,40,30,0.06); color: #9a4a3a; border: 1.3px solid rgba(154,74,58,0.4); border-radius: 11px; padding: 11px; font-size: 13px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; transition: background .15s; }
@@ -13468,12 +13461,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sy <= 0) e.preventDefault();
     }
   }, { passive: false });
-
-  // ── ตัวนับวินิจฉัย: ต้องผูกทีหลัง handler ด้านบน → จะได้เห็นว่าถูกบล็อกจริงไหม ──
-  document.addEventListener('touchmove', (e) => {
-    const D = window.__DIAG; if (!D) return;
-    D.tm++; if (e.defaultPrevented) D.tmBlocked++;
-  }, { passive: true });
   // auto-login from session
   const s = getSession();
   if (s) {
@@ -14557,6 +14544,21 @@ loadFruitNames();
   };
   window.fpSetManage = function (on) { _manage = !!on && isAdmin(); fpRenderSheet(); };
 
+  // อ่านรายการบิล — บิลเก็บเป็น "array เปล่า" ใต้ key 'tospon_quotes_v1' (ไม่ใช่ {quotes:[...]})
+  // ใช้ของในหน่วยความจำก่อนถ้ามี (สดกว่า) · ไม่มีค่อยอ่าน localStorage · รองรับรูปแบบเก่าเผื่อไว้
+  function _fpQuotes() {
+    try { if (window.state && Array.isArray(window.state.quotes) && window.state.quotes.length) return window.state.quotes; } catch (e) {}
+    try {
+      const raw = localStorage.getItem('tospon_quotes_v1');
+      if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) return a; if (a && Array.isArray(a.quotes)) return a.quotes; }
+    } catch (e) {}
+    try {
+      const raw2 = localStorage.getItem('thodsapon_state_v1');
+      if (raw2) { const s = JSON.parse(raw2); if (Array.isArray(s)) return s; if (s && Array.isArray(s.quotes)) return s.quotes; }
+    } catch (e) {}
+    return [];
+  }
+
   // สถิติการใช้ผลไม้ (จาก localStorage · ไม่พึ่ง scope ของ gardens) → {name:{last, recent}}
   // last = วันที่ล่าสุดที่ผลไม้นี้ถูกใช้ (ms) · recent = จำนวน record ใน 90 วันล่าสุด
   function fpUsageStats() {
@@ -14590,8 +14592,7 @@ loadFruitNames();
       });
     } catch (e) {}
     try {
-      const st = JSON.parse(localStorage.getItem('thodsapon_state_v1') || '{}');
-      (((st && st.quotes) || [])).forEach(q => {
+      _fpQuotes().forEach(q => {
         let ms = toMs(q.date);
         if (ms == null) ms = toMs(q.createdAt);
         bump(q.fruit, ms);
@@ -14731,8 +14732,7 @@ loadFruitNames();
       (Array.isArray(gs) ? gs : []).forEach(g => { if (String(g.fruit || '').trim() === nm) used++; });
     } catch (e) {}
     try {
-      const st = JSON.parse(localStorage.getItem('thodsapon_state_v1') || '{}');
-      (((st && st.quotes) || [])).forEach(q => { if (String(q.fruit || '').trim() === nm) used++; });
+      _fpQuotes().forEach(q => { if (String(q.fruit || '').trim() === nm) used++; });
     } catch (e) {}
     try {
       const pf = JSON.parse(localStorage.getItem('thodsapon_pf_v1') || localStorage.getItem('thodsapon_price_forms_v1') || '[]');
@@ -14809,7 +14809,7 @@ function renderPriceLib() {
   } else {
     listHtml = list.map(f => {
       const actions = admin ? '<div class="pf-card-act"><button onclick="pfOpenEdit(\'' + f.id + '\')" title="แก้">✎</button><button class="del" onclick="pfDeleteForm(\'' + f.id + '\')" title="ลบ">🗑</button></div>' : '';
-      return '<div class="pf-card"><div class="pf-card-top"><span class="pf-card-name">' + pfEsc(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f) + '</div>' + actions + '</div>';
+      return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfEsc(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f) + '</div>' + actions + '</div>';
     }).join('');
   }
   scr.innerHTML =
@@ -18006,6 +18006,7 @@ function renderOrigBillDrawer() {
 })();
 
 function calcQuoteSummary(q) {
+  if (!q || typeof q !== 'object') q = {};   // กันบิลว่าง/พัง → คืนสรุปเป็นศูนย์ ดีกว่าทำแอปพัง
   if (q.type === 'plan') {
     let totKg = 0, revenue = 0;
     (q.planDays || []).forEach(d => {
@@ -18075,11 +18076,15 @@ function calcQuoteSummary(q) {
     const profit = hasSold && cost ? revenue - cost : null;
     return { totalKg, quoted: revenue, sold: revenue, exp: cost, profit, hasSold, isOrchard: true };
   }
-  const totalKg = q.rows.reduce((s, r) => s + (r.baskets * r.kgPer + r.extra), 0);
-  const quoted = q.rows.reduce((s, r) => s + (r.baskets * r.kgPer + r.extra) * r.quotedPrice, 0);
-  const sold = q.rows.reduce((s, r) => s + (r.baskets * r.kgPer + r.extra) * r.soldPrice, 0);
+  // ── กันบิลข้อมูลไม่ครบ (sync ไม่ครบ / ของเก่า) ทำให้ทั้งโมดูลพัง ──
+  // เดิม: q.rows.reduce(...) → ถ้า rows หาย = throw → สคริปต์เล่มสวนตายทั้งบล็อก (ปุ่มทั้งหมดหาย)
+  const _rows = Array.isArray(q.rows) ? q.rows : [];
+  const _kgOf = (r) => (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
+  const totalKg = _rows.reduce((s, r) => s + _kgOf(r), 0);
+  const quoted = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.quotedPrice) || 0), 0);
+  const sold = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.soldPrice) || 0), 0);
   const exp = (q.expenses?.roasting || 0) + (q.expenses?.transport || 0) + (q.expenses?.processing || 0) + (q.expenses?.deduct || 0);
-  const hasSold = q.rows.some(r => r.soldPrice > 0);
+  const hasSold = _rows.some(r => (Number(r.soldPrice) || 0) > 0);
   const profit = hasSold ? sold - quoted - exp : null;
   return { totalKg, quoted, sold, exp, profit, hasSold };
 }
@@ -26286,6 +26291,7 @@ function gvBsetRender() {
   if (_gvBsetPage === 'backup') { if (ttlEl) ttlEl.textContent = '💾 ข้อมูล & สำรอง'; if (backEl) backEl.style.display = ''; gvBsetRenderBackup(); return; }
   if (_gvBsetPage === 'profit') { if (ttlEl) ttlEl.textContent = '📊 สรุป กำไร/ขาดทุน'; if (backEl) backEl.style.display = ''; gvBsetRenderProfit(); return; }
   if (_gvBsetPage === 'fruit') { if (ttlEl) ttlEl.textContent = '🍎 ชื่อผลไม้'; if (backEl) backEl.style.display = ''; gvBsetRenderFruit(); return; }
+  if (_gvBsetPage === 'fruitmerge') { if (ttlEl) ttlEl.textContent = '🔀 รวมผลไม้'; if (backEl) backEl.style.display = ''; gvBsetRenderFruitMerge(); return; }
   if (ttlEl) ttlEl.textContent = '⚙ ตั้งค่าเล่มสวน';
   if (backEl) backEl.style.display = 'none';
   const showProfit = (typeof profitVisible === 'function' && profitVisible());
@@ -26304,7 +26310,11 @@ window.gvBsetGo = function (p) {
   if (p === 'fruit') { _fruitMgrQuery = ''; _fruitMgrShowAll = false; }
   gvBsetRender();
 };
-window.gvBsetBack = function () { _gvBsetPage = 'menu'; gvBsetRender(); };
+window.gvBsetBack = function () {
+  // หน้ารวมผลไม้ = หน้าย่อยของ "ชื่อผลไม้" → ‹ กลับไปหน้าชื่อผลไม้ ไม่ใช่เมนูหลัก
+  if (_gvBsetPage === 'fruitmerge') { _gvBsetPage = 'fruit'; gvBsetRender(); return; }
+  _gvBsetPage = 'menu'; gvBsetRender();
+};
 
 // ── หน้าสรุป กำไร/ขาดทุน ──
 function gvBsetRenderProfit() {
@@ -26630,30 +26640,24 @@ window.fruitMgrSearch = function (v) { _fruitMgrQuery = v || ''; fruitMgrRenderL
 window.fruitMgrShowAll = function () { _fruitMgrShowAll = true; fruitMgrRenderList(); };
 
 function gvBsetRenderFruit() {
-  const _t0 = performance.now();
   fruitSeedIfEmpty();
   const body = document.getElementById('gv-bset-body'); if (!body) return;
   const total = (window.fruitNames || []).length;
   // ── โครงเบา render ทันที → ชีตเปิดไม่หน่วง แตะไม่ค้าง ──
   body.innerHTML = `
-    <div id="diag-hud" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;
-      background:#1c1a17;color:#7fe27f;border:1px solid #3a5a3a;border-radius:8px;padding:7px 9px;margin-bottom:10px;
-      white-space:pre-wrap;word-break:break-all;">กำลังวัด…</div>
     <div class="gvh-sec-lbl">🍎 ชื่อผลไม้ (${total})</div>
     <div class="gvh-what" style="margin:2px 2px 11px;">เลือกจากรายการนี้ตอนกรอกสวน/บิล → ค้นหา &amp; กราฟไม่มั่ว · แก้/ลบ/เลือกสีได้อิสระ</div>
     <button class="gvh-add-fruit" onclick="fruitMgrAddOpen()">＋ เพิ่มชื่อผลไม้</button>
+    ${total > 1 ? `<button class="gvh-manual-merge" onclick="fruitMergeManualOpen()">🔀 รวมผลไม้ (เลือกเอง)</button>` : ''}
     <div id="gvh-mergeslot"></div>
     ${total > 12 ? `<input id="gvh-fsearch" class="gvh-fsearch" placeholder="🔍 ค้นหาชื่อผลไม้..." value="${gbEscapeHtml(_fruitMgrQuery || '')}" oninput="fruitMgrSearch(this.value)" autocomplete="off">` : ''}
     <div class="gvh-flist" id="gvh-flist"><div class="gvh-what" style="text-align:center;padding:16px;">กำลังโหลด…</div></div>
   `;
-  if (window.__DIAG) window.__DIAG.openMs = +(performance.now() - _t0).toFixed(1);
-  gvDiagStart();
   // ── งานหนัก (usage map + list + หา duplicate) เลื่อนไปหลัง paint → ไม่บล็อกการเปิด ──
   const _tok = (gvBsetRenderFruit._tok = (gvBsetRenderFruit._tok || 0) + 1);
   setTimeout(() => {
     if (gvBsetRenderFruit._tok !== _tok) return;       // ถ้าเปลี่ยนหน้าไปแล้ว ยกเลิก
     if (_gvBsetPage !== 'fruit') return;
-    const _t1 = performance.now();
     try { _fruitUsageMapCache = fruitBuildUsageMap(); } catch (e) { _fruitUsageMapCache = {}; }
     fruitMgrRenderList();
     try {
@@ -26661,39 +26665,101 @@ function gvBsetRenderFruit() {
       const slot = document.getElementById('gvh-mergeslot');
       if (slot && grpCount) slot.innerHTML = `<button class="gvh-merge-btn" onclick="fruitMergeOpen()">🔗 รวมชื่อซ้ำ · พบ ${grpCount} กลุ่ม</button>`;
     } catch (e) {}
-    if (window.__DIAG) {
-      window.__DIAG.deferMs = +(performance.now() - _t1).toFixed(1);
-      window.__DIAG.rows = document.querySelectorAll('.gvh-frow').length;
-    }
   }, 0);
 }
 window.gvBsetRenderFruit = gvBsetRenderFruit;
 
-// ── HUD วินิจฉัย: อัปเดตทุก 400ms ขณะเปิดหน้าชื่อผลไม้ ──
-let _gvDiagTimer = null;
-function gvDiagStart() {
-  clearInterval(_gvDiagTimer);
-  _gvDiagTimer = setInterval(() => {
-    const el = document.getElementById('diag-hud');
-    if (!el || _gvBsetPage !== 'fruit') { clearInterval(_gvDiagTimer); _gvDiagTimer = null; return; }
-    const D = window.__DIAG; if (!D) return;
-    const bd = document.getElementById('gv-bset-body');
-    const sh = document.querySelector('.gv-bset-sheet');
-    let mem = '-';
-    try { if (performance.memory) mem = Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB'; } catch (e) {}
-    const scrollInfo = bd ? (bd.scrollTop + '/' + (bd.scrollHeight - bd.clientHeight)) : '-';
-    const sheetScrolls = sh ? (sh.scrollHeight > sh.clientHeight + 1 ? 'YES(ผิด!)' : 'no') : '-';
-    el.textContent =
-      `build ${window.__APP_BUILD}  ผลไม้ ${(window.fruitNames || []).length}  แถว ${D.rows}\n`
-      + `เปิดหน้า ${D.openMs}ms  งานตามหลัง ${D.deferMs}ms\n`
-      + `LONGTASK ${D.longMax < 0 ? 'n/a(Safari)' : D.longN + ' ครั้ง · นานสุด ' + D.longMax + 'ms'}\n`
-      + `FPS ${D.fps} (ต่ำสุด ${D.fpsMin})   RAM ${mem}\n`
-      + `TOUCHMOVE ${D.tm}  ถูกบล็อก ${D.tmBlocked}\n`
-      + `scroll body ${scrollInfo}   sheet เลื่อนเอง: ${sheetScrolls}\n`
-      + `error ${D.err.length ? D.err.join(' | ') : '-'}`;
-  }, 400);
+// ═══════════ รวมผลไม้แบบเลือกเอง (แบบ B: ① เลือกตัวที่จะรวม → ② เลือกชื่อที่เก็บ) ═══════════
+// ใช้กลไกเดิม fruitMergeApply(canonical, variants) → เปลี่ยนชื่อในสวน/บิล/คลังราคาให้ครบก่อน แล้วค่อยลบชื่อซ้ำ
+let _fmSel = [];        // ชื่อผลไม้ที่ติ๊กไว้ (เรียงตามลำดับที่กด)
+let _fmCanon = null;    // ชื่อที่จะเก็บไว้
+window.fruitMergeManualOpen = function () {
+  _fmSel = []; _fmCanon = null;
+  _gvBsetPage = 'fruitmerge';
+  gvBsetRender();
+};
+window.fmToggle = function (name) {
+  const i = _fmSel.indexOf(name);
+  if (i >= 0) { _fmSel.splice(i, 1); if (_fmCanon === name) _fmCanon = null; }
+  else _fmSel.push(name);
+  // ยังไม่ได้เลือกชื่อที่เก็บ → เดาให้: ตัวที่ใช้เยอะสุด
+  if (!_fmCanon && _fmSel.length) {
+    _fmCanon = _fmSel.slice().sort((a, b) => fruitCountUses(b) - fruitCountUses(a))[0];
+  }
+  if (_fmCanon && _fmSel.indexOf(_fmCanon) < 0) _fmCanon = _fmSel[0] || null;
+  gvBsetRenderFruitMerge();
+};
+window.fmSetCanon = function (name) { _fmCanon = name; gvBsetRenderFruitMerge(); };
+window.fmApply = async function () {
+  if (_fmSel.length < 2 || !_fmCanon) return;
+  const others = _fmSel.filter(n => n !== _fmCanon);
+  const total = others.reduce((a, n) => a + fruitCountUses(n), 0);
+  let ok;
+  const bodyHtml = `จะเปลี่ยน <b>${others.map(gbEscapeHtml).join('</b>, <b>')}</b><br>ให้เป็น <b>${gbEscapeHtml(_fmCanon)}</b> ทั้งหมด`
+    + `<br><br>แก้ข้อมูล <b>${total} รายการ</b> (สวน/บิล/คลังราคา) แล้วลบชื่อที่ไม่ใช้ทิ้ง<br><span style="color:#b5281b">ย้อนกลับไม่ได้</span>`;
+  if (typeof gvBsetCmOpen === 'function') {
+    ok = await new Promise(res => {
+      window.__fmRes = res;
+      gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">🔀 ยืนยันการรวม</div></div>`
+        + `<div class="gv-bset-cm-body"><div class="gv-bset-cm-info">${bodyHtml}</div></div>`
+        + `<div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose();window.__fmRes&&window.__fmRes(false)">ยกเลิก</button>`
+        + `<button class="gv-bset-cm-btn confirm" onclick="gvBsetCmClose();window.__fmRes&&window.__fmRes(true)">🔀 รวมเลย</button></div>`);
+    });
+  } else ok = confirm('รวม ' + _fmSel.length + ' ชื่อ?');
+  if (!ok) return;
+  let changed = 0;
+  try { changed = fruitMergeApply(_fmCanon, _fmSel.slice()); } catch (e) { console.error('[fm]', e); }
+  _fruitUsageMapCache = null;
+  _fmSel = []; _fmCanon = null;
+  _gvBsetPage = 'fruit';
+  gvBsetRender();
+  if (typeof renderListView === 'function') { try { renderListView(); } catch (e) {} }
+  if (typeof toast === 'function') toast('รวมแล้ว ✓ แก้ ' + changed + ' รายการ');
+  if (typeof haptic === 'function') haptic(15);
+};
+
+function gvBsetRenderFruitMerge() {
+  const body = document.getElementById('gv-bset-body'); if (!body) return;
+  const list = (window.fruitNames || []).slice();
+  const useLbl = n => { const c = fruitCountUses(n); return c ? c + ' รายการ' : 'ยังไม่มีใครใช้'; };
+
+  // ① เลือกผลไม้ที่จะรวม
+  const rows = list.map(f => {
+    const on = _fmSel.indexOf(f.name) >= 0;
+    return `<div class="fm-row ${on ? 'picked' : ''}" onclick='fmToggle(${JSON.stringify(f.name)})'>
+      <div class="fm-cb ${on ? 'on' : ''}">${on ? '✓' : ''}</div>
+      <span class="gvh-fdot" style="background:${gbEscapeHtml(f.color || '#b0a07a')}"></span>
+      <div class="fm-meta"><div class="fm-name">${gbEscapeHtml(f.name)}</div><div class="fm-use">${useLbl(f.name)}</div></div>
+    </div>`;
+  }).join('');
+
+  // ② เลือกชื่อที่เก็บ (เฉพาะตัวที่ติ๊กไว้)
+  let step2 = '';
+  if (_fmSel.length >= 2) {
+    const opts = _fmSel.map(n => `<div class="fm-opt ${n === _fmCanon ? 'sel' : ''}" onclick='fmSetCanon(${JSON.stringify(n)})'>
+        <div class="fm-radio"></div><span class="fm-onm">${gbEscapeHtml(n)}</span><span class="fm-ouse">${useLbl(n)}</span></div>`).join('');
+    step2 = `<div class="fm-arrow">▼ รวมเป็นชื่อเดียว</div>
+      <div class="fm-box"><div class="fm-h">② เก็บชื่อไหนไว้?</div>${opts}</div>`;
+  }
+
+  // ปุ่มสรุป
+  let footer = '';
+  if (_fmSel.length < 2) {
+    footer = `<div class="fm-hint">เลือกอย่างน้อย 2 ชื่อที่เป็นผลไม้เดียวกัน</div>`;
+  } else {
+    const others = _fmSel.filter(n => n !== _fmCanon);
+    const total = others.reduce((a, n) => a + fruitCountUses(n), 0);
+    footer = `<button class="fm-go" onclick="fmApply()">🔀 รวม ${_fmSel.length} ชื่อ → "${gbEscapeHtml(_fmCanon || '')}"${total ? ` (แก้ ${total} รายการ)` : ''}</button>`;
+  }
+
+  body.innerHTML = `
+    <div class="gvh-what" style="margin:2px 2px 11px;">ชื่อที่เป็นผลไม้เดียวกันแต่พิมพ์ต่างกัน → รวมให้เหลือชื่อเดียว · ข้อมูลเก่าถูกแก้ตามให้อัตโนมัติ (ไม่หาย)</div>
+    <div class="fm-box"><div class="fm-h">① เลือกผลไม้ที่จะรวม ${_fmSel.length ? `(${_fmSel.length})` : ''}</div>${rows || '<div class="gvh-what">ไม่มีผลไม้</div>'}</div>
+    ${step2}
+    ${footer}
+  `;
 }
-window.gvDiagStart = gvDiagStart;
+window.gvBsetRenderFruitMerge = gvBsetRenderFruitMerge;
 
 // ── modal เพิ่ม/แก้ (มี color picker อิสระ) ──
 function _fruitEditModal(id) {
