@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1068;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (68)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1085;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (85)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -115,6 +115,13 @@ window.numCv = function (idOrEl) {
   var el = (typeof idOrEl === 'string') ? document.getElementById(idOrEl) : idOrEl;
   if (!el) return 0;
   return Number(String(el.value).replace(/[^0-9.\-]/g, '')) || 0;
+};
+// ── escape HTML แบบ global ──
+// ⚠ ตัวเดิม gbEscapeHtml นิยามอยู่ใน closure ของโมดูลสวน → โมดูลบิลเรียกไม่ได้ (ReferenceError)
+//    ทำให้ delQuote / duplicateQuote / delPlanGrade พังทั้งฟังก์ชัน = กดปุ่มแล้วไม่มีอะไรเกิดขึ้น
+//    วางไว้ global ตรงนี้ → ทุกโมดูลเรียกได้ (ตัวใน closure จะ shadow ทับเอง ผลลัพธ์เหมือนกันเป๊ะ)
+window.gbEscapeHtml = function (s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 };
 window.numStr = function (n) {
   if (n == null || n === '') return '';
@@ -13247,6 +13254,15 @@ function changeName(idx) {
     });
 }
 function delUser(idx) {
+  const _u = users[idx];
+  if (!_u) return;
+  // ── กันลบบัญชีตัวเอง ──
+  // ถ้าลบได้: session จะชี้ไปยังผู้ใช้ที่ไม่มีอยู่ → เปิดแอปใหม่แล้วล็อกอินกลับไม่ได้อีก
+  // และถ้าเป็น admin คนสุดท้าย จะไม่เหลือใครจัดการผู้ใช้/ผลไม้/สำรองข้อมูลได้เลย
+  if (currentUser && _u.id === currentUser.id) {
+    toast('ลบบัญชีตัวเองไม่ได้');
+    return;
+  }
   openAuthModal(`ลบผู้ใช้: ${users[idx].name}?`,
     `<div style="font-size: 13px; color: #ff8a78; text-align:center; padding: 8px 0;">ลบผู้ใช้นี้ออกถาวร — ทำต่อ?</div>`,
     () => {
@@ -13914,8 +13930,12 @@ let planDays = [];             // [{id, type:'real'|'plan', date, rows:[{grade, 
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) state.quotes = JSON.parse(raw);
-  } catch(e) { console.error(e); }
+    const a = raw ? JSON.parse(raw) : [];
+    // กันข้อมูลผิดรูป (restore ผิด / cloud sync พลาด / เป็น null) → state.quotes ต้องเป็น array เสมอ
+    // ไม่งั้นทุกจุดที่ใช้ state.quotes.forEach/filter/map (50+ จุด) จะพังพร้อมกัน = แอปตาย
+    const arr = Array.isArray(a) ? a : (a && Array.isArray(a.quotes) ? a.quotes : []);
+    state.quotes = arr.filter(q => q && typeof q === 'object');
+  } catch (e) { console.error(e); state.quotes = []; }
 }
 function _persistRaw() {
   try {
@@ -14032,15 +14052,15 @@ function confirmAction(opts) {
           text-align: center; margin-bottom: 22px;
           padding: 0 6px;
         ">${body}</div>
-        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px;">
-          <button id="cf-act-cancel" class="cf-btn" style="
+        <div style="display: grid; grid-template-columns: ${cancelLabel ? '1.4fr 1fr' : '1fr'}; gap: 10px;">
+          ${!cancelLabel ? '' : `<button id="cf-act-cancel" class="cf-btn" style="
             background: linear-gradient(180deg, #e8dab0, #c8a878);
             border: 1.5px solid #6b4423; color: #3a2010;
             padding: 13px 12px; border-radius: 8px;
             font-size: 15px; font-weight: 700;
             cursor: pointer; font-family: inherit;
             box-shadow: 0 2px 0 #6b4423, inset 0 1px 0 rgba(255,255,255,0.5);
-          ">${cancelLabel}</button>
+          ">${cancelLabel}</button>`}
           <button id="cf-act-ok" class="cf-btn" style="
             background: linear-gradient(180deg, ${okColor} 0%, ${okBorder} 100%);
             border: 1.5px solid ${okBorder}; color: white;
@@ -14058,7 +14078,8 @@ function confirmAction(opts) {
       bg.style.animation = 'cfActFade 0.15s ease-out reverse';
       setTimeout(() => { bg.remove(); resolve(val); }, 150);
     };
-    document.getElementById('cf-act-cancel').onclick = () => { if (typeof haptic === 'function') haptic(8); close(false); };
+    const _cfC = document.getElementById('cf-act-cancel');
+    if (_cfC) _cfC.onclick = () => { if (typeof haptic === 'function') haptic(8); close(false); };
     document.getElementById('cf-act-ok').onclick = () => { if (typeof haptic === 'function') haptic(15); close(true); };
     bg.onclick = (e) => { if (e.target === bg) close(false); };
   });
@@ -14370,10 +14391,28 @@ function loadFruitNames() {
   catch (e) { window.fruitNames = []; }
 }
 function saveFruitNames() {
-  try { localStorage.setItem(FRUIT_KEY, JSON.stringify(window.fruitNames)); } catch (e) {}
+  try { localStorage.setItem(FRUIT_KEY, JSON.stringify(window.fruitNames)); return true; }
+  catch (e) {
+    // เดิม: catch เปล่า → พื้นที่เต็มแล้วเซฟไม่ติด "เงียบสนิท" (แอปยังบอกว่าสำเร็จ) = ข้อมูลหายโดยไม่รู้ตัว
+    console.error('saveFruitNames error:', e);
+    if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+      if (typeof toast === 'function') toast('⚠ พื้นที่เต็ม — ชื่อผลไม้ยังไม่ถูกบันทึก');
+    } else {
+      if (typeof toast === 'function') toast('⚠ บันทึกชื่อผลไม้ไม่สำเร็จ');
+    }
+    return false;
+  }
 }
 window.loadFruitNames = loadFruitNames;
 window.saveFruitNames = saveFruitNames;
+
+// ── ตัวอักษรไทยเข้ารหัสได้ 2 แบบ: "ำ" (U+0E33) กับ "ํา" (นิคหิต+สระอา) — ตาดูเหมือนกันเป๊ะ ──
+// ถ้าไม่จัดให้เป็นแบบเดียวกัน จะเพิ่มชื่อซ้ำที่แยกไม่ออกด้วยตาได้ → สวน/บิลถูกแยกเป็น 2 ชื่อ → กราฟ/ตัวกรองเพี้ยน
+// fruitCleanName = ใช้ "ตอนเก็บ" (หน้าตาเหมือนเดิม แต่เข้ารหัสแบบเดียว)
+function fruitCleanName(s) {
+  return String(s == null ? '' : s).trim().replace(/\u0E4D\u0E32/g, '\u0E33').normalize('NFC');
+}
+window.fruitCleanName = fruitCleanName;
 // หาสีของผลไม้จากชื่อ (ไม่เจอ → สีกลาง)
 function fruitColor(name) {
   if (!name) return '#b0a07a';
@@ -14531,16 +14570,40 @@ loadFruitNames();
     wrap.outerHTML = window.fpFieldHtml(id, inp.value || '');
   };
 
+  // ── กันจอค้างบน iOS: บังคับวาดเฟรมต่อเนื่องขณะชีตเปิด (ดูคำอธิบายเต็มที่ gvKeepAliveStart) ──
+  let _fpKA = false;
+  function fpKeepAliveStart() {
+    if (_fpKA) return;
+    _fpKA = true;
+    const sh = document.getElementById('fp-sheet');
+    let px = document.getElementById('fp-ka-px');
+    if (!px && sh) {
+      px = document.createElement('div'); px.id = 'fp-ka-px'; px.setAttribute('aria-hidden', 'true');
+      px.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none;z-index:0;';
+      sh.appendChild(px);
+    }
+    let last = 0, flip = false;
+    const tick = (t) => {
+      if (!_fpKA) return;
+      if (px && t - last > 150) { last = t; flip = !flip; px.style.background = flip ? 'rgba(250,246,238,1)' : 'rgba(250,246,238,0.996)'; }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  function fpKeepAliveStop() { _fpKA = false; }
+
   window.fpOpen = function (id, manage) {
     ensureDom();
     _id = id; _manage = !!manage && isAdmin();
     fpRenderSheet();
     document.getElementById('fp-ov').classList.add('open');
+    fpKeepAliveStart();
     if (typeof haptic === 'function') haptic(8);
   };
   window.fpClose = function () {
     const ov = document.getElementById('fp-ov'); if (ov) ov.classList.remove('open');
     _manage = false;
+    fpKeepAliveStop();
   };
   window.fpSetManage = function (on) { _manage = !!on && isAdmin(); fpRenderSheet(); };
 
@@ -14692,34 +14755,53 @@ loadFruitNames();
     if (el) el.classList.add('sel');
   };
   window.fpEditClose = function () { const b = document.getElementById('fp-edit'); if (b) b.classList.remove('open'); };
-  window.fpEditSave = function (id) {
+  window.fpEditSave = async function (id) {
     if (!isAdmin()) return;
     const el = document.getElementById('fp-ename');
-    const name = (el && el.value || '').trim();
+    const name = window.fruitCleanName ? window.fruitCleanName(el && el.value) : (el && el.value || '').trim();
     const color = window.__fpColor || PAL[0];
     if (!name) { if (typeof toast === 'function') toast('ใส่ชื่อผลไม้ก่อน'); return; }
-    const dup = (window.fruitNames || []).find(x => x.name === name && x.id !== id);
+    // เทียบแบบจัดตัวอักษรให้เป็นมาตรฐาน (กันชื่อที่ตาดูเหมือนกันเป๊ะ เช่น ลำไย vs ลําไย)
+    const _k = (s) => window.fruitCleanName ? window.fruitCleanName(s) : String(s || '').trim();
+    const dup = (window.fruitNames || []).find(x => x.id !== id && _k(x.name) === _k(name));
     if (dup) { if (typeof toast === 'function') toast('มีชื่อนี้อยู่แล้ว'); return; }
+
     let oldName = null;
+    if (id) { const f0 = (window.fruitNames || []).find(x => x.id === id); oldName = f0 ? f0.name : null; }
+
+    // ── เปลี่ยนชื่อ + ของเก่าใช้อยู่ → ยืนยันก่อน "โดยยังไม่แตะข้อมูล" (ให้เหมือนหน้า ⚙ ชื่อผลไม้) ──
+    if (id && oldName && oldName !== name) {
+      let uses = 0;
+      try { if (typeof window.fruitCountUses === 'function') uses = window.fruitCountUses(oldName); } catch (e) {}
+      if (uses > 0 && typeof window.confirmAction === 'function') {
+        const ok = await window.confirmAction({
+          title: '✏️ แก้ชื่อผลไม้',
+          body: 'เปลี่ยน "' + oldName + '" → "' + name + '"\n\nจะแก้ใน ' + uses + ' รายการ (สวน/บิล/คลังราคา) ให้ตรงกันทั้งหมด\nถ้าอยากได้ชื่อใหม่แยกต่างหาก ให้กด "＋ เพิ่มผลไม้" แทน',
+          okLabel: 'แก้เลย', cancelLabel: 'ยกเลิก'
+        });
+        if (!ok) return;   // ยกเลิก = ไม่เปลี่ยนอะไรเลย
+      }
+    }
+
     if (id) {
       const f = (window.fruitNames || []).find(x => x.id === id);
-      oldName = f ? f.name : null;
       if (f) { f.name = name; f.color = color; }
     } else {
       if (!window.fruitNames) window.fruitNames = [];
       window.fruitNames.push({ id: (typeof fruitNewId === 'function' ? fruitNewId() : 'fr_' + Date.now()), name, color });
     }
-    if (typeof saveFruitNames === 'function') saveFruitNames();
-    // แก้ชื่อ + มี record ใช้ชื่อเดิม → อัปเดตให้ตรง (ใช้ helper กลางที่ไม่ผูก UI)
+    let savedOk = true;
+    if (typeof saveFruitNames === 'function') { const r = saveFruitNames(); savedOk = (r !== false); }
+    // แก้ชื่อ = แก้ในของเก่าให้ตรงเสมอ → ไม่มีชื่อกำพร้า
+    let changed = 0;
     if (id && oldName && oldName !== name && typeof fruitPropagateRename === 'function') {
-      try { fruitPropagateRename(oldName, name); } catch (e) {}
-      // ถ้าค่าในช่องที่กำลังเลือกเป็นชื่อเก่า → อัปเดตช่องด้วย
+      try { changed = fruitPropagateRename(oldName, name); } catch (e) {}
       const inp = document.getElementById(_id);
       if (inp && inp.value === oldName) { inp.value = name; window.fpRefreshField(_id); }
     }
     fpEditClose();
     fpRenderSheet();
-    if (typeof toast === 'function') toast(id ? 'บันทึกแล้ว' : 'เพิ่มผลไม้แล้ว');
+    if (savedOk && typeof toast === 'function') toast(changed ? ('✓ แก้ ' + changed + ' รายการเป็น "' + name + '"') : (id ? 'บันทึกแล้ว' : 'เพิ่มผลไม้แล้ว'));
   };
   window.fpDelete = function (id) {
     if (!isAdmin()) return;
@@ -14751,8 +14833,20 @@ function pfLoad() {
   catch (e) { priceForms = []; }
 }
 function pfPersist() {
-  try { localStorage.setItem(PF_KEY, JSON.stringify(priceForms)); } catch (e) {}
+  let ok = true;
+  try { localStorage.setItem(PF_KEY, JSON.stringify(priceForms)); }
+  catch (e) {
+    // เดิม: catch เปล่า → พื้นที่เต็มแล้วฟอร์มราคาไม่ถูกบันทึก แต่แอปขึ้น "บันทึกฟอร์มแล้ว ✓"
+    ok = false;
+    console.error('pfPersist error:', e);
+    if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+      if (typeof toast === 'function') toast('⚠ พื้นที่เต็ม — ฟอร์มราคายังไม่ถูกบันทึก');
+    } else {
+      if (typeof toast === 'function') toast('⚠ บันทึกฟอร์มราคาไม่สำเร็จ');
+    }
+  }
   try { if (typeof cloudScheduleSync === 'function') cloudScheduleSync(1500); else if (window.cloudScheduleSync) window.cloudScheduleSync(1500); } catch (e) {}
+  return ok;
 }
 const PF_DEL_KEY = 'thodsapon_pf_deleted';
 function pfDeletedGet() { try { return JSON.parse(localStorage.getItem(PF_DEL_KEY) || '[]'); } catch (e) { return []; } }
@@ -14832,6 +14926,8 @@ function pfRecTime(f) {
 function pfOldList() { const c = pfCutoff1y(); return (priceForms || []).filter(f => { const t = pfRecTime(f); return t != null && t < c; }); }
 function pfCountOld() { try { return pfOldList().length; } catch (e) { return 0; } }
 window.pfPurgeOld = async function () {
+  // สิทธิ์: คลังราคาใช้ร่วมกันทุกคน + sync cloud → แก้ได้เฉพาะ admin (UI ปิดอยู่แล้ว · อันนี้กันชั้นสอง)
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมิน'); return; }
   const old = pfOldList();
   if (!old.length) { if (typeof toast === 'function') toast('ไม่มีรายการเก่าเกิน 1 ปี'); renderPriceLib(); return; }
@@ -14858,6 +14954,8 @@ window.pfPurgeOld = async function () {
 
 
 window.pfOpenEdit = function (id) {
+  // สิทธิ์: คลังราคาใช้ร่วมกันทุกคน + sync cloud → แก้ได้เฉพาะ admin (UI ปิดอยู่แล้ว · อันนี้กันชั้นสอง)
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมินแก้ได้'); return; }
   _pfEditId = id || null;
   const scr = document.getElementById('pf-edit');
@@ -14900,6 +14998,8 @@ window.pfDelRow = function (i) { if (window._pfDraftRows.length <= 1) return; wi
 function pfRerenderRows() { const c = document.getElementById('pf-rows'); if (c) c.innerHTML = pfRowInputsHtml(); }
 
 window.pfSaveForm = function () {
+  // สิทธิ์: คลังราคาใช้ร่วมกันทุกคน + sync cloud → แก้ได้เฉพาะ admin (UI ปิดอยู่แล้ว · อันนี้กันชั้นสอง)
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมิน'); return; }
   const fEl = document.getElementById('pf-fruit'), dEl = document.getElementById('pf-date');
   const fruit = (fEl && fEl.value || '').trim();
@@ -14916,12 +15016,15 @@ window.pfSaveForm = function () {
   } else {
     priceForms.unshift({ id: 'pf_' + now.toString(36) + '_' + Math.random().toString(36).slice(2, 6), fruit, date, rows, createdAt: now, updatedAt: now });
   }
-  pfPersist();
+  const _ok = pfPersist();
   pfCloseEdit();
   renderPriceLib();
-  if (typeof toast === 'function') toast('บันทึกฟอร์มแล้ว ✓');
+  // บอก "สำเร็จ" เฉพาะตอนบันทึกติดจริง — ไม่งั้นข้อความเตือนพื้นที่เต็มจะโดนทับ (ผู้ใช้เข้าใจผิดว่าเซฟแล้ว)
+  if (_ok && typeof toast === 'function') toast('บันทึกฟอร์มแล้ว ✓');
 };
 window.pfDeleteForm = async function (id) {
+  // สิทธิ์: คลังราคาใช้ร่วมกันทุกคน + sync cloud → แก้ได้เฉพาะ admin (UI ปิดอยู่แล้ว · อันนี้กันชั้นสอง)
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมิน'); return; }
   let ok;
   if (typeof confirmAction === 'function') ok = await confirmAction({ title: 'ลบฟอร์มราคา?', body: 'ลบถาวร ไม่สามารถกู้คืนได้', okLabel: '🗑 ลบ', cancelLabel: 'ยกเลิก', danger: true });
@@ -15018,6 +15121,21 @@ window.pfPullStart = function () {
     if (!form) warn = '⚠ ไม่พบฟอร์มของผลไม้/วันนี้';
     else if (billN > formN) warn = `⚠ บิลมี ${billN} เบอร์ · ฟอร์มมี ${formN} → ${billN - formN} เบอร์ท้ายไม่มีราคา (กรอกเอง)`;
     else if (formN > billN) warn = `ℹ ฟอร์มมี ${formN} เบอร์ · ใช้ ${billN} อันแรก`;
+    // ── เตือนเมื่อชื่อเบอร์ในบิลไม่ตรงกับชื่อในฟอร์มที่จะจับคู่ ──
+    // การจับคู่ยังใช้ "ตำแหน่งแถว" เหมือนเดิมทุกอย่าง — เพิ่มแค่คำเตือนให้เห็นก่อนกดยืนยัน
+    // (บิลรวมมีวันที่ต่อท้ายชื่อเบอร์ เช่น "ยัก · 1 ก.ค." → เทียบจาก _grade ที่เก็บชื่อเดิมไว้)
+    const _gnorm = s => String(s == null ? '' : s).normalize('NFC').trim();
+    const _mism = matches.filter(m => {
+      if (!m.formRow) return false;
+      const bg = _gnorm(m.row._grade != null ? m.row._grade : m.row.grade);
+      const fg = _gnorm(m.formRow.name);
+      return bg && fg && bg !== fg;
+    });
+    if (_mism.length) {
+      const _ex = _mism.slice(0, 2).map(m =>
+        `${_gnorm(m.row._grade != null ? m.row._grade : m.row.grade)}←${_gnorm(m.formRow.name)}`).join(' · ');
+      warn = (warn ? warn + ' · ' : '') + `⚠ ชื่อเบอร์ไม่ตรง ${_mism.length} แถว (${_ex}) — ดึงตามลำดับแถว ตรวจก่อนยืนยัน`;
+    }
     return { group: g, form, matches, warn };
   });
   window._pfPullPlan = plan;
@@ -15073,7 +15191,7 @@ window.pfPullConfirm = function () {
 // ═══════════════════ /คลังราคา ═══════════════════
 
 function makeRow(data = {}) {
-  return {
+  const r = {
     id: 'r_' + Math.random().toString(36).slice(2,7),
     grade: data.grade || '',
     baskets: data.baskets ?? '',
@@ -15082,6 +15200,14 @@ function makeRow(data = {}) {
     quotedPrice: data.quotedPrice ?? '',
     soldPrice: data.soldPrice ?? '',
   };
+  // ── คงข้อมูล "แถวนี้มาจากวันไหน / เบอร์เดิมชื่ออะไร" ของบิลรวมไว้ ──
+  // ใช้โดย 4 อย่าง: ดึงราคาแยกวัน (pfGroupBillRows) · เลือกฟอร์มตามวันจริง (pfFindForm)
+  //   · ป้าย "ใกล้สุด" ตอนไม่มีฟอร์มตรงวัน · เส้นคั่นวันในตารางซื้อ/ขาย (renderRows/renderSold)
+  // ถ้าไม่คงไว้: เปิดบิลรวมมาแก้แล้วข้อมูลนี้หาย → ทุกวันใช้ฟอร์มเดียวกัน = ราคาผิดวัน
+  if (data._date != null) r._date = data._date;
+  if (data._grade != null) r._grade = data._grade;
+  if (data._grp != null) r._grp = data._grp;
+  return r;
 }
 function addRow(data) { rows.push(makeRow(data)); renderRows(); }
 function delRow(id) { rows = rows.filter(r => r.id !== id); renderRows(); }
@@ -17206,6 +17332,17 @@ function runAutoCalc() {
 }
 
 
+// ── อ่านค่า "ค่าใช้จ่ายต่อโล" ──
+// เดิม: numCv(id) || 12  → ผู้ใช้พิมพ์ 0 (ดีลนี้ไม่มีค่าต่อโล) จะกลายเป็น 12 เงียบๆ
+//       เพราะ 0 || 12 = 12 · ดีล 2,000 กก. = ต้นทุนเกินจริง 24,000 บ. → กำไรต่ำกว่าจริง
+// ใหม่: เว้นว่าง = ใช้ค่าตั้งต้น (12) · พิมพ์ 0 = ศูนย์จริง
+function perKgOf(id, dflt) {
+  const el = document.getElementById(id);
+  const raw = el ? String(el.value == null ? '' : el.value).replace(/,/g, '').trim() : '';
+  if (raw === '') return dflt;
+  const n = Number(raw);
+  return isFinite(n) ? n : dflt;
+}
 function readForm() {
   if (formType === 'plan') {
     return {
@@ -17229,7 +17366,7 @@ function readForm() {
       })),
       planCosts: {
         buy: numCv('f-plan-buy') || 0,
-        perKg: numCv('f-plan-perkg') || 12,
+        perKg: perKgOf('f-plan-perkg', 12),
         transport: numCv('f-plan-transport') || 0,
         totalKg: numCv('f-plan-totalkg') || 0,
       },
@@ -17262,7 +17399,7 @@ function readForm() {
       }),
       multiDayCosts: {
         buy: numCv('f-md-buy') || 0,
-        perKg: numCv('f-md-perkg') || 12,
+        perKg: perKgOf('f-md-perkg', 12),
         transport: numCv('f-md-transport') || 0,
         other: numCv('f-md-other') || 0,
       },
@@ -17315,7 +17452,7 @@ function readForm() {
       orchTotalKg: numCv('f-orch-totalkg') || 0,
       orchCosts: {
         buy: numCv('f-orch-buy') || 0,
-        perKg: numCv('f-orch-perkg') || 12,
+        perKg: perKgOf('f-orch-perkg', 12),
         transport: numCv('f-orch-transport') || 0,
         other: numCv('f-orch-other') || 0,
       },
@@ -17330,6 +17467,10 @@ function readForm() {
     market: document.getElementById('f-market').value.trim(),
     fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
     rows: rows.filter(r => r.grade).map(r => ({
+      // คงข้อมูลกลุ่มวันของบิลรวมไว้ตอนบันทึก (ไม่มีผลกับการคำนวณเงิน)
+      ...(r._date != null ? { _date: r._date } : {}),
+      ...(r._grade != null ? { _grade: r._grade } : {}),
+      ...(r._grp != null ? { _grp: r._grp } : {}),
       grade: r.grade,
       baskets: Number(r.baskets) || 0,
       kgPer: Number(r.kgPer) || 0,
@@ -17732,6 +17873,7 @@ async function delQuote(id, ev) {
   });
   if (!ok) return;
   state.quotes = state.quotes.filter(x => x.id !== id);
+  try { if (typeof window.clearGardenStampByQuote === 'function') window.clearGardenStampByQuote(id); } catch (e) {}
   try { persist(); } catch (e) { console.error('[del] persist failed', e); }  // อัปเดตจอต่อแม้ storage ถูกบล็อก
   renderList();
   toast('ลบแล้ว');
@@ -18007,10 +18149,13 @@ function renderOrigBillDrawer() {
 
 function calcQuoteSummary(q) {
   if (!q || typeof q !== 'object') q = {};   // กันบิลว่าง/พัง → คืนสรุปเป็นศูนย์ ดีกว่าทำแอปพัง
+  // คืนเฉพาะรายการที่เป็น object จริง — กัน null/ของแปลกที่ปนอยู่ "ใน" array (sync ไม่ครบ/ข้อมูลเก่า)
+  // ถ้าไม่กัน: r.baskets ของ null → throw → สคริปต์เล่มสวนตายทั้งบล็อก (ปุ่มหายหมด)
+  const _ok = (v) => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object');
   if (q.type === 'plan') {
     let totKg = 0, revenue = 0;
-    (q.planDays || []).forEach(d => {
-      (d.rows || []).forEach(r => {
+    _ok(q.planDays).forEach(d => {
+      _ok(d.rows).forEach(r => {
         const kg = (r.baskets || 0) * (r.kgPer || 20);
         totKg += kg;
         revenue += kg * (r.sellPrice || 0);
@@ -18026,7 +18171,7 @@ function calcQuoteSummary(q) {
   if (q.type === 'multiday') {
     const grades = q.multiDayGrades || ['ยัก','vip','โบ้','ลาย'];
     let totKg = 0, revenue = 0;
-    (q.multiDayRows || []).forEach(r => {
+    _ok(q.multiDayRows).forEach(r => {
       let totBk = 0;
       grades.forEach(g => { totBk += r.baskets?.[g] || 0; });
       const kg = totBk * (r.kgPer || 20) + (r.extra || 0);
@@ -18041,7 +18186,7 @@ function calcQuoteSummary(q) {
   }
   if (q.type === 'perkg') {
     let totalKg = 0, totBuy = 0, totProc = 0, totSell = 0;
-    (q.perkgRows || []).forEach(r => {
+    _ok(q.perkgRows).forEach(r => {
       const kg = r.kg || 0;
       totalKg += kg;
       totBuy += kg * (r.buyPrice || 0);
@@ -18057,14 +18202,14 @@ function calcQuoteSummary(q) {
   if (q.type === 'orchard') {
     let totalKg = 0, revenue = 0;
     if (q.orchMode === 'A') {
-      (q.orchRows || []).forEach(r => {
+      _ok(q.orchRows).forEach(r => {
         const kg = r.baskets * r.kgPer + r.extra;
         totalKg += kg;
         revenue += kg * r.sellPrice;
       });
     } else {
       const tk = q.orchTotalKg || 0;
-      (q.orchPctRows || []).forEach(r => {
+      _ok(q.orchPctRows).forEach(r => {
         const kg = r.pct / 100 * tk;
         totalKg += kg;
         revenue += kg * r.sellPrice;
@@ -18078,7 +18223,8 @@ function calcQuoteSummary(q) {
   }
   // ── กันบิลข้อมูลไม่ครบ (sync ไม่ครบ / ของเก่า) ทำให้ทั้งโมดูลพัง ──
   // เดิม: q.rows.reduce(...) → ถ้า rows หาย = throw → สคริปต์เล่มสวนตายทั้งบล็อก (ปุ่มทั้งหมดหาย)
-  const _rows = Array.isArray(q.rows) ? q.rows : [];
+  // กัน 2 ชั้น: (1) rows ไม่ใช่ array  (2) มี null/ของแปลกปนอยู่ "ใน" array
+  const _rows = (Array.isArray(q.rows) ? q.rows : []).filter(r => r && typeof r === 'object');
   const _kgOf = (r) => (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
   const totalKg = _rows.reduce((s, r) => s + _kgOf(r), 0);
   const quoted = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.quotedPrice) || 0), 0);
@@ -18299,7 +18445,7 @@ function importData(ev) {
         okLabel: '✓ กู้คืน', cancelLabel: 'ยกเลิก', danger: false,
       });
       if (!ok) return;
-      const pending = { gardens: parsed.gardens, notes: parsed.notes, quotes: parsed.quotes, priceForms: parsed.priceForms };
+      const pending = { gardens: parsed.gardens, notes: parsed.notes, quotes: parsed.quotes, priceForms: parsed.priceForms, fruitNames: parsed.fruitNames };
       const res = window.gvBsetRestoreApply(pending, 'all');
       if (typeof renderList === 'function') renderList();
       if (typeof renderListView === 'function') { try { renderListView(); } catch (e3) {} }
@@ -18428,7 +18574,11 @@ function provinceToRegion(p) {
 }
 
 function loadGardens() {
-  try { return migrateGardens(JSON.parse(localStorage.getItem(KEY_GARDENS)) || []); }
+  // ถ้าข้อมูลผิดรูป (ไม่ใช่ array) → เดิม migrateGardens จะ throw แล้วคืน [] = สวนหายหมดทั้งที่ข้อมูลยังอยู่
+  try {
+    const a = JSON.parse(localStorage.getItem(KEY_GARDENS));
+    return migrateGardens(Array.isArray(a) ? a.filter(g => g && typeof g === 'object') : []);
+  }
   catch(e) { return []; }
 }
 function saveGardens(g) {
@@ -18436,15 +18586,27 @@ function saveGardens(g) {
     localStorage.setItem(KEY_GARDENS, JSON.stringify(g));
   } catch(e) {
     console.error('saveGardens error:', e);
-    if (e.name === 'QuotaExceededError' || e.code === 22) {
-      if (typeof toast === 'function') toast('⚠ พื้นที่เต็ม — ลบรูปเก่าก่อน');
-    } else {
-      if (typeof toast === 'function') toast('⚠ บันทึกไม่สำเร็จ');
-    }
-    return;
+    const full = !!(e && (e.name === 'QuotaExceededError' || e.code === 22));
+    // ⚠ ต้องใช้ modal ไม่ใช่ toast — เพราะผู้เรียก (saveGarden/อัลบั้ม/ปิดสวน ฯลฯ 17+ จุด)
+    //    จะเด้ง toast "บันทึกแล้ว" ทับทันที → ผู้ใช้เข้าใจผิดว่าเซฟติด ทั้งที่ข้อมูลไม่ได้ถูกบันทึก
+    try {
+      if (typeof window.confirmAction === 'function') {
+        window.confirmAction({
+          title: full ? '⚠ พื้นที่เต็ม — ยังไม่ได้บันทึก!' : '⚠ บันทึกไม่สำเร็จ',
+          body: full
+            ? 'สิ่งที่เพิ่งแก้ ยังไม่ถูกบันทึกลงเครื่อง\n\nวิธีแก้: ลบรูปเก่าในอัลบั้มสวน หรือสำรองข้อมูลก่อนแล้วค่อยลบของเก่า\n\nอย่าเพิ่งปิดแอป — ข้อมูลจะหาย'
+            : 'สิ่งที่เพิ่งแก้ ยังไม่ถูกบันทึกลงเครื่อง',
+          okLabel: 'เข้าใจแล้ว', cancelLabel: '',
+        });
+      } else if (typeof toast === 'function') {
+        toast(full ? '⚠ พื้นที่เต็ม — ลบรูปเก่าก่อน' : '⚠ บันทึกไม่สำเร็จ');
+      }
+    } catch (e2) {}
+    return false;
   }
   // Mark all current gardens as dirty (sync engine จะตัดสินเองว่า push อันไหน ตาม updated_at)
   if (typeof cloudOnLocalChange === 'function') cloudOnLocalChange('gardens');
+  return true;
 }
 
 // ════════════════════════════════════════════
@@ -19200,6 +19362,7 @@ async function cloudPullUpdates() {
       if (incoming.archived) {
         // เก็บเข้าคลังแล้ว → อยู่บน cloud อย่างเดียว ไม่ดึงลงเครื่อง
         // (กัน localStorage บวม + กันสวนที่ archive โผล่กลับตอน full-pull)
+        try { if (typeof archStubPut === 'function') archStubPut(incoming); } catch (e) {}   // เก็บตอก่อนลบ → กำไรปีเก่ายังครบ
         if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; }
       } else if (idx >= 0) {
         gardens[idx] = incoming;
@@ -19691,6 +19854,46 @@ function isArchived(g) {
   return !!(g && g.archived);
 }
 
+// ══════════ ตอผลกำไรของสวนที่เก็บเข้าคลัง (archived stubs) ══════════
+// ปัญหา: สวนที่ archive จะถูกลบออกจากเครื่อง (ไปอยู่บน cloud) → หน้าสรุปกำไรปีเก่าเลยนับไม่ครบ
+// วิธีแก้: เก็บ "ตอ" เฉพาะที่หน้ากำไรต้องใช้ (id/name/openedAt/stamp) ~200 ไบต์ต่อสวน
+// ⚠ สำคัญ: เก็บใน key แยก ไม่ใช่ใน gardens — ถ้าเก็บใน gardens ตัว sync จะ push ตอขึ้น cloud
+//    ทับข้อมูลเต็มที่เก็บไว้ = ข้อมูลจริงหายถาวร (อันตรายกว่าปัญหาเดิม)
+const ARCH_STUB_KEY = 'thodsapon_archived_stamps_v1';
+function archStubLoad() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ARCH_STUB_KEY) || '[]');
+    return Array.isArray(raw) ? raw.filter(x => x && typeof x === 'object' && x.id) : [];
+  } catch (e) { return []; }
+}
+function archStubSave(list) {
+  try { localStorage.setItem(ARCH_STUB_KEY, JSON.stringify(list)); return true; }
+  catch (e) { console.error('[archStub] save failed', e); return false; }
+}
+// เก็บตอจากสวน 1 ใบ (เรียกตอน archive และตอน pull เจอสวน archived ก่อนลบออกจากเครื่อง)
+function archStubPut(g) {
+  try {
+    if (!g || !g.id) return;
+    if (!g.stamp || typeof g.stamp.amount !== 'number') return;   // ไม่มีผลประทับ = ไม่ต้องเก็บ
+    const list = archStubLoad();
+    const stub = { id: g.id, name: g.name || '', openedAt: g.openedAt || null, stamp: g.stamp };
+    const i = list.findIndex(x => x.id === g.id);
+    if (i >= 0) list[i] = stub; else list.push(stub);
+    archStubSave(list);
+  } catch (e) {}
+}
+// ลบตอ (เรียกตอนนำสวนกลับขึ้นมา — ของจริงกลับมาแล้ว ไม่ต้องใช้ตอ)
+function archStubRemove(id) {
+  try {
+    const list = archStubLoad();
+    const next = list.filter(x => x.id !== id);
+    if (next.length !== list.length) archStubSave(next);
+  } catch (e) {}
+}
+window.archStubLoad = archStubLoad;
+window.archStubPut = archStubPut;
+window.archStubRemove = archStubRemove;
+
 function shouldAutoArchive(g) {
   if (g.archived) return false;
   if (!g.closedAt) return false;
@@ -19711,6 +19914,7 @@ function archiveGarden(id, reason) {
   g.archived = true;
   g.archivedAt = todayISO();
   g.archivedReason = reason || 'manual';
+  archStubPut(g);   // เก็บตอไว้ให้หน้าสรุปกำไรปีเก่ายังนับได้ หลังสวนถูกย้ายไปอยู่บน cloud
   return true;
 }
 
@@ -19720,6 +19924,7 @@ function unarchiveGarden(id) {
   delete g.archived;
   delete g.archivedAt;
   delete g.archivedReason;
+  archStubRemove(id);   // ของจริงกลับมาแล้ว → ทิ้งตอ (กันนับซ้ำ)
   return true;
 }
 
@@ -19823,7 +20028,7 @@ function daysOverdue(g) {
 function paidTotal(g) {
   // รวมทุกครั้งที่จ่าย (deposit + payments[])
   const dep = +g.deposit || 0;
-  const pays = (g.payments || []).reduce((s, p) => s + (+p.amount || 0), 0);
+  const pays = (g.payments || []).reduce((s, p) => s + (p ? (+p.amount || 0) : 0), 0);
   return dep + pays;
 }
 function lastPaymentDate(g) {
@@ -20001,6 +20206,9 @@ function gfFmtMoney(el) {
   }
   try { el.setSelectionRange(pos, pos); } catch (e) {}
 }
+// ⚠ ต้อง export: oninput="gfFmtMoney(this)" ทำงานใน global scope — ถ้าไม่ export จะ ReferenceError
+//    แล้วฟังก์ชันที่ต่อท้าย (updateRemaining/updateCostPerKg) จะไม่ทำงานตามไปด้วย
+window.gfFmtMoney = gfFmtMoney;
 function uid() { return 'x_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,5); }
 function calcDayProgress(g) {
   // Prefer openedAt (actual day garden was opened) over collectStartDate (planned)
@@ -20028,7 +20236,7 @@ function daysSinceOpened(g) {
   return Math.max(0, Math.floor((today - start) / 86400000) + 1);
 }
 function todayCollect(g) {
-  return g.collections?.find(c => c.date === todayISO());
+  return (g.collections || []).find(c => c && c.date === todayISO());
 }
 function totalBaskets(g) {
   return g.collections?.reduce((s, c) => s + Number(c.baskets || 0), 0) || 0;
@@ -20057,7 +20265,7 @@ function isPayOwnerEligible(g) {
 }
 // Compute lines [{grade, kg, price, amount}] from a collection
 function computePayOwnerLines(g, c) {
-  const rows = (c && c.rows) || [];
+  const rows = (c && Array.isArray(c.rows)) ? c.rows : [];   // กัน rows ที่ไม่ใช่ array (ข้อมูลเพี้ยน)
   // priceMap for kg-grade
   const priceMap = {};
   if (g.dealType === 'kg-grade' && Array.isArray(g.gradePrices)) {
@@ -20069,6 +20277,7 @@ function computePayOwnerLines(g, c) {
   // Aggregate per grade within the collection
   const m = {};
   rows.forEach(r => {
+    if (!r || typeof r !== 'object') return;   // กัน null ปนใน rows (sync ไม่ครบ)
     const grade = String(r.grade || '').trim() || 'ไม่ระบุ';
     const kg = Number(r.baskets||0) * Number(r.kgPer||0) + Number(r.extra||0);
     if (!kg) return;
@@ -20157,10 +20366,10 @@ function removePayOwnerExpense(g, collectionId) {
 // Sync ALL collections' pay-owner expenses (for use when prices change)
 function syncAllPayOwnerExpenses(g) {
   if (!g || !isPayOwnerEligible(g)) return;
-  (g.collections||[]).forEach(c => syncPayOwnerExpense(g, c));
+  (g.collections||[]).forEach(c => { if (c && typeof c === 'object') syncPayOwnerExpense(g, c); });
   // Also remove orphaned auto-pay-owner entries (collection deleted)
   if (Array.isArray(g.expenses)) {
-    const validIds = new Set((g.collections||[]).map(c => c.id));
+    const validIds = new Set((g.collections||[]).filter(c => c && typeof c === 'object').map(c => c.id));
     g.expenses = g.expenses.filter(e => !(e && e.kind === 'auto-pay-owner' && !validIds.has(e.collectionId)));
   }
 }
@@ -20770,7 +20979,7 @@ function renderListView() {
     } else if (g.dealType === 'kg-all' && g.kgPrice) {
       row1Chips.push(`<span class="lc-chip deal kg-all">${fmtNum(g.kgPrice)} บ/ก</span>`);
     } else if (g.dealType === 'kg-grade' && g.gradePrices?.length) {
-      const prices = g.gradePrices.map(p => p.price).filter(Boolean);
+      const prices = (g.gradePrices || []).filter(p => p && typeof p === 'object').map(p => p.price).filter(Boolean);
       if (prices.length) {
         const mn = Math.min(...prices), mx = Math.max(...prices);
         row1Chips.push(`<span class="lc-chip deal kg-grade">แยกเบอร์ ${mn===mx?fmtNum(mn):fmtNum(mn)+'-'+fmtNum(mx)}</span>`);
@@ -20805,7 +21014,7 @@ function renderListView() {
           const mm = isNaN(d.getTime()) ? '' : d.toLocaleDateString('th-TH', { month: 'short' });
           const last = (i === colls.length - 1) ? ' last' : '';
           // ── ส่วนขยาย: รายเบอร์ + รวม ตก./กก. ของเที่ยวนั้น ──
-          const crows = (c.rows || []).filter(r => Number(r.baskets) || Number(r.extra));
+          const crows = (Array.isArray(c.rows) ? c.rows : []).filter(r => r && (Number(r.baskets) || Number(r.extra)));
           let totBk, totKg, grHtml;
           if (crows.length) {
             totBk = crows.reduce((s, r) => s + (Number(r.baskets) || 0), 0);
@@ -20851,7 +21060,7 @@ function renderListView() {
     // Progress bar — เก็บปัจจุบัน (totKg) เทียบเป้า (expectedKg) แบบหมุดคู่ทับกัน
     let progBarHtml = '';
     if (isOpened && g.expectedKg) {
-      const totKg = (g.collections||[]).reduce((s,c) => s + (Number(c.kg)||0), 0);
+      const totKg = (g.collections||[]).reduce((s,c) => s + (c ? (Number(c.kg)||0) : 0), 0);
       const tgtKg = Number(g.expectedKg) || 0;
       const rawPct = tgtKg > 0 ? (totKg / tgtKg) * 100 : 0;
       const isExceeded = rawPct > 100;
@@ -21054,7 +21263,7 @@ function priceShort(g) {
   if (g.dealType === 'lump' && g.lumpTotal) return 'เหมา ' + fmtNum(g.lumpTotal) + ' บ.';
   if (g.dealType === 'kg-all' && g.kgPrice) return g.kgPrice + ' บ./กก.';
   if (g.dealType === 'kg-grade' && g.gradePrices?.length) {
-    const prices = g.gradePrices.map(gp => gp.price).filter(Boolean);
+    const prices = g.gradePrices.filter(gp => gp && typeof gp === 'object').map(gp => gp.price).filter(Boolean);
     if (!prices.length) return '';
     const min = Math.min(...prices), max = Math.max(...prices);
     return min === max ? min + ' บ./กก.' : min + '-' + max + ' บ./กก.';
@@ -21273,7 +21482,7 @@ function renderDetail() {
   if (g.dealType === 'lump' && g.lumpTotal) _priceShort = fmtNum(g.lumpTotal) + ' บ.';
   else if (g.dealType === 'kg-all' && g.kgPrice) _priceShort = fmtNum(g.kgPrice) + ' บ./กก.';
   else if (g.dealType === 'kg-grade' && Array.isArray(g.gradePrices)) {
-    const _ps = g.gradePrices.map(gp => Number(gp.price)).filter(p => p > 0);
+    const _ps = g.gradePrices.filter(gp => gp && typeof gp === 'object').map(gp => Number(gp.price)).filter(p => p > 0);
     if (_ps.length) { const _mn = Math.min(..._ps), _mx = Math.max(..._ps); _priceShort = (_mn === _mx ? fmtNum(_mn) : fmtNum(_mn) + '–' + fmtNum(_mx)) + ' บ./กก.'; }
   }
   const _subHtml = [gbEscapeHtml(g.fruit || '—'), _dealShort, _priceShort].filter(Boolean).join(' · ');
@@ -21281,8 +21490,8 @@ function renderDetail() {
   let priceMetaHtml = '';
   if (g.dealType === 'lump' && g.lumpTotal) priceMetaHtml = `<span class="ns-meta-item"><b>ราคา:</b> ${fmtNum(g.lumpTotal)} บ. <span class="ns-price-note">(เหมารวม)</span></span>`;
   else if (g.dealType === 'kg-all' && g.kgPrice) priceMetaHtml = `<span class="ns-meta-item"><b>ราคา:</b> ${fmtNum(g.kgPrice)} บ./กก.</span>`;
-  else if (g.dealType === 'kg-grade' && Array.isArray(g.gradePrices) && g.gradePrices.some(gp => gp.grade || gp.price)) {
-    const _chips = g.gradePrices.filter(gp => gp.grade || gp.price).map(gp => `<span class="ns-price-chip"><span class="g">${gbEscapeHtml(gp.grade || '—')}</span><span class="p">${gp.price ? fmtNum(gp.price) : '—'}</span></span>`).join('');
+  else if (g.dealType === 'kg-grade' && Array.isArray(g.gradePrices) && g.gradePrices.some(gp => gp && (gp.grade || gp.price))) {
+    const _chips = g.gradePrices.filter(gp => gp && (gp.grade || gp.price)).map(gp => `<span class="ns-price-chip"><span class="g">${gbEscapeHtml(gp.grade || '—')}</span><span class="p">${gp.price ? fmtNum(gp.price) : '—'}</span></span>`).join('');
     priceMetaHtml = `<span class="ns-meta-item ns-meta-price"><b>ราคา:</b> <span class="ns-price-list">${_chips}</span></span>`;
   }
   const phClass = isClosed ? 'ph faded' : 'ph';
@@ -21987,7 +22196,7 @@ function openGardenForm(id) {
             </div>
             <label>มัดจำ</label>
             <div class="deposit-stack">
-              <input id="gf-deposit2" type="text" inputmode="numeric" value="${gfMoneyStr(g.deposit)}" placeholder="(ถ้ามี)" oninput="gfFmtMoney(this)">
+              <input id="gf-deposit2" type="text" inputmode="numeric" value="${isEdit ? gfMoneyStr(paidTotal(g)) : ''}" placeholder="(ถ้ามี)" oninput="gfFmtMoney(this)">
               <div class="date-line">
                 <span>วันที่:</span>
                 <input id="gf-deposit-date2" type="date" value="${gbEscapeHtml(g.depositDate||todayISO())}">
@@ -22009,7 +22218,7 @@ function openGardenForm(id) {
             </div>
             <label>มัดจำ</label>
             <div class="deposit-stack">
-              <input id="gf-deposit3" type="text" inputmode="numeric" value="${gfMoneyStr(g.deposit)}" placeholder="(ถ้ามี)" oninput="gfFmtMoney(this)">
+              <input id="gf-deposit3" type="text" inputmode="numeric" value="${isEdit ? gfMoneyStr(paidTotal(g)) : ''}" placeholder="(ถ้ามี)" oninput="gfFmtMoney(this)">
               <div class="date-line">
                 <span>วันที่:</span>
                 <input id="gf-deposit-date3" type="date" value="${gbEscapeHtml(g.depositDate||todayISO())}">
@@ -22085,7 +22294,7 @@ function openGardenForm(id) {
 
   // grade rows
   if (g.gradePrices && g.gradePrices.length) {
-    g.gradePrices.forEach(gp => addGradeRow(gp.grade, gp.price));
+    g.gradePrices.forEach(gp => { if (gp && typeof gp === 'object') addGradeRow(gp.grade, gp.price); });
   } else {
     addGradeRow();
   }
@@ -22520,6 +22729,26 @@ window.stampGardenFromBill = function (gardenId, stamp) {
     saveGardens(gardens);
     if (typeof renderListView === 'function') renderListView();
   } catch (e) {}
+};
+// ── ลบบิล → ล้างผลประทับของสวนที่มาจากบิลใบนั้น (เรียกจาก delQuote คนละ scope) ──
+// ถ้าไม่ล้าง: หน้าสรุปกำไรจะยังนับกำไรจากบิลที่ถูกลบไปแล้ว → ตัวเลขสรุปผิด
+window.clearGardenStampByQuote = function (quoteId) {
+  try {
+    if (!quoteId) return 0;
+    let n = 0;
+    (gardens || []).forEach(g => {
+      if (g && g.stamp && g.stamp.quoteId === quoteId) {
+        delete g.stamp;
+        g._localUpdatedAt = Date.now();
+        n++;
+      }
+    });
+    if (n) {
+      saveGardens(gardens);
+      if (typeof renderListView === 'function') renderListView();
+    }
+    return n;
+  } catch (e) { return 0; }
 };
 
 async function delGarden(id) {
@@ -26266,11 +26495,47 @@ function gvBsetOpen() {
   _gvBsetPage = 'menu';
   bg.classList.add('open');        // เปิด sheet ก่อน — กันกรณี render สะดุดแล้ว sheet ไม่โผล่
   try { gvBsetRender(); } catch (e) { console.error('[bset] render error', e); }
+  gvKeepAliveStart();
   if (typeof haptic === 'function') haptic(10);
 }
+
+// ═══════════ กันจอค้างบน iOS (render keep-alive) ═══════════
+// พบจากการทดลองบนเครื่องจริง: ตอนใส่ตัววัดที่มี requestAnimationFrame วนตลอด → ไม่ค้าง · เอาออก → ค้างทันที
+// แปลว่า JS ไม่ได้ค้าง (FPS 54 · touchmove 228 · บล็อก 0) แต่ iOS "หยุดวาดภาพ" → จอเหมือนแข็งตาย
+// วิธีแก้: ขอเฟรมต่อเนื่อง + ขยับจุด 1px (สีเดียวกับพื้นชีต = มองไม่เห็น) เพื่อบังคับให้วาดใหม่
+// ทำงานเฉพาะตอนชีตเปิดอยู่ → ปิดชีตแล้วหยุดทันที ไม่กินแบตตอนไม่ใช้
+let _gvKA = false;
+function gvKeepAliveStart() {
+  if (_gvKA) return;
+  _gvKA = true;
+  const sh = document.querySelector('.gv-bset-sheet');
+  let px = document.getElementById('gv-ka-px');
+  if (!px && sh) {
+    px = document.createElement('div');
+    px.id = 'gv-ka-px';
+    px.setAttribute('aria-hidden', 'true');
+    px.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none;z-index:0;';
+    sh.appendChild(px);
+  }
+  let last = 0, flip = false;
+  const tick = (t) => {
+    if (!_gvKA) return;
+    if (px && t - last > 150) {          // ~7 ครั้ง/วินาที พอให้ iOS วาดต่อเนื่อง
+      last = t; flip = !flip;
+      px.style.background = flip ? 'rgba(250,246,238,1)' : 'rgba(250,246,238,0.996)';
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function gvKeepAliveStop() { _gvKA = false; }
+window.gvKeepAliveStart = gvKeepAliveStart;
+window.gvKeepAliveStop = gvKeepAliveStop;
+
 function gvBsetClose() {
   const bg = document.getElementById('gv-bset-bg');
   if (bg) bg.classList.remove('open');
+  gvKeepAliveStop();
 }
 function gvBsetBgClick(e) {
   if (e.target && e.target.id === 'gv-bset-bg') gvBsetClose();
@@ -26299,7 +26564,7 @@ function gvBsetRender() {
   body.innerHTML = `
     ${showProfit ? `<div class="gv-menu-item" onclick="gvBsetGo('profit')"><span class="gmi-ic">📊</span><div class="gmi-tx"><div class="gmi-t">สรุป กำไร / ขาดทุน</div><div class="gmi-d">ผลรวมต่อช่วงเวลา · เลือกสวนได้</div></div><span class="gmi-arr">›</span></div>` : ''}
     ${showBackup ? `<div class="gv-menu-item" onclick="gvBsetGo('backup')"><span class="gmi-ic">💾</span><div class="gmi-tx"><div class="gmi-t">ข้อมูล & สำรอง</div><div class="gmi-d">เช็คสุขภาพ · สำรอง · คลังสวน · รูป</div></div><span class="gmi-arr">›</span></div>` : ''}
-    <div class="gv-menu-item" onclick="gvBsetGo('fruit')"><span class="gmi-ic">🍎</span><div class="gmi-tx"><div class="gmi-t">ชื่อผลไม้</div><div class="gmi-d">เพิ่ม/แก้/ลบ · เลือกสีเอง · เลือกไม่ต้องพิมพ์</div></div><span class="gmi-arr">›</span></div>
+    ${showBackup ? `<div class="gv-menu-item" onclick="gvBsetGo('fruit')"><span class="gmi-ic">🍎</span><div class="gmi-tx"><div class="gmi-t">ชื่อผลไม้</div><div class="gmi-d">เพิ่ม/แก้/ลบ · เลือกสีเอง · เลือกไม่ต้องพิมพ์</div></div><span class="gmi-arr">›</span></div>` : ''}
     ${(!showProfit && !showBackup) ? '<div class="gv-prof-empty">ไม่มีเมนูที่ใช้ได้</div>' : ''}`;
 }
 window.gvBsetGo = function (p) {
@@ -26322,7 +26587,13 @@ function gvBsetRenderProfit() {
   const MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   const MONF = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
   const odOf = g => g.openedAt || (g.stamp && g.stamp.date) || null;
-  const stamped = (gardens || []).filter(g => g.stamp && typeof g.stamp.amount === 'number');
+  // รวม "สวนในเครื่อง" + "ตอของสวนที่เก็บเข้าคลัง" → กำไรปีเก่ายังครบแม้สวนถูกย้ายไปอยู่บน cloud
+  // สวนจริงชนะตอเสมอ (กันนับซ้ำตอนที่ยังไม่ sync หรือนำกลับขึ้นมาแล้ว)
+  const _live = (gardens || []).filter(g => g && g.stamp && typeof g.stamp.amount === 'number');
+  const _liveIds = new Set(_live.map(g => g.id));
+  let _stubs = [];
+  try { _stubs = (typeof archStubLoad === 'function' ? archStubLoad() : []).filter(s => s && s.stamp && typeof s.stamp.amount === 'number' && !_liveIds.has(s.id)); } catch (e) { _stubs = []; }
+  const stamped = _live.concat(_stubs.map(s => ({ id: s.id, name: s.name, openedAt: s.openedAt, stamp: s.stamp, _archStub: true })));
   const mkOf = g => { const iso = odOf(g); if (!iso) return null; const d = new Date(iso); return d.getFullYear() + '-' + d.getMonth(); };
   const yOf = g => { const iso = odOf(g); if (!iso) return null; return new Date(iso).getFullYear(); };
   const inRange = g => {
@@ -26674,6 +26945,7 @@ window.gvBsetRenderFruit = gvBsetRenderFruit;
 let _fmSel = [];        // ชื่อผลไม้ที่ติ๊กไว้ (เรียงตามลำดับที่กด)
 let _fmCanon = null;    // ชื่อที่จะเก็บไว้
 window.fruitMergeManualOpen = function () {
+  if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   _fmSel = []; _fmCanon = null;
   _gvBsetPage = 'fruitmerge';
   gvBsetRender();
@@ -26691,6 +26963,7 @@ window.fmToggle = function (name) {
 };
 window.fmSetCanon = function (name) { _fmCanon = name; gvBsetRenderFruitMerge(); };
 window.fmApply = async function () {
+  if (!fruitMgrCanEdit()) return;
   if (_fmSel.length < 2 || !_fmCanon) return;
   const others = _fmSel.filter(n => n !== _fmCanon);
   const total = others.reduce((a, n) => a + fruitCountUses(n), 0);
@@ -26787,8 +27060,8 @@ function _fruitEditModal(id) {
     </div>
   `);
 }
-function fruitMgrAddOpen() { _fruitEditModal(null); }
-function fruitMgrEditOpen(id) { _fruitEditModal(id); }
+function fruitMgrAddOpen() { if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; } _fruitEditModal(null); }
+function fruitMgrEditOpen(id) { if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; } _fruitEditModal(id); }
 function fruitMgrPickSwatch(el, color) {
   window.__fruitEditColor = color;
   const ci = document.getElementById('fruit-mgr-color'); if (ci) ci.value = color;
@@ -26802,37 +27075,75 @@ function fruitMgrPickCustom(color) {
   const row = document.getElementById('fruit-sw-row'); if (row) row.querySelectorAll('.gvh-sw').forEach(s => s.classList.remove('sel'));
 }
 function fruitMgrSave(id) {
+  if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   const nameEl = document.getElementById('fruit-mgr-name');
-  const name = (nameEl && nameEl.value || '').trim();
+  const name = (typeof fruitCleanName === 'function') ? fruitCleanName(nameEl && nameEl.value) : (nameEl && nameEl.value || '').trim();
   const color = window.__fruitEditColor || FRUIT_PALETTE[0];
   if (!name) { toast('ใส่ชื่อผลไม้ก่อน'); return; }
-  const dup = (window.fruitNames || []).find(x => x.name === name && x.id !== id);
+  // เทียบแบบจัดตัวอักษรให้เป็นมาตรฐานก่อน → กันชื่อที่ "ตาดูเหมือนกันเป๊ะ" แต่เข้ารหัสต่างกัน
+  const _k = (s) => (typeof fruitCleanName === 'function') ? fruitCleanName(s) : String(s || '').trim();
+  const dup = (window.fruitNames || []).find(x => x.id !== id && _k(x.name) === _k(name));
   if (dup) { toast('มีชื่อนี้อยู่แล้ว'); return; }
+
+  // ── เปลี่ยนชื่อ + ของเก่าใช้อยู่ → ยืนยันก่อน "โดยยังไม่แตะข้อมูลใดๆ" ──
+  // (เดิม: แก้คลังไปแล้วค่อยถาม → ตอบ "ไม่ต้อง" = คลังเปลี่ยนแต่ของเก่าไม่เปลี่ยน = ชื่อกำพร้า)
+  if (id) {
+    const f = (window.fruitNames || []).find(x => x.id === id);
+    const oldName = f ? f.name : null;
+    if (f && oldName && oldName !== name) {
+      const uses = (typeof fruitCountUses === 'function') ? fruitCountUses(oldName) : 0;
+      if (uses > 0) {
+        _fmrPending = { id, name, color, oldName, uses };
+        gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">✏️ แก้ชื่อผลไม้</div></div>
+          <div class="gv-bset-cm-body"><div class="gv-bset-cm-info">
+            เปลี่ยน "<b>${gbEscapeHtml(oldName)}</b>" → "<b>${gbEscapeHtml(name)}</b>"<br><br>
+            จะแก้ใน <b>${uses} รายการ</b> (สวน/บิล/คลังราคา) ให้ตรงกันทั้งหมด<br>
+            <span style="opacity:.7">ถ้าอยากได้ชื่อใหม่แยกต่างหาก ให้กด "＋ เพิ่มชื่อผลไม้" แทน</span>
+          </div></div>
+          <div class="gv-bset-cm-acts">
+            <button class="gv-bset-cm-btn cancel" onclick="fruitMgrRenameCancel()">ยกเลิก</button>
+            <button class="gv-bset-cm-btn confirm" onclick="fruitMgrRenameGo()">แก้เลย</button>
+          </div>`);
+        return;   // ← ยังไม่เปลี่ยนอะไรเลย · ยกเลิก = ทุกอย่างเหมือนเดิม
+      }
+    }
+  }
+  _fruitMgrCommit(id, name, color);
+}
+let _fmrPending = null;
+window.fruitMgrRenameCancel = function () { _fmrPending = null; gvBsetCmClose(); gvBsetRenderFruit(); };
+window.fruitMgrRenameGo = function () {
+  if (!fruitMgrCanEdit()) { gvBsetCmClose(); return; }
+  const p = _fmrPending; _fmrPending = null;
+  if (!p) { gvBsetCmClose(); return; }
+  _fruitMgrCommit(p.id, p.name, p.color);
+};
+// แก้ชื่อ = แก้ทุกที่เสมอ (คลัง + สวน/บิล/คลังราคา) → ไม่มีชื่อกำพร้า
+function _fruitMgrCommit(id, name, color) {
+  if (!fruitMgrCanEdit()) return;
   let oldName = null;
   if (id) {
     const f = (window.fruitNames || []).find(x => x.id === id);
     oldName = f ? f.name : null;
     if (f) { f.name = name; f.color = color; }
   } else {
+    if (!window.fruitNames) window.fruitNames = [];
     window.fruitNames.push({ id: fruitNewId(), name, color });
   }
-  saveFruitNames();
-  gvBsetCmClose();
-  // เปลี่ยนชื่อ + มี record ใช้ชื่อเดิม → ถามแก้ของเก่าด้วยไหม
-  if (id && oldName && oldName !== name && typeof fruitCountUses === 'function') {
-    const uses = fruitCountUses(oldName);
-    if (uses > 0) {
-      gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">แก้ในของเก่าด้วยไหม?</div></div>
-        <div class="gv-bset-cm-body"><div class="gv-bset-cm-info">มี <b>${uses} รายการ</b> (สวน/บิล/คลังราคา) ที่ยังใช้ชื่อ "<b>${gbEscapeHtml(oldName)}</b>" — แก้เป็น "<b>${gbEscapeHtml(name)}</b>" ทั้งหมดไหม?</div></div>
-        <div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose(); gvBsetRenderFruit();">ไม่ต้อง</button><button class="gv-bset-cm-btn confirm" onclick="fruitDoPropagate('${String(oldName).replace(/'/g, "\\'")}','${String(name).replace(/'/g, "\\'")}')">แก้ให้ตรงกัน</button></div>`);
-      return;
-    }
+  const savedOk = saveFruitNames();
+  let changed = 0;
+  if (id && oldName && oldName !== name && typeof fruitPropagateRename === 'function') {
+    try { changed = fruitPropagateRename(oldName, name); } catch (e) { console.error('[fruit rename]', e); }
   }
+  _fruitUsageMapCache = null;
+  gvBsetCmClose();
   gvBsetRenderFruit();
-  toast(id ? 'แก้แล้ว' : 'เพิ่มแล้ว');
+  // บอก "สำเร็จ" เฉพาะตอนเซฟติดจริง (ไม่งั้นข้อความเตือนพื้นที่เต็มจะโดนทับ)
+  if (savedOk) toast(changed ? `✓ แก้ ${changed} รายการเป็น "${name}"` : (id ? 'แก้แล้ว' : 'เพิ่มแล้ว'));
   if (typeof haptic === 'function') haptic(12);
 }
 function fruitMgrDelete(id) {
+  if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   const f = (window.fruitNames || []).find(x => x.id === id); if (!f) return;
   const u = fruitUsage(f.name);
   const used = u.g || u.q;
@@ -26845,6 +27156,7 @@ function fruitMgrDelete(id) {
   `);
 }
 function fruitMgrDeleteConfirm(id) {
+  if (!fruitMgrCanEdit()) return;
   window.fruitNames = (window.fruitNames || []).filter(x => x.id !== id);
   saveFruitNames();
   gvBsetCmClose();
@@ -26894,6 +27206,14 @@ function fruitAllUsedNames() {
   return [...s].filter(Boolean);
 }
 // นับจำนวน record ที่ใช้ชื่อนี้
+// ── สิทธิ์: จัดการคลังชื่อผลไม้ = admin เท่านั้น ──
+// (คลังนี้ใช้ร่วมกันทุกคน + sync ขึ้น cloud → แก้ชื่อทีเดียวกระทบสวน/บิลของทุกคน และรวมผลไม้ย้อนไม่ได้)
+// picker (fp) เช็คอยู่แล้ว แต่หน้า ⚙ ลืมเช็ค → พนักงานที่เปิดชีตได้ (มีสิทธิ์ดูกำไร) แก้ได้หมด
+function fruitMgrCanEdit() {
+  return !!(typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'admin');
+}
+window.fruitMgrCanEdit = fruitMgrCanEdit;
+
 function fruitCountUses(name) {
   const nm = String(name || '').trim();
   const u = fruitUsage(nm);
@@ -26901,6 +27221,7 @@ function fruitCountUses(name) {
   try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (String(f.fruit || '').trim() === nm) pf++; }); } catch (e) {}
   return u.g + u.q + pf;
 }
+window.fruitCountUses = fruitCountUses;
 // จัดกลุ่มชื่อที่น่าจะซ้ำ/คล้ายกัน
 function fruitFindGroups() {
   const arr = fruitAllUsedNames();
@@ -27696,7 +28017,10 @@ function gvBsetImportPreview(payload, fileName) {
     ? exAt.toLocaleString('th-TH', { day:'numeric', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' })
     : '—';
 
-  window.__gvBsetPendingImport = { gardens: inGardens, notes: inNotes, quotes: inQuotes, priceForms: inPf, hasQuote };
+  // ⚠ ต้องส่ง fruitNames ต่อด้วย — ไฟล์สำรองเก็บไว้แล้ว แต่เดิมลืมดึงออกมา
+  //    → กู้คืนบนเครื่องใหม่แล้วคลังชื่อผลไม้ว่าง = สวน/บิลทุกใบชี้ชื่อที่ไม่มีในคลัง (ขึ้น ⚠ ต้องเพิ่มเองใหม่หมด)
+  const inFruit = Array.isArray(payload.fruitNames) ? payload.fruitNames : [];
+  window.__gvBsetPendingImport = { gardens: inGardens, notes: inNotes, quotes: inQuotes, priceForms: inPf, fruitNames: inFruit, hasQuote };
   window.__gvRestoreScope = hasQuote ? 'all' : 'garden';
 
   const scopeRow = hasQuote ? `
