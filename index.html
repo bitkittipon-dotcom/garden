@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1085;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (85)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1091;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (91)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 (function () {
   // ── breadcrumbs: จำ 12 การกระทำล่าสุดก่อนเกิดบัค ──
   window.__bcrumbs = [];
@@ -13940,6 +13940,7 @@ function load() {
 function _persistRaw() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.quotes));
+    return true;
   } catch(e) {
     console.error('_persistRaw error:', e);
     if (e.name === 'QuotaExceededError' || e.code === 22) {
@@ -13947,15 +13948,19 @@ function _persistRaw() {
     } else {
       if (typeof toast === 'function') toast('⚠ บันทึกไม่สำเร็จ');
     }
+    return false;   // ← ผู้เรียกต้องรู้ว่าไม่ติด (เดิมเงียบ → saveQuote toast "บันทึกแล้ว ✓" ทับ + ล้างฟอร์มทิ้ง)
   }
 }
 let _cloudSkipDirty = false;
 function persist() {
-  _persistRaw();
+  const ok = _persistRaw();
   // trigger cloud sync เฉพาะตอนที่ไม่ใช่จาก pull (ป้องกัน loop)
-  if (!_cloudSkipDirty && typeof cloudOnLocalChange === 'function') {
+  // + เฉพาะตอนเซฟลงเครื่องติดจริง — ถ้าไม่ติดแล้วยังมาร์ค dirty จะพยายาม push ข้อมูลที่กำลังจะถูกย้อนทิ้ง
+  //   (ตรงกับที่ saveGardens ทำอยู่แล้ว)
+  if (ok && !_cloudSkipDirty && typeof cloudOnLocalChange === 'function') {
     cloudOnLocalChange('quotes');
   }
+  return ok;
 }
 
 const fmt = (n) => {
@@ -17504,6 +17509,9 @@ function saveQuote() {
     hasRows = q.rows.length > 0;
   }
   if (!hasRows) { toast('เพิ่มเบอร์อย่างน้อย 1 แถว'); return; }
+  // ── ถ่ายสำเนารายการบิลไว้ก่อนแตะอะไร (ไว้ย้อนถ้าเซฟไม่ติด) ──
+  // สำเนาตื้นพอ: saveQuote "แทนที่ทั้ง object" (state.quotes[idx] = q) ไม่เคยแก้ field ของบิลเดิม
+  const _snapQuotes = state.quotes.slice();
   const idx = state.quotes.findIndex(x => x.id === q.id);
   if (idx >= 0) {
     const prev = state.quotes[idx];
@@ -17526,7 +17534,27 @@ function saveQuote() {
   if (q.reviewed && q.gardenId) {
     state.quotes = state.quotes.filter(x => !(x && x.id !== q.id && x.gardenId === q.gardenId && x.pendingReview && !x.reviewed));
   }
-  persist();
+  // ── เซฟลงเครื่อง ── ถ้าไม่ติด (พื้นที่เต็ม) ต้องย้อนทุกอย่างกลับ แล้วหยุดตรงนี้
+  // เดิม: เซฟไม่ติดก็ไหลต่อ → พลุ+เสียงฉลอง → toast "บันทึกแล้ว ✓" (ทับคำเตือน) → resetForm() ล้างฟอร์มทิ้ง
+  //       → บิลที่กรอกมาทั้งใบหายถาวร กู้ไม่ได้เลย (ในเครื่องก็ไม่มี ฟอร์มก็ถูกล้าง)
+  // ใหม่: ย้อน state.quotes กลับ (กันบิลซ้ำตอนกดใหม่ + กันบิลรอตรวจเก่าหาย) · ฟอร์มยังอยู่ครบ · บอกให้ชัดว่าต้องทำอะไร
+  if (persist() === false) {
+    state.quotes = _snapQuotes;
+    try {
+      if (typeof window.confirmAction === 'function') {
+        window.confirmAction({
+          title: '⚠ พื้นที่เต็ม — บิลยังไม่ถูกบันทึก!',
+          body: 'บิลใบนี้ <b>ยังไม่ได้บันทึกลงเครื่อง</b><br><br>'
+              + '<b>ฟอร์มที่กรอกไว้ยังอยู่ครบ</b> — อย่าเพิ่งปิดแอปหรือกดย้อนกลับ<br><br>'
+              + 'วิธีแก้: ลบรูปเก่าในอัลบั้มสวน หรือสำรองข้อมูลก่อนแล้วค่อยลบของเก่า<br>'
+              + 'พอมีที่ว่างแล้ว กด "บันทึก" อีกครั้งได้เลย',
+          okLabel: 'เข้าใจแล้ว',
+          cancelLabel: '',
+        });
+      }
+    } catch (e) {}
+    return;
+  }
   // mark recent for current user
   if (typeof pushRecent === 'function') pushRecent(q.id);
   // premium feedback
@@ -17921,8 +17949,14 @@ async function duplicateQuote(id, ev) {
   copy.id = uid();
   copy.date = todayISO();
   copy.updatedAt = Date.now();
+  // สำเนารายการไว้ก่อนแตะ — ถ้าเซฟไม่ติด (พื้นที่เต็ม) ต้องย้อนออก ไม่งั้นสำเนาผีค้างในหน่วยความจำ
+  // แล้วถ้ามีอะไรเซฟสำเร็จทีหลัง มันจะติดลงไปด้วยแบบผู้ใช้ไม่ได้สั่ง
+  const _snapDup = state.quotes.slice();
   state.quotes.unshift(copy);
-  persist();
+  if (persist() === false) {
+    state.quotes = _snapDup;
+    return;   // หยุดก่อน toast สำเร็จ → คำเตือน "⚠ พื้นที่เต็ม" ของ _persistRaw จะโผล่ให้เห็นแทน
+  }
   if (typeof pushRecent === 'function') pushRecent(copy.id);
   renderList();
   toast('ทำสำเนาแล้ว ✓');
@@ -18462,8 +18496,12 @@ function importData(ev) {
       });
       if (!ok) return;
       const existing = new Set(state.quotes.map(q => q.id));
+      const _snapImp = state.quotes.slice();   // ย้อนได้ถ้าเซฟไม่ติด
       data.forEach(q => { if (!existing.has(q.id)) state.quotes.push(q); });
-      persist();
+      if (persist() === false) {
+        state.quotes = _snapImp;
+        return;   // ไม่บอกว่า "Import แล้ว" ทั้งที่ไม่ได้เข้าเครื่อง — คำเตือนพื้นที่เต็มจะโผล่แทน
+      }
       toast('Import แล้ว');
       renderList();
       return;
@@ -23113,6 +23151,17 @@ function openSendToQuote() {
   const _sq = (typeof window.state === 'object' && Array.isArray(window.state.quotes)) ? window.state.quotes : ((typeof state === 'object' && state && Array.isArray(state.quotes)) ? state.quotes : []);
   const _existing = _sq.find(x => x && x.gardenId === g.id && x.pendingReview && !x.reviewed);
   if (_existing) {
+    // ── เก็บค่าเดิมของทุกฟิลด์ที่กำลังจะเขียนทับ ──
+    // สาขานี้แก้ "ในตัว object เดิม" (ไม่ใช่แทนที่ทั้งก้อน) → สำเนา array ชั้นเดียวย้อนไม่ได้
+    // ต้องเก็บทีละฟิลด์แล้ว Object.assign กลับ ถ้าเซฟไม่ติด
+    // ไม่งั้น: ในเครื่องเป็นข้อมูลเก่า · ในหน่วยความจำเป็นข้อมูลใหม่ → เซฟอะไรสำเร็จทีหลังจะเขียนของผสมลงไป
+    const _snapEx = {
+      rows: _existing.rows, date: _existing.date, fruit: _existing.fruit,
+      customer: _existing.customer, fromBills: _existing.fromBills,
+      isMergedBill: _existing.isMergedBill, sentAt: _existing.sentAt,
+      updatedAt: _existing.updatedAt, note: _existing.note,
+      gardenStatusSnap: _existing.gardenStatusSnap,
+    };
     _existing.rows = rows;
     _existing.date = todayISO();
     _existing.fruit = g.fruit || 'ลำไย';
@@ -23123,7 +23172,11 @@ function openSendToQuote() {
     _existing.updatedAt = Date.now();
     _existing.note = noteText;
     _existing.gardenStatusSnap = _gStatusSnap;
-    if (typeof window.persist === 'function') window.persist(); else if (typeof persist === 'function') persist();
+    const _pfn = (typeof window.persist === 'function') ? window.persist : (typeof persist === 'function' ? persist : null);
+    if (_pfn && _pfn() === false) {
+      Object.assign(_existing, _snapEx);   // ย้อนครบทั้ง 10 ฟิลด์
+      return;   // ไม่ล้างที่เลือกไว้ (กดส่งใหม่ได้เลย) · ไม่ toast สำเร็จ → คำเตือนพื้นที่เต็มโผล่แทน
+    }
     if (typeof pushRecent === 'function') pushRecent(_existing.id);
     _selectedBills.clear();
     toast('✓ อัปเดตบิลรอตรวจของสวนนี้แล้ว');
@@ -23153,12 +23206,20 @@ function openSendToQuote() {
     updatedAt: Date.now(),
   };
 
-  if (typeof window.state === 'object' && Array.isArray(window.state.quotes)) {
-    window.state.quotes.unshift(quote);
-    if (typeof window.persist === 'function') window.persist();
-  } else if (typeof state === 'object' && Array.isArray(state.quotes)) {
-    state.quotes.unshift(quote);
-    if (typeof persist === 'function') persist();
+  // ── เพิ่มบิลใหม่ + เซฟ ── ถ้าเซฟไม่ติด (พื้นที่เต็ม) ย้อนออกแล้วหยุด
+  // ไม่งั้นบิลผีค้างในหน่วยความจำ + toast บอกว่าส่งแล้วทั้งที่ไม่ได้เข้าเครื่อง
+  const _tgt = (typeof window.state === 'object' && window.state && Array.isArray(window.state.quotes))
+    ? window.state
+    : ((typeof state === 'object' && state && Array.isArray(state.quotes)) ? state : null);
+  if (_tgt) {
+    const _snapSend = _tgt.quotes.slice();
+    _tgt.quotes.unshift(quote);
+    const _pfn2 = (typeof window.persist === 'function') ? window.persist : (typeof persist === 'function' ? persist : null);
+    if (_pfn2 && _pfn2() === false) {
+      _tgt.quotes = _snapSend;
+      renderDetail();
+      return;   // ที่เลือกไว้ยังอยู่ → ลบของเก่าให้ว่างแล้วกดส่งใหม่ได้ทันที
+    }
   }
   // mark recent for current user
   if (typeof pushRecent === 'function') pushRecent(quote.id);
@@ -25728,14 +25789,19 @@ function albumOpenUpload(gardenId) {
         console.error('[album] resize failed', err);
       }
     }
-    try { saveGardens(gardens); }
+    // ⚠ saveGardens ดัก quota เองข้างใน (โชว์ modal เตือน) แล้ว "คืน false" — มันไม่ throw
+    //    catch ข้างล่างจึงเป็นโค้ดตายมาตลอด → ไหลไป toast "✓ เพิ่ม N ภาพ" ทั้งที่รูปไม่ได้ถูกบันทึกจริง
+    //    (พิสูจน์: อัปโหลดตอนพื้นที่เต็ม → เห็น modal "พื้นที่เต็ม" + toast "✓ เพิ่ม 1 ภาพ" พร้อมกัน · เก็บได้จริง 0 รูป)
+    let _albumSaved = false;
+    try { _albumSaved = saveGardens(gardens) !== false; }
     catch (err) {
       console.error('[album] save failed', err);
+      _albumSaved = false;
       if (err && (err.name === 'QuotaExceededError' || /quota/i.test(String(err.message||'')))) {
         if (typeof toast === 'function') toast('⚠ พื้นที่เต็ม! ลองลบรูปเก่าหรือ backup');
-        return;
       }
     }
+    if (!_albumSaved) return;   // บันทึกไม่ติด → หยุด (saveGardens เตือนด้วย modal แล้ว) ห้าม toast ว่าสำเร็จ
     if (typeof renderDetail === 'function') renderDetail();
     const fs = document.getElementById('album-fullscreen');
     if (fs && fs.style.display !== 'none') albumRenderFullscreen(gardenId);
@@ -27058,8 +27124,41 @@ function _fruitEditModal(id) {
       <button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button>
       <button class="gv-bset-cm-btn confirm" onclick="fruitMgrSave('${id || ''}')">บันทึก</button>
     </div>
+    <div id="fm-ka-px" aria-hidden="true" style="width:1px;height:1px;pointer-events:none;"></div>
   `);
+  fmKeepAliveStart();
 }
+
+// ═══════ กันจอค้างบน iOS — เฉพาะหน้าต่างชื่อผลไม้ ═══════
+// อาการ: เปิดหน้าต่างนี้แล้วจอแข็งตาย (JS ไม่ค้าง — iOS แค่ "หยุดวาดภาพ" ของเลเยอร์นี้)
+// สาเหตุ: หน้าต่างนี้ (#gv-bset-cm-bg) เป็น position:fixed z-index:7000 = เลเยอร์แยกจากชีตตั้งค่า
+//         ตัวกันค้างเดิม (gvKeepAlive) ขยับจุดอยู่ "ใน" .gv-bset-sheet → บังคับวาดไม่ถึงเลเยอร์นี้
+// วิธีแก้: ใช้กลไกเดียวกับของเดิมเป๊ะ — ขอเฟรมต่อเนื่อง + กะพริบจุด 1px สีเดียวกับพื้นกล่อง (#faf6ee)
+// ขอบเขต: แตะเฉพาะหน้าต่างนี้ · ไม่ยุ่งกับ gvBsetCmOpen/gvBsetCmClose ที่อีก 19 หน้าต่างใช้ร่วมกัน
+// หยุดเอง: พอ #fruit-mgr-name หายจากจอ (= หน้าต่างปิด) ลูปจบทันที ไม่กินแบตต่อ
+let _fmKA = false;
+function fmKeepAliveStart() {
+  if (_fmKA) return;
+  _fmKA = true;
+  let last = 0, flip = false;
+  const tick = (t) => {
+    if (!_fmKA) return;
+    const px = document.getElementById('fm-ka-px');
+    const bg = document.getElementById('gv-bset-cm-bg');
+    // หยุดเมื่อ: หน้าต่างถูกปิด (class open หลุด) หรือเนื้อหาถูกแทนด้วยหน้าต่างอื่น (ไม่มีช่องชื่อผลไม้แล้ว)
+    // ⚠ gvBsetCmClose เอาแค่ class 'open' ออก — ไม่ได้ล้างเนื้อหา → เช็คแค่ id จะไม่มีวันหยุด = กินแบตตลอด
+    if (!px || !bg || !bg.classList.contains('open') || !document.getElementById('fruit-mgr-name')) { _fmKA = false; return; }
+    if (t - last > 150) {                // ~7 ครั้ง/วินาที พอให้ iOS วาดต่อเนื่อง
+      last = t; flip = !flip;
+      px.style.background = flip ? 'rgba(250,246,238,1)' : 'rgba(250,246,238,0.996)';
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function fmKeepAliveStop() { _fmKA = false; }
+window.fmKeepAliveStart = fmKeepAliveStart;
+window.fmKeepAliveStop = fmKeepAliveStop;
 function fruitMgrAddOpen() { if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; } _fruitEditModal(null); }
 function fruitMgrEditOpen(id) { if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; } _fruitEditModal(id); }
 function fruitMgrPickSwatch(el, color) {
@@ -27121,25 +27220,36 @@ window.fruitMgrRenameGo = function () {
 // แก้ชื่อ = แก้ทุกที่เสมอ (คลัง + สวน/บิล/คลังราคา) → ไม่มีชื่อกำพร้า
 function _fruitMgrCommit(id, name, color) {
   if (!fruitMgrCanEdit()) return;
-  let oldName = null;
+  let oldName = null, oldColor = null;
   if (id) {
     const f = (window.fruitNames || []).find(x => x.id === id);
     oldName = f ? f.name : null;
+    oldColor = f ? f.color : null;
     if (f) { f.name = name; f.color = color; }
   } else {
     if (!window.fruitNames) window.fruitNames = [];
     window.fruitNames.push({ id: fruitNewId(), name, color });
   }
   const savedOk = saveFruitNames();
-  let changed = 0;
+  let changed = 0, propOk = true;
   if (id && oldName && oldName !== name && typeof fruitPropagateRename === 'function') {
-    try { changed = fruitPropagateRename(oldName, name); } catch (e) { console.error('[fruit rename]', e); }
+    try { changed = fruitPropagateRename(oldName, name); propOk = (window.__fruitPropOk !== false); }
+    catch (e) { console.error('[fruit rename]', e); propOk = false; }
+  }
+  // ── สวน/บิลเซฟไม่ติด (พื้นที่เต็ม) → ย้อนชื่อในคลังกลับด้วย ──
+  // คลังผลไม้เป็นคีย์เล็ก เซฟติดเสมอ · สวน/บิลเป็นคีย์ใหญ่ เต็มก่อน
+  // ถ้าไม่ย้อน = คลังชื่อใหม่ · สวน/บิลชื่อเก่า → "ชื่อกำพร้า" ถาวร (ต้องมาไล่แก้เองทีหลัง)
+  // ย้อนแล้ว = ไม่มีอะไรเปลี่ยนเลย ผู้ใช้ลบรูปให้ว่างแล้วค่อยกดใหม่ได้
+  if (!propOk && id && oldName) {
+    const f2 = (window.fruitNames || []).find(x => x.id === id);
+    if (f2) { f2.name = oldName; if (oldColor != null) f2.color = oldColor; }
+    try { saveFruitNames(); } catch (e) {}
   }
   _fruitUsageMapCache = null;
   gvBsetCmClose();
   gvBsetRenderFruit();
-  // บอก "สำเร็จ" เฉพาะตอนเซฟติดจริง (ไม่งั้นข้อความเตือนพื้นที่เต็มจะโดนทับ)
-  if (savedOk) toast(changed ? `✓ แก้ ${changed} รายการเป็น "${name}"` : (id ? 'แก้แล้ว' : 'เพิ่มแล้ว'));
+  // บอก "สำเร็จ" เฉพาะตอนเซฟติดจริงทั้งคลังและสวน/บิล (ไม่งั้นข้อความเตือนพื้นที่เต็มจะโดนทับ)
+  if (savedOk && propOk) toast(changed ? `✓ แก้ ${changed} รายการเป็น "${name}"` : (id ? 'แก้แล้ว' : 'เพิ่มแล้ว'));
   if (typeof haptic === 'function') haptic(12);
 }
 function fruitMgrDelete(id) {
@@ -27243,33 +27353,55 @@ function fruitSuggestCanonical(variants) {
 }
 
 // ── อัปเดต fruit ในทุก record (pure — ไม่ save) ──
-function _fruitRenameInRecords(oldName, newName) {
+function _fruitRenameInRecords(oldName, newName, _touched) {
   let changed = 0;
-  try { gardens.forEach(g => { if (String(g.fruit || '').trim() === oldName) { g.fruit = newName; changed++; } }); } catch (e) {}
-  try { ((window.state && window.state.quotes) || []).forEach(q => { if (String(q.fruit || '').trim() === oldName) { q.fruit = newName; changed++; } }); } catch (e) {}
-  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (String(f.fruit || '').trim() === oldName) { f.fruit = newName; changed++; } }); } catch (e) {}
+  const _t = (o) => { if (_touched) _touched.push(o); };   // จำ object ที่แตะจริง → ย้อนกลับได้เป๊ะ ไม่ต้องเดาจากชื่อ
+  try { gardens.forEach(g => { if (String(g.fruit || '').trim() === oldName) { g.fruit = newName; changed++; _t(g); } }); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(q => { if (String(q.fruit || '').trim() === oldName) { q.fruit = newName; changed++; _t(q); } }); } catch (e) {}
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => { if (String(f.fruit || '').trim() === oldName) { f.fruit = newName; changed++; _t(f); } }); } catch (e) {}
   // remap filter ชนิดผลไม้ที่เลือกอยู่ (กันค้างชื่อเก่า → สวนหาย)
   try { if (typeof filters !== 'undefined' && filters.fruit && filters.fruit.has(oldName)) { filters.fruit.delete(oldName); filters.fruit.add(newName); } } catch (e) {}
   return changed;
 }
 function _fruitSaveAllRecords() {
-  try { saveGardens(gardens); } catch (e) {}
-  try { if (typeof persist === 'function') persist(); } catch (e) {}
-  try { if (typeof pfPersist === 'function') pfPersist(); } catch (e) {}
+  // ⚠ เดิม catch เปล่าทั้งหมด → พื้นที่เต็มก็เงียบ แล้วผู้เรียก toast "✓ แก้ N รายการ" ทั้งที่ไม่ได้เซฟ
+  //   (saveGardens คืน false · persist ไม่มี try/catch เลย → มัน throw · pfPersist กลืน error)
+  let ok = true;
+  try { if (saveGardens(gardens) === false) ok = false; } catch (e) { ok = false; console.error('[fruit] saveGardens', e); }
+  try { if (typeof persist === 'function') persist(); } catch (e) { ok = false; console.error('[fruit] persist', e); }
+  try { if (typeof pfPersist === 'function') pfPersist(); } catch (e) { ok = false; console.error('[fruit] pfPersist', e); }
   try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}  // รีเฟรชลิสต์ให้ชื่อ+filter ตรง
+  return ok;
 }
 function fruitPropagateRename(oldName, newName) {
-  const c = _fruitRenameInRecords(oldName, newName);
-  if (c) _fruitSaveAllRecords();
-  return c;
+  const touched = [];
+  const c = _fruitRenameInRecords(oldName, newName, touched);
+  window.__fruitPropOk = true;
+  if (c) {
+    window.__fruitPropOk = _fruitSaveAllRecords();
+    if (!window.__fruitPropOk) {
+      // เซฟไม่ติด (พื้นที่เต็ม) → ย้อนความจำกลับให้ตรงกับข้อมูลจริงในเครื่อง
+      // ถ้าไม่ย้อน: จอโชว์ชื่อใหม่ แต่ในเครื่องเป็นชื่อเก่า → เผลอกดเซฟอย่างอื่นทีหลังจะเขียนทับผิดๆ
+      touched.forEach(o => { try { o.fruit = oldName; } catch (e) {} });
+      try {
+        if (typeof filters !== 'undefined' && filters.fruit && filters.fruit.has(newName)) {
+          filters.fruit.delete(newName); filters.fruit.add(oldName);
+        }
+      } catch (e) {}
+      try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}
+    }
+  }
+  return c;   // คงค่าเดิม (จำนวนรายการ) — ผู้เรียกเดิมไม่พัง · ผลสำเร็จอ่านจาก window.__fruitPropOk
 }
 window.fruitPropagateRename = fruitPropagateRename;
 
 function fruitDoPropagate(oldName, newName) {
   const changed = fruitPropagateRename(oldName, newName);
+  const propOk = (window.__fruitPropOk !== false);
   gvBsetCmClose();
   gvBsetRenderFruit();
-  toast(`✓ แก้ ${changed} รายการเป็น "${newName}"`);
+  // เซฟไม่ติด → fruitPropagateRename ย้อนความจำให้แล้ว + saveGardens เตือนด้วย modal → ห้าม toast ว่าสำเร็จ
+  if (propOk) toast(`✓ แก้ ${changed} รายการเป็น "${newName}"`);
   if (typeof haptic === 'function') haptic(15);
 }
 window.fruitDoPropagate = fruitDoPropagate;
@@ -28346,15 +28478,21 @@ async function gvBsetRecompressApply() {
   }
 
   gvBsetProgressUpdate(96, 'บันทึก...');
-  try { saveGardens(gardens); }
+  // ⚠ saveGardens ดัก quota เองข้างใน (โชว์ modal) แล้ว "คืน false" — มันไม่ throw
+  //    catch ข้างล่างจึงเป็นโค้ดตาย → ไหลไป toast "✓ บีบ N รูป · ประหยัด X KB" ทั้งที่เครื่องไม่เปลี่ยนเลย
+  //    (ผู้ใช้กดเมนูนี้ตอนพื้นที่ใกล้เต็มพอดี → เชื่อว่าประหยัดได้แล้ว กลับไปเซฟบิลต่อ → เต็มเหมือนเดิม งง)
+  // หมายเหตุ: ไม่ต้องย้อนรูปที่บีบแล้วในหน่วยความจำ — รูปเล็กลงเป็นผลดี
+  //           ถ้ามีอะไรเซฟติดทีหลังก็ได้ของที่บีบแล้วไปเลย (ต่างจากเคสอื่นที่ของในจำ "ผิด" จึงต้องย้อน)
+  let _rcSaved = false;
+  try { _rcSaved = saveGardens(gardens) !== false; }
   catch (err) {
     console.error('[bset] recompress save', err);
+    _rcSaved = false;
     if (err && (err.name === 'QuotaExceededError' || /quota/i.test(String(err.message||'')))) {
-      gvBsetProgressClose();
-      toast('⚠ บันทึกไม่ได้ — พื้นที่เต็ม');
-      return;
+      if (typeof toast === 'function') toast('⚠ บันทึกไม่ได้ — พื้นที่เต็ม');
     }
   }
+  if (!_rcSaved) { gvBsetProgressClose(); return; }   // หยุดก่อน toast สำเร็จ (modal ของ saveGardens เตือนแล้ว)
 
   gvBsetProgressUpdate(100, 'เสร็จ!');
   setTimeout(() => {
