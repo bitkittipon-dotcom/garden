@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1092;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (92)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1095;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (95)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11281,6 +11281,51 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     font-size: 11px;
   }
 
+
+/* ── บิลรวม: แถวหัวข้อวัน ── */
+tr.mg-dayhdr td { background:#e6dcc0; border-top:2.5px solid #b8942f; border-bottom:1px solid #d4c69e;
+  padding:5px 9px; text-align:left; font-family:'IBM Plex Sans Thai',sans-serif; }
+tr.mg-dayhdr .d { font-size:11.5px; font-weight:700; color:#5a4a2a; }
+tr.mg-dayhdr .n { font-size:10px; font-weight:400; color:#8a7350; margin-left:5px; }
+tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีหัวข้อแล้ว ไม่ต้องมีเส้นซ้ำ */
+
+/* ── ดึงราคา: ปุ่ม "เลือก" + ช่องแก้ราคา + แผ่นเลือกวันที่ ── */
+.pf-pl-pick { font-size:9.5px; font-weight:800; color:#3f7a3f; background:#fff;
+  border:1.5px solid #3f7a3f; border-radius:8px; padding:1px 8px; cursor:pointer; }
+.pf-pl-pick:active { background:#eef7ec; }
+.pf-pl-after { font-size:9px; font-weight:800; color:#fff; background:#c0574a; border-radius:8px; padding:1px 7px; }
+.pf-pl-picked { font-size:9px; font-weight:800; color:#fff; background:#3f7a3f; border-radius:8px; padding:1px 7px; margin-left:4px; }
+.pf-pl-nm { font-size:11.5px; color:#8a7350; min-width:56px; }
+.pf-pl-nm .o { display:inline-block; background:#eee5cf; border-radius:4px; padding:0 4px; margin-right:4px; font-size:10px; }
+.pf-pl-inp { width:66px; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700;
+  font-size:13px; border:1px solid #d8cba8; border-radius:6px; padding:3px 6px; background:#fffdf7; color:#3a2f14; }
+.pf-pl-inp.edited { border-color:#3f7a3f; background:#eef7ec; color:#2f5c2f; }
+.pf-pl-inp.empty { border-style:dashed; border-color:#c9a24a; background:#fffaf0; }
+.pf-pl-edited-tag { font-size:9px; font-weight:800; color:#3f7a3f; }
+.dp { border:1.5px solid #3f7a3f; border-radius:10px; background:#fbfdfa; padding:8px; margin:7px 0 3px; }
+.dp-h { font-size:11.5px; font-weight:700; color:#3f7a3f; margin-bottom:6px; }
+.dp-row { display:flex; align-items:center; gap:8px; padding:6px 7px; border-radius:7px; font-size:12px; color:#4a3c1c; cursor:pointer; }
+.dp-row + .dp-row { border-top:1px solid #eaf1e7; }
+.dp-row.on { background:#e6f2e3; font-weight:700; }
+.dp-d { min-width:64px; font-weight:700; }
+.dp-p { font-family:'JetBrains Mono',monospace; font-size:11px; color:#6b5a33; }
+.dp-tag { margin-left:auto; font-size:9px; font-weight:800; padding:1px 6px; border-radius:7px; }
+.dp-tag.before { background:#e6f2e3; color:#3f7a3f; }
+.dp-tag.after { background:#fdecec; color:#a33; }
+.dp-cancel { border:none; background:none; color:#8a7350; font-size:11px; margin-top:5px; }
+
+/* ── คลังราคา: จุดโหลดต่อ ── */
+.pf-sentinel { text-align:center; font-size:12px; color:#8a7350; padding:14px 8px; opacity:.75; }
+
+/* ── ฟอร์มราคา: ก๊อปจากใบล่าสุด (ยังไม่ยืนยัน) ── */
+/* หมายเหตุ: #pf-edit เป็น "พี่น้อง" ของ #price-lib ไม่ใช่ลูก → ห้ามใช้ #price-lib นำหน้า (CSS เดิมก็ใช้ .pf-fld เปล่าๆ) */
+.pf-copybar { font-size:12.5px; line-height:1.5; background:#fdf3dd; border:1px solid #e0c98b;
+  border-radius:8px; padding:7px 10px; margin:2px 0 9px; color:#6b5a33; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pf-copybar.done { background:#eef7ec; border-color:#b7d9ae; color:#3f6b39; }
+.pf-cb-n { margin-left:auto; background:#e8b864; color:#4a3c1c; font-weight:700;
+  border-radius:999px; padding:2px 9px; font-size:11.5px; white-space:nowrap; }
+.pf-fld.pf-copied { opacity:.5; border-style:dashed; background:#fbf7ec; }
+.pf-row.pf-rcopied .pf-ord { opacity:.5; }
 </style>
 <style>
 /* ── ระบบบันทึกข้อผิดพลาด (errlog) ── */
@@ -14922,6 +14967,7 @@ window.openPriceLib = function () {
   pfLoad();
   const scr = document.getElementById('price-lib');
   if (!scr) return;
+  _pfShown = PF_PAGE;          // เปิดใหม่ = เริ่มที่ 60 ใบเสมอ
   scr.style.display = '';
   renderPriceLib();
 };
@@ -14930,6 +14976,50 @@ window.pfClose = function () { const s = document.getElementById('price-lib'); i
 function pfRowChips(f) {
   return (f.rows || []).map((r, i) => '<span class="pf-chip"><span class="o">' + (i + 1) + '</span>' + pfEsc(r.name || '—') + ' <b>' + pfFmt(r.price) + '</b></span>').join('');
 }
+// ── แสดงทีละ 60 ใบ · เลื่อนถึงล่างสุดโหลดต่อเอง ──
+// เดิมวาดทุกใบพร้อมกัน: 800 ใบ = 16,000 DOM node · หน้ายาว 74,441px (เลื่อน 88 จอ)
+// บน iOS ที่การวาดจอมีปัญหาอยู่แล้ว ยิ่ง node เยอะยิ่งเสี่ยงค้าง
+const PF_PAGE = 60;
+let _pfShown = PF_PAGE;
+let _pfSenObs = null;
+
+function pfCardHtml(f, admin) {
+  const actions = admin ? '<div class="pf-card-act"><button onclick="pfOpenEdit(\'' + f.id + '\')" title="แก้">✎</button><button class="del" onclick="pfDeleteForm(\'' + f.id + '\')" title="ลบ">🗑</button></div>' : '';
+  return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfEsc(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f) + '</div>' + actions + '</div>';
+}
+
+// ต่อท้ายอย่างเดียว — ห้ามวาดใหม่ทั้งก้อน ไม่งั้นจอเด้งกลับบนสุดขณะกำลังเลื่อน
+function pfLoadMore() {
+  const list = pfByFruit(_pfFruitFilter);
+  if (_pfShown >= list.length) { pfSentinelDone(); return; }
+  const admin = pfIsAdmin();
+  const to = Math.min(_pfShown + PF_PAGE, list.length);
+  const html = list.slice(_pfShown, to).map(f => pfCardHtml(f, admin)).join('');
+  const sen = document.getElementById('pf-sentinel');
+  if (sen) sen.insertAdjacentHTML('beforebegin', html);
+  else { const c = document.querySelector('#price-lib .pf-list'); if (c) c.insertAdjacentHTML('beforeend', html); }
+  _pfShown = to;
+  if (_pfShown >= list.length) pfSentinelDone();
+  else { const s2 = document.getElementById('pf-sentinel'); if (s2) s2.textContent = 'เหลืออีก ' + (list.length - _pfShown) + ' ใบ · เลื่อนต่อ'; }
+}
+window.pfLoadMore = pfLoadMore;
+
+function pfSentinelDone() {
+  if (_pfSenObs) { _pfSenObs.disconnect(); _pfSenObs = null; }
+  const sen = document.getElementById('pf-sentinel'); if (sen) sen.remove();
+}
+
+// เฝ้าจุดล่างสุด — ใช้ IntersectionObserver (ไม่ต้องดัก scroll event = ไม่กินแรงตอนเลื่อน)
+function pfWatchBottom() {
+  if (_pfSenObs) { _pfSenObs.disconnect(); _pfSenObs = null; }
+  const sen = document.getElementById('pf-sentinel'); if (!sen) return;
+  const root = document.querySelector('#price-lib .pf-body') || null;
+  _pfSenObs = new IntersectionObserver((es) => {
+    if (es.some(e => e.isIntersecting)) pfLoadMore();
+  }, { root: root, rootMargin: '400px' });   // โหลดล่วงหน้า 400px → ไม่ทันเห็นตัวโหลด
+  _pfSenObs.observe(sen);
+}
+
 function renderPriceLib() {
   const scr = document.getElementById('price-lib');
   if (!scr) return;
@@ -14940,15 +15030,15 @@ function renderPriceLib() {
   const tabs = ['<span class="pf-pill' + (_pfFruitFilter === null ? ' on' : '') + '" onclick="pfSetFilter(null)">ทั้งหมด</span>']
     .concat(fruits.map(f => '<span class="pf-pill' + (_pfFruitFilter === f ? ' on' : '') + '" onclick="pfSetFilter(\'' + esc(f) + '\')">' + pfEsc(f) + '</span>')).join('');
   const list = pfByFruit(_pfFruitFilter);
+  if (_pfShown > list.length) _pfShown = Math.max(PF_PAGE, Math.min(_pfShown, list.length));
   let listHtml;
   if (!list.length) {
     listHtml = '<div class="pf-empty">ยังไม่มีฟอร์มราคา' + (_pfFruitFilter ? (' "' + pfEsc(_pfFruitFilter) + '"') : '') + '</div>'
       + (admin ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ สร้างฟอร์มเลย</button>' : '');
   } else {
-    listHtml = list.map(f => {
-      const actions = admin ? '<div class="pf-card-act"><button onclick="pfOpenEdit(\'' + f.id + '\')" title="แก้">✎</button><button class="del" onclick="pfDeleteForm(\'' + f.id + '\')" title="ลบ">🗑</button></div>' : '';
-      return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfEsc(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f) + '</div>' + actions + '</div>';
-    }).join('');
+    const shown = Math.min(_pfShown, list.length);
+    listHtml = list.slice(0, shown).map(f => pfCardHtml(f, admin)).join('');
+    if (shown < list.length) listHtml += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
   }
   scr.innerHTML =
     '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div></div>'
@@ -14956,8 +15046,9 @@ function renderPriceLib() {
     + (admin && list.length ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
     + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">🧹 ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '')
     + '</div>';
+  pfWatchBottom();
 }
-window.pfSetFilter = function (f) { _pfFruitFilter = f; renderPriceLib(); };
+window.pfSetFilter = function (f) { _pfFruitFilter = f; _pfShown = PF_PAGE; renderPriceLib(); };   // เปลี่ยนแท็บ = เริ่มนับ 60 ใหม่
 
 // ── ลบรายการคลังราคาที่เก่าเกิน 1 ปี ──
 // เกณฑ์อายุ: ใช้วันที่ราคา (f.date) เป็นหลัก · ถ้าไม่มีใช้ createdAt · ถ้าไม่รู้วันเลย = ไม่ลบ (ปลอดภัย)
@@ -15010,32 +15101,125 @@ window.pfOpenEdit = function (id) {
 window.pfCloseEdit = function () { const s = document.getElementById('pf-edit'); if (s) s.style.display = 'none'; };
 
 function pfRowInputsHtml() {
-  return window._pfDraftRows.map((r, i) =>
-    '<div class="pf-row"><div class="pf-ord">' + (i + 1) + '</div>'
+  return window._pfDraftRows.map((r, i) => {
+    const cp = r && r._copied ? ' pf-copied' : '';       // ราคาที่ก๊อปมา = จาง + ขอบประ จนกว่าจะแตะยืนยัน
+    const rc = r && r._copied ? ' pf-rcopied' : '';
+    return '<div class="pf-row' + rc + '"><div class="pf-ord">' + (i + 1) + '</div>'
     + '<input class="pf-fld" placeholder="ชื่อเบอร์" value="' + pfEsc(r.name) + '" oninput="_pfDraftRows[' + i + '].name=this.value">'
-    + '<input class="pf-fld pf-price" type="number" inputmode="decimal" placeholder="0" value="' + pfEsc(r.price) + '" oninput="_pfDraftRows[' + i + '].price=this.value">'
-    + '<button class="pf-rowdel" onclick="pfDelRow(' + i + ')" title="ลบเบอร์">✕</button></div>'
-  ).join('');
+    + '<input class="pf-fld pf-price' + cp + '" type="number" inputmode="decimal" placeholder="0" value="' + pfEsc(r.price) + '"'
+    + ' oninput="_pfDraftRows[' + i + '].price=this.value;pfConfirmRow(' + i + ',this)"'
+    + ' onfocus="pfConfirmRow(' + i + ',this)">'
+    + '<button class="pf-rowdel" onclick="pfDelRow(' + i + ')" title="ลบเบอร์">✕</button></div>';
+  }).join('');
 }
+// ── หาใบล่าสุดไว้เป็นต้นแบบ (ราคาส่วนมากซ้ำเดิม 3-4 วันขยับที → ไม่ต้องพิมพ์ใหม่ทุกครั้ง) ──
+// คืน {src, fruit}: src = ฟอร์มที่จะก๊อป · fruit = ผลไม้ที่เดาให้
+function pfLatestSource(fruit) {
+  if (fruit) { const a = pfByFruit(fruit); return { src: a[0] || null, fruit: fruit }; }
+  const all = pfByFruit(null);            // เรียงวันที่ใหม่→เก่าอยู่แล้ว
+  const s = all[0] || null;
+  return { src: s, fruit: s ? (s.fruit || '') : '' };
+}
+window.pfLatestSource = pfLatestSource;
+
 function pfRenderEdit() {
   const scr = document.getElementById('pf-edit');
   if (!scr) return;
   const editing = _pfEditId ? priceForms.find(f => f.id === _pfEditId) : null;
-  const fruit = editing ? (editing.fruit || '') : (_pfFruitFilter || '');
+  let fruit = editing ? (editing.fruit || '') : (_pfFruitFilter || '');
   const date = editing ? (editing.date || '') : new Date().toISOString().slice(0, 10);
-  let rows = editing ? (editing.rows || []).slice() : [{ name: '', price: '' }, { name: '', price: '' }, { name: '', price: '' }];
-  if (!rows.length) rows = [{ name: '', price: '' }];
-  window._pfDraftRows = rows.map(r => ({ name: r.name || '', price: (r.price === 0 || r.price) ? String(r.price) : '' }));
-  const fruitOpts = pfAllFruits().map(f => '<option value="' + pfEsc(f) + '">').join('');
+  let rows, copiedFrom = null;
+  if (editing) {
+    rows = (editing.rows || []).slice();
+    window._pfDraftRows = rows.map(r => ({ name: r.name || '', price: (r.price === 0 || r.price) ? String(r.price) : '' }));
+  } else {
+    // ── ฟอร์มใหม่: ก๊อปเบอร์+ราคาจากใบล่าสุดมาให้ แล้วทำเครื่องหมายว่า "ยังไม่ยืนยัน" ──
+    const L = pfLatestSource(fruit);
+    if (!fruit && L.fruit) fruit = L.fruit;            // ไม่ได้กรอง → เดาผลไม้จากใบล่าสุด
+    if (L.src && (L.src.rows || []).length) {
+      copiedFrom = L.src;
+      window._pfDraftRows = L.src.rows.map(r => ({
+        name: r.name || '',
+        price: (r.price === 0 || r.price) ? String(r.price) : '',
+        _copied: true                                   // ← ธง UI เท่านั้น · pfSaveForm สร้าง object ใหม่ ไม่พาไปลงไฟล์
+      }));
+    } else {
+      window._pfDraftRows = [{ name: '', price: '' }, { name: '', price: '' }, { name: '', price: '' }];
+    }
+  }
+  window.__pfCopiedFrom = copiedFrom ? { date: copiedFrom.date, fruit: copiedFrom.fruit } : null;
   scr.innerHTML =
     '<div class="pf-hd"><button class="pf-back" onclick="pfCloseEdit()">← กลับ</button><div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div></div>'
     + '<div class="pf-body">'
     + '<div class="pf-sub">เรียงจากเบอร์ใหญ่/แพงสุด → เล็กสุด · ชื่อเป็นแค่ตัวช่วยจำ</div>'
     + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '"></div>'
+    + '<div id="pf-copybar">' + pfCopyBarHtml() + '</div>'
     + '<div id="pf-rows">' + pfRowInputsHtml() + '</div>'
     + '<button class="pf-addrow" onclick="pfAddRow()">+ เพิ่มเบอร์</button>'
     + '<button class="pf-save" onclick="pfSaveForm()">💾 บันทึกฟอร์ม</button>'
     + '</div>';
+  pfWatchFruit();
+}
+
+// ── ป้ายบอกว่าก๊อปมาจากใบไหน + เหลือกี่เบอร์ที่ยังไม่ยืนยัน ──
+function pfUnconfirmedCount() { return (window._pfDraftRows || []).filter(r => r && r._copied).length; }
+function pfCopyBarHtml() {
+  const c = window.__pfCopiedFrom;
+  if (!c) return '';
+  const n = pfUnconfirmedCount();
+  if (!n) return '<div class="pf-copybar done">✓ ตรวจครบทุกเบอร์แล้ว</div>';
+  return '<div class="pf-copybar">📋 ก๊อปจากใบ <b>' + pfDateLabel(c.date) + '</b> — แตะช่องราคาเพื่อยืนยัน'
+    + '<span class="pf-cb-n">ยังไม่ยืนยัน ' + n + ' เบอร์</span></div>';
+}
+function pfCopyBarUpdate() { const el = document.getElementById('pf-copybar'); if (el) el.innerHTML = pfCopyBarHtml(); }
+
+// ยืนยันทีละช่อง — ห้ามวาดแถวใหม่ (จะทำให้แป้นพิมพ์เด้งปิด/เสีย focus)
+window.pfConfirmRow = function (i, el) {
+  const r = (window._pfDraftRows || [])[i];
+  if (!r || !r._copied) return;
+  r._copied = false;
+  if (el) { const row = el.closest('.pf-row'); if (row) row.classList.remove('pf-rcopied'); el.classList.remove('pf-copied'); }
+  pfCopyBarUpdate();
+};
+
+// ── รู้ว่าผู้ใช้เปลี่ยนผลไม้เมื่อไหร่ ──
+// fpPick เซ็ต .value ของ hidden input ตรงๆ ไม่ยิง event → ดักด้วย onchange ไม่ได้
+// และ fpPick ใช้ร่วมกับบิล/สวน → ห้ามแตะ
+// แต่ fpRefreshField แทน outerHTML ของช่อง = เกิด DOM mutation → เฝ้าดูเฉพาะในหน้านี้ได้ ไม่กวนใคร
+let _pfFruitObs = null, _pfLastFruit = null;
+function pfWatchFruit() {
+  const scr = document.getElementById('pf-edit'); if (!scr) return;
+  const cur = () => { const e = document.getElementById('pf-fruit'); return e ? (e.value || '') : ''; };
+  _pfLastFruit = cur();
+  if (_pfFruitObs) _pfFruitObs.disconnect();
+  _pfFruitObs = new MutationObserver(() => {
+    if (!scr.isConnected || scr.style.display === 'none') { _pfFruitObs.disconnect(); _pfFruitObs = null; return; }
+    const v = cur();
+    if (v === _pfLastFruit) return;
+    _pfLastFruit = v;
+    if (_pfEditId) return;                 // แก้ใบเก่า → ไม่ยุ่ง
+    pfRefillFor(v);
+  });
+  _pfFruitObs.observe(scr, { childList: true, subtree: true });
+}
+
+// เปลี่ยนผลไม้ → เติมใหม่จากใบล่าสุดของผลไม้นั้น
+function pfRefillFor(fruit) {
+  const a = fruit ? pfByFruit(fruit) : [];
+  const src = a[0] || null;
+  const typed = (window._pfDraftRows || []).some(r => r && !r._copied && (r.name || r.price));
+  if (typed) return;                       // พิมพ์เองไปแล้ว → ห้ามทับของผู้ใช้
+  if (src && (src.rows || []).length) {
+    window._pfDraftRows = src.rows.map(r => ({
+      name: r.name || '', price: (r.price === 0 || r.price) ? String(r.price) : '', _copied: true
+    }));
+    window.__pfCopiedFrom = { date: src.date, fruit: src.fruit };
+  } else {
+    window._pfDraftRows = [{ name: '', price: '' }, { name: '', price: '' }, { name: '', price: '' }];
+    window.__pfCopiedFrom = null;
+  }
+  pfRerenderRows();
+  pfCopyBarUpdate();
 }
 window.pfAddRow = function () { window._pfDraftRows.push({ name: '', price: '' }); pfRerenderRows(); };
 window.pfDelRow = function (i) { if (window._pfDraftRows.length <= 1) return; window._pfDraftRows.splice(i, 1); pfRerenderRows(); };
@@ -15138,28 +15322,43 @@ function pfGroupBillRows() {
 }
 
 // หาฟอร์มที่เหมาะสุด: ผลไม้ตรงชูก่อน → ใกล้วันสุด
-function pfFindForm(fruit, dateISO) {
-  if (!priceForms.length) return null;
+// ── หากลุ่มฟอร์มที่เข้าข่าย: ชื่อตรง → ชื่อคล้าย → ทั้งหมด ──
+// แยกออกมาเพื่อให้ pfFindForm กับปุ่ม "เลือก" ใช้ตรรกะเดียวกัน (ไม่งั้นรายการที่ให้เลือกจะไม่ตรงกับที่ระบบหาให้)
+function pfFormPool(fruit) {
   const bf = (fruit || '').trim();
   const exact = priceForms.filter(f => (f.fruit || '').trim() === bf);
+  if (exact.length) return exact;
   const partial = priceForms.filter(f => bf && (f.fruit || '').trim() && ((f.fruit || '').includes(bf) || bf.includes((f.fruit || '').trim())));
-  const pool = exact.length ? exact : (partial.length ? partial : priceForms.slice());
+  if (partial.length) return partial;
+  return priceForms.slice();
+}
+window.pfFormPool = pfFormPool;
+
+function pfFindForm(fruit, dateISO) {
+  if (!priceForms.length) return null;
+  const pool = pfFormPool(fruit).slice();
+  if (!pool.length) return null;
   if (!dateISO) { pool.sort((a, b) => (b.date || '').localeCompare(a.date || '')); return pool[0] || null; }
-  const t = new Date(dateISO).getTime();
-  pool.sort((a, b) => Math.abs(new Date(a.date || 0).getTime() - t) - Math.abs(new Date(b.date || 0).getTime() - t));
-  return pool[0] || null;
+  // ── กฎ: เอาฟอร์มที่ออก "ก่อนหรือตรงวัน" ที่ใกล้สุดเสมอ ──
+  // เหตุผล: ถ้ายังไม่ออกฟอร์มใหม่ = ยังขายราคาเดิม → ราคาที่ใช้จริงวันนั้นคือใบล่าสุดที่ออกก่อนหน้า
+  // เดิมเรียงตาม "ระยะห่างสัมบูรณ์": ขายวันที่ 8 มีฟอร์ม 7 กับ 9 → ห่างเท่ากัน → หลุดไปเอาวันที่ 9
+  //       = ราคาที่ยังไม่เกิดตอนขาย (บั๊กเงียบ ตัวเลขผิดโดยไม่มีอะไรเตือน)
+  // เทียบ string ISO ตรงๆ ได้ (YYYY-MM-DD เรียงตามตัวอักษร = เรียงตามเวลา)
+  const before = pool.filter(f => (f.date || '') <= dateISO).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (before.length) return before[0];
+  const after = pool.filter(f => (f.date || '') > dateISO).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  return after[0] || null;   // ไม่มีใบก่อนหน้าเลย → จำใจใช้วันหลัง + เตือนในหน้าดึงราคา
 }
 
-window.pfPullStart = function () {
-  pfLoad();
-  const grps = pfGroupBillRows();
-  if (!grps.length) { if (typeof toast === 'function') toast('ยังไม่มีเบอร์ในบิล'); return; }
-  if (!priceForms.length) { if (typeof toast === 'function') toast('ยังไม่มีฟอร์มในคลังราคา'); return; }
-  const fruit = pfBillFruit();
-  const bd = pfBillDate();
-  const plan = grps.map(g => {
-    const form = pfFindForm(fruit, g.date || bd);
-    const matches = g.rows.map((r, i) => ({ row: r, formRow: (form && form.rows[i]) ? form.rows[i] : null, idx: i }));
+// ── สร้างข้อมูล 1 กลุ่ม (แยกออกมาเพื่อให้ปุ่ม "เลือก" สร้างใหม่เฉพาะกลุ่มนั้นได้) ──
+// forcedForm = ฟอร์มที่ผู้ใช้เลือกเอง (null = ให้ระบบหาให้)
+function pfBuildGroup(g, fruit, bd, forcedForm) {
+  const tgt = g.date || bd;
+  {
+    const form = forcedForm || pfFindForm(fruit, tgt);
+    // ⚠ formRow ชี้เข้า priceForms "ตัวจริง" ไม่ใช่สำเนา → ห้ามเขียนทับเด็ดขาด (คลังราคาจะเพี้ยน)
+    //    ราคาที่ผู้ใช้แก้เองเก็บใน editPrice แยกต่างหาก · formRow ใช้อ่านอย่างเดียว
+    const matches = g.rows.map((r, i) => ({ row: r, formRow: (form && form.rows[i]) ? form.rows[i] : null, idx: i, editPrice: null }));
     const billN = g.rows.length, formN = form ? form.rows.length : 0;
     let warn = '';
     if (!form) warn = '⚠ ไม่พบฟอร์มของผลไม้/วันนี้';
@@ -15180,12 +15379,72 @@ window.pfPullStart = function () {
         `${_gnorm(m.row._grade != null ? m.row._grade : m.row.grade)}←${_gnorm(m.formRow.name)}`).join(' · ');
       warn = (warn ? warn + ' · ' : '') + `⚠ ชื่อเบอร์ไม่ตรง ${_mism.length} แถว (${_ex}) — ดึงตามลำดับแถว ตรวจก่อนยืนยัน`;
     }
-    return { group: g, form, matches, warn };
-  });
+    // เตือนเมื่อจำใจใช้ฟอร์มที่ออก "หลัง" วันขาย (ไม่มีใบก่อนหน้าเลย) = ราคาที่ยังไม่เกิดตอนขาย
+    if (form && tgt && (form.date || '') > tgt) {
+      warn = (warn ? warn + ' · ' : '') + '⚠ ใช้ฟอร์มวันหลัง (' + pfDateLabel(form.date) + ') เพราะไม่มีใบก่อนหน้า — ตรวจราคาก่อนยืนยัน';
+    }
+    return { group: g, form, matches, warn, fruit: fruit, targetDate: tgt, picked: !!forcedForm };
+  }
+}
+
+window.pfPullStart = function () {
+  pfLoad();
+  const grps = pfGroupBillRows();
+  if (!grps.length) { if (typeof toast === 'function') toast('ยังไม่มีเบอร์ในบิล'); return; }
+  if (!priceForms.length) { if (typeof toast === 'function') toast('ยังไม่มีฟอร์มในคลังราคา'); return; }
+  const fruit = pfBillFruit();
+  const bd = pfBillDate();
+  const plan = grps.map(g => pfBuildGroup(g, fruit, bd, null));
   window._pfPullPlan = plan;
+  window._pfPullFruit = fruit;
+  window._pfPullBillDate = bd;
   pfPullRender(plan, fruit);
   const scr = document.getElementById('pf-pull');
   if (scr) scr.style.display = '';
+};
+
+// ── ผู้ใช้แก้ราคาเอง — ห้ามวาดใหม่ (แป้นพิมพ์จะเด้งปิด/เสีย focus) แค่จำค่า + เปลี่ยนสี ──
+// เก็บเป็น "ข้อความ": '' = ไม่ดึงแถวนี้ (คงราคาเดิมในบิล) · '0' = ราคา 0 จริง
+window.pfPullEdit = function (gi, mi, el) {
+  const p = (window._pfPullPlan || [])[gi]; if (!p) return;
+  const m = p.matches[mi]; if (!m) return;
+  m.editPrice = el.value;
+  el.classList.remove('empty');
+  el.classList.add('edited');
+  const row = el.closest('.pf-pl-row');
+  const tag = row ? row.querySelector('.pf-pl-edited-tag') : null;
+  if (tag) tag.style.display = '';
+};
+
+// ── ปุ่ม "เลือก" → กาง/พับ รายการฟอร์มที่มีจริง ──
+window.pfPullPick = function (gi) {
+  const host = document.getElementById('pf-dp-' + gi); if (!host) return;
+  if (host.innerHTML.trim()) { host.innerHTML = ''; return; }   // กดซ้ำ = ปิด
+  const p = (window._pfPullPlan || [])[gi]; if (!p) return;
+  const pool = pfFormPool(p.fruit).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const tgt = p.targetDate || '';
+  const rowsH = pool.map(f => {
+    const isBefore = !tgt || (f.date || '') <= tgt;
+    const on = (p.form && p.form.id === f.id) ? ' on' : '';
+    const prices = (f.rows || []).slice(0, 4).map(r => pfFmt(r.price)).join(' · ');
+    return '<div class="dp-row' + on + '" onclick="pfPullSetForm(' + gi + ',\'' + f.id + '\')">'
+      + '<span class="dp-d">' + pfDateLabel(f.date) + '</span>'
+      + '<span class="dp-p">' + pfEsc(prices) + '</span>'
+      + '<span class="dp-tag ' + (isBefore ? 'before' : 'after') + '">' + (isBefore ? 'ก่อนหน้า' : 'วันหลัง') + '</span></div>';
+  }).join('');
+  host.innerHTML = '<div class="dp"><div class="dp-h">เลือกฟอร์มราคาที่จะดึง — ' + pfEsc(p.fruit || '') + '</div>'
+    + (rowsH || '<div class="pf-empty">ไม่มีฟอร์ม</div>')
+    + '<button class="dp-cancel" onclick="pfPullPick(' + gi + ')">ยกเลิก</button></div>';
+};
+
+// ── เลือกฟอร์มเอง → สร้างกลุ่มนั้นใหม่ (กลุ่มอื่นไม่แตะ · ราคาที่แก้ของกลุ่มอื่นยังอยู่ใน plan) ──
+window.pfPullSetForm = function (gi, id) {
+  const plan = window._pfPullPlan || [];
+  const p = plan[gi]; if (!p) return;
+  const f = priceForms.find(x => x.id === id); if (!f) return;
+  plan[gi] = pfBuildGroup(p.group, p.fruit, window._pfPullBillDate, f);
+  pfPullRender(plan, window._pfPullFruit);
+  if (typeof haptic === 'function') haptic(8);
 };
 window.pfPullClose = function () { const s = document.getElementById('pf-pull'); if (s) s.style.display = 'none'; };
 
@@ -15193,28 +15452,48 @@ function pfPullRender(plan, fruit) {
   const scr = document.getElementById('pf-pull');
   if (!scr) return;
   const multi = plan.length > 1;
-  const body = plan.map(p => {
+  const body = plan.map((p, gi) => {
     const g = p.group;
     const dLbl = g.date ? pfDateLabel(g.date) : 'บิลนี้';
     const formLbl = p.form ? (pfEsc(p.form.fruit || '') + ' · ' + pfDateLabel(p.form.date)) : '—';
-    const near = p.form && g.date && p.form.date !== g.date ? '<span class="pf-pl-near">ใกล้สุด</span>' : '';
-    const rowsHtml = p.matches.map(m => {
+    // ป้าย: ก่อนวันขาย = "ใกล้สุด" (ปกติ) · หลังวันขาย = "วันหลัง" (ผิดธรรมชาติ เตือนสีแดง)
+    let near = '';
+    if (p.form && p.targetDate && p.form.date !== p.targetDate) {
+      near = ((p.form.date || '') > p.targetDate)
+        ? '<span class="pf-pl-after">วันหลัง</span>'
+        : '<span class="pf-pl-near">ใกล้สุด</span>';
+    }
+    if (p.picked) near += '<span class="pf-pl-picked">เลือกเอง</span>';
+    const rowsHtml = p.matches.map((m, mi) => {
       const bg = pfEsc(m.row._grade || m.row.grade || '—');
-      if (m.formRow && m.formRow.price != null && !isNaN(m.formRow.price)) {
-        return `<div class="pf-pl-row"><span class="pf-pl-bill">${bg}</span><span class="pf-pl-arr">⟵</span><span class="pf-pl-form"><span class="o">${m.idx + 1}</span>${pfEsc(m.formRow.name || '')} <b>${pfFmt(m.formRow.price)}</b></span></div>`;
-      }
-      return `<div class="pf-pl-row miss"><span class="pf-pl-bill">${bg}</span><span class="pf-pl-arr">⟵</span><span class="pf-pl-form none">— ไม่มี —</span></div>`;
+      const hasForm = !!(m.formRow && m.formRow.price != null && !isNaN(m.formRow.price));
+      const edited = m.editPrice != null;
+      const val = edited ? pfEsc(m.editPrice) : (hasForm ? pfEsc(String(m.formRow.price)) : '');
+      const nm = hasForm
+        ? ('<span class="o">' + (m.idx + 1) + '</span>' + pfEsc(m.formRow.name || ''))
+        : '— ไม่มี —';
+      const cls = 'pf-pl-inp' + (edited ? ' edited' : (hasForm ? '' : ' empty'));
+      return '<div class="pf-pl-row' + (hasForm ? '' : ' miss') + '">'
+        + '<span class="pf-pl-bill">' + bg + '</span><span class="pf-pl-arr">⟵</span>'
+        + '<span class="pf-pl-nm">' + nm + '</span>'
+        + '<input class="' + cls + '" type="number" inputmode="decimal" placeholder="' + (hasForm ? '0' : 'กรอกเอง') + '"'
+        + ' value="' + val + '" oninput="pfPullEdit(' + gi + ',' + mi + ',this)">'
+        + '<span class="pf-pl-edited-tag"' + (edited ? '' : ' style="display:none"') + '>✎ แก้เอง</span>'
+        + '</div>';
     }).join('');
-    return `<div class="pf-pl-grp">
-      <div class="pf-pl-ghd">${multi ? ('📅 ' + dLbl) : 'จับคู่ราคา'} <span class="pf-pl-fmto">${p.form ? ('⟵ ฟอร์ม ' + formLbl) : ''}</span> ${near}</div>
-      ${rowsHtml}
-      ${p.warn ? `<div class="pf-pl-warn">${p.warn}</div>` : ''}
-    </div>`;
+    return '<div class="pf-pl-grp">'
+      + '<div class="pf-pl-ghd">' + (multi ? ('📅 ' + dLbl) : 'จับคู่ราคา')
+      + ' <span class="pf-pl-fmto">' + (p.form ? ('⟵ ฟอร์ม ' + formLbl) : '') + '</span> ' + near
+      + ' <button class="pf-pl-pick" onclick="pfPullPick(' + gi + ')">เลือก</button></div>'
+      + '<div id="pf-dp-' + gi + '"></div>'
+      + rowsHtml
+      + (p.warn ? '<div class="pf-pl-warn">' + p.warn + '</div>' : '')
+      + '</div>';
   }).join('');
   const anyForm = plan.some(p => p.form);
   scr.innerHTML =
     '<div class="pf-hd"><button class="pf-back" onclick="pfPullClose()">← ยกเลิก</button><div class="pf-ttl">⬇ ดึงราคา</div></div>'
-    + '<div class="pf-body"><div class="pf-sub">จับคู่ <b>ตามลำดับ</b> (ไม่สนชื่อ) — ราคาลงช่อง "ราคาขาย" · ทับของเดิม</div>'
+    + '<div class="pf-body"><div class="pf-sub">จับคู่ <b>ตามลำดับ</b> (ไม่สนชื่อ) — แก้ราคาได้ทุกช่อง · <b>ไม่กระทบคลังราคา</b> · ช่องว่าง = ไม่ดึงแถวนั้น</div>'
     + body
     + (anyForm ? '<button class="pf-save" onclick="pfPullConfirm()">✓ ยืนยัน ดึงราคาลงบิล</button>' : '<div class="pf-empty">ไม่มีฟอร์มที่ใช้ได้</div>')
     + '</div>';
@@ -15224,7 +15503,18 @@ window.pfPullConfirm = function () {
   const plan = window._pfPullPlan || [];
   let filled = 0;
   plan.forEach(p => p.matches.forEach(m => {
-    if (m.formRow && m.formRow.price != null && !isNaN(m.formRow.price)) { m.row.soldPrice = m.formRow.price; filled++; }
+    let v = null;
+    if (m.editPrice != null) {
+      const t = String(m.editPrice).trim();
+      if (t === '') return;                 // ว่าง = ไม่แตะแถวนี้ (คงราคาเดิมในบิล)
+      const n = Number(t);
+      if (!isFinite(n)) return;
+      v = n;                                // พิมพ์ 0 = ใส่ 0 จริง (ห้ามใช้ || จะกิน 0 — บทเรียนจากบั๊ก perKg||12)
+    } else if (m.formRow && m.formRow.price != null && !isNaN(m.formRow.price)) {
+      v = m.formRow.price;                  // อ่านอย่างเดียว — ไม่เคยเขียนกลับเข้า formRow = คลังราคาปลอดภัย
+    }
+    if (v == null) return;
+    m.row.soldPrice = v; filled++;
   }));
   pfPullClose();
   if (typeof renderRows === 'function') renderRows();
@@ -15256,22 +15546,60 @@ function makeRow(data = {}) {
 function addRow(data) { rows.push(makeRow(data)); renderRows(); }
 function delRow(id) { rows = rows.filter(r => r.id !== id); renderRows(); }
 
+// ═══════ บิลรวม: แสดงวันที่เป็น "หัวข้อวัน" แทนการยัดใส่ชื่อเบอร์ ═══════
+// เดิม: grade = "10 A · 8 ก.ค." (เบอร์+วันปนกันเป็นข้อความเดียว)
+//       → ตารางซื้อเป็น <input> ตัดหาย · ตารางขายเป็น <div> ตกบรรทัด · วันซ้ำทุกแถวทั้งที่มีเส้นคั่นวันอยู่แล้ว
+// ใหม่: แถวโชว์แค่เบอร์ (_grade) · วันที่ขึ้นเป็นหัวข้อครั้งเดียวต่อวัน + ยอดรวมรายวัน
+// หมายเหตุ: r.grade (ข้อความรวม) ยังคงอยู่เหมือนเดิมทุกประการ — ใช้ตอนแชร์บิล/คำนวณ/ดึงราคา ไม่แตะ
+function _mgIsMerged(r) { return !!(r && r._date && r._grade != null); }
+function _mgShown(r) { return _mgIsMerged(r) ? (r._grade || '') : (r.grade || ''); }
+
+// แก้ได้เฉพาะ "เบอร์" — วันที่ล็อก (มาจากสวน แก้ที่นี่ไม่ได้)
+// ห้าม re-render ตอนพิมพ์ (แป้นพิมพ์จะเด้งปิด) → อัปเดตข้อมูล + ช่องที่คำนวณเองเท่านั้น
+window.updateGradeOnly = function (id, val) {
+  const r = rows.find(x => x.id === id); if (!r) return;
+  if (_mgIsMerged(r)) {
+    r._grade = val;
+    r.grade = val + ' · ' + (typeof fmtDate === 'function' ? fmtDate(r._date) : r._date);  // คงรูปแบบเดิมไว้เป๊ะ
+  } else {
+    r.grade = val;
+  }
+  if (typeof scheduleSave === 'function') scheduleSave();
+};
+
+// หัวข้อวัน 1 แถว (colspan) — ซื้อ 8 คอลัมน์ · ขาย 6 คอลัมน์
+function _mgDayHdr(dateISO, dayRows, cols) {
+  const n = dayRows.length;
+  const kg = dayRows.reduce((s, r) => s + (typeof totalKgOf === 'function' ? totalKgOf(r) : 0), 0);
+  const lbl = (typeof fmtDate === 'function') ? fmtDate(dateISO) : dateISO;
+  return '<tr class="mg-dayhdr"><td colspan="' + cols + '">'
+    + '<span class="d">📅 ' + escapeHtml(lbl) + '</span>'
+    + '<span class="n">· ' + n + ' เบอร์ · ' + (typeof fmt === 'function' ? fmt(kg) : kg) + ' กก.</span>'
+    + '</td></tr>';
+}
+
 function renderRows() {
   const body = document.getElementById('rows-body');
   let _pfPrevKey = null, _pfGrpIdx = -1;
-  body.innerHTML = rows.map(r => {
+  body.innerHTML = rows.map((r, _ri) => {
     const totalKg = totalKgOf(r);
     const price = Number(r.quotedPrice) || 0;
     const amount = totalKg * price;
     const isEmpty = !r.grade && !r.baskets && !r.extra;
     const _gk = (r._grp != null ? ('g' + r._grp + '|') : '') + (r._date || '');
-    let _grpStart = false;
-    if (r._date) { if (_gk !== _pfPrevKey) { _pfGrpIdx++; _grpStart = _pfGrpIdx > 0; } _pfPrevKey = _gk; }
+    let _grpStart = false, _newDay = false;
+    if (r._date) { if (_gk !== _pfPrevKey) { _pfGrpIdx++; _grpStart = _pfGrpIdx > 0; _newDay = true; } _pfPrevKey = _gk; }
     const _grpCls = r._date ? (' pf-grp-' + (_pfGrpIdx % 2) + (_grpStart ? ' pf-grp-start' : '')) : '';
-    return `
+    // ── ขึ้นวันใหม่ → แทรกแถวหัวข้อวัน (เฉพาะบิลรวมที่มี _date) ──
+    let _hdr = '';
+    if (_newDay && _mgIsMerged(r)) {
+      const dayRows = rows.filter(x => x._date === r._date && (x._grp == null || x._grp === r._grp));
+      _hdr = _mgDayHdr(r._date, dayRows, 8);
+    }
+    return _hdr + `
       <tr class="${isEmpty ? 'empty-line' : ''}${_grpCls}" data-id="${r.id}">
-        <td><input class="cell-input grade" placeholder="—" value="${escapeHtml(r.grade||'')}"
-             oninput="updateRow('${r.id}','grade',this.value)"></td>
+        <td><input class="cell-input grade" placeholder="—" value="${escapeHtml(_mgShown(r))}"
+             oninput="updateGradeOnly('${r.id}',this.value)"></td>
         <td><input class="cell-input" type="text" data-comma="1" inputmode="decimal" placeholder="—" value="${r.baskets}"
              oninput="updateRow('${r.id}','baskets',this.value)"></td>
         <td><input class="cell-input" type="text" data-comma="1" inputmode="decimal" placeholder="20" value="${r.kgPer}"
@@ -15399,12 +15727,18 @@ function renderSold() {
     const cls = profit === null ? 'empty' : (profit >= 0 ? 'gain' : 'loss');
     const sign = (n) => n > 0 ? '+' + fmt(n) : fmt(n);
     const _gk = (r._grp != null ? ('g' + r._grp + '|') : '') + (r._date || '');
-    let _grpStart = false;
-    if (r._date) { if (_gk !== _pfPrevKeyS) { _pfGrpIdxS++; _grpStart = _pfGrpIdxS > 0; } _pfPrevKeyS = _gk; }
+    let _grpStart = false, _newDayS = false;
+    if (r._date) { if (_gk !== _pfPrevKeyS) { _pfGrpIdxS++; _grpStart = _pfGrpIdxS > 0; _newDayS = true; } _pfPrevKeyS = _gk; }
     const _grpCls = r._date ? ('pf-grp-' + (_pfGrpIdxS % 2) + (_grpStart ? ' pf-grp-start' : '')) : '';
-    return `
+    // ขึ้นวันใหม่ → หัวข้อวัน (นับเฉพาะแถวที่มีเบอร์ เหมือน valid)
+    let _hdrS = '';
+    if (_newDayS && _mgIsMerged(r)) {
+      const dayRows = valid.filter(x => x._date === r._date && (x._grp == null || x._grp === r._grp));
+      _hdrS = _mgDayHdr(r._date, dayRows, 6);
+    }
+    return _hdrS + `
       <tr class="${_grpCls}" data-soldid="${r.id}">
-        <td><div class="cell-calc grade">${escapeHtml(r.grade||'')}</div></td>
+        <td><div class="cell-calc grade">${escapeHtml(_mgShown(r))}</div></td>
         <td><div class="cell-calc" data-skg="${r.id}">${fmt(kg)}</div></td>
         <td><input class="cell-input" type="text" data-comma="1" inputmode="decimal" placeholder="—" value="${numStr(r.soldPrice)}"
              oninput="updateRow('${r.id}','soldPrice',this.value)"></td>
