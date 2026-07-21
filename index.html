@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1095;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (95)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1098;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (98)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11282,6 +11282,24 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   }
 
 
+/* ── ค่าเปิดสวน (ดึงจากสวน) ── */
+.gcost-box { background:#f7efd8; border:1.5px solid #cbb884; border-radius:11px; padding:10px; margin-bottom:10px; }
+.gcost-top { display:flex; align-items:center; gap:9px; margin-bottom:9px; }
+.gcost-types { display:flex; gap:6px; flex-wrap:wrap; }
+.gcost-sel { flex:1; min-width:76px; text-align:center; border:1.5px solid #cbb884; border-radius:8px; padding:7px 4px; font-size:12px; color:#6b5a33; background:#fff; cursor:pointer; line-height:1.35; }
+.gcost-sel .v { display:block; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#3a6b2a; margin-top:2px; }
+.gcost-sel.on { border-color:#3f7a3f; border-width:2px; background:#eef7ec; color:#2f5c2f; font-weight:700; }
+.gcost-hint { font-size:10.5px; color:#8a7350; margin-top:7px; }
+/* ── ค่าจัดทำ: ปุ่มสลับโหมด + คูณ ── */
+.pmode-tog { display:flex; gap:6px; margin-left:auto; margin-right:8px; }
+.pmode-tog .pm { border:1.5px solid #d8cba8; border-radius:7px; padding:3px 10px; font-size:11px; color:#8a7350; background:#fff; cursor:pointer; }
+.pmode-tog .pm.on { border-color:#5a7a3a; border-width:2px; background:#eef4e6; color:#3f6b2a; font-weight:700; }
+.pcalc { display:flex; align-items:center; gap:7px; padding:7px 2px; }
+.pcalc .pkg { background:#eee5cf; border-radius:7px; padding:6px 9px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#6b5a33; white-space:nowrap; }
+.pcalc .pop, .pcalc .peq { color:#8a7350; font-weight:700; }
+.pcalc .prate { width:60px; text-align:center; background:#fff; border:2px solid #5a7a3a; border-radius:7px; padding:6px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; }
+.pcalc .pres { flex:1; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#3a6b2a; }
+
 /* ── บิลรวม: แถวหัวข้อวัน ── */
 tr.mg-dayhdr td { background:#e6dcc0; border-top:2.5px solid #b8942f; border-bottom:1px solid #d4c69e;
   padding:5px 9px; text-align:left; font-family:'IBM Plex Sans Thai',sans-serif; }
@@ -11316,6 +11334,27 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 
 /* ── คลังราคา: จุดโหลดต่อ ── */
 .pf-sentinel { text-align:center; font-size:12px; color:#8a7350; padding:14px 8px; opacity:.75; }
+/* ── คลังราคา: ค้นหา + กรอง ── */
+.pf-search { margin-bottom:9px; }
+.pf-sbox { display:flex; align-items:center; gap:7px; background:#fff; border:1px solid #d8cba8; border-radius:9px; padding:8px 11px; }
+.pf-sbox input { border:none; outline:none; flex:1; font-size:13px; font-family:inherit; background:transparent; color:#3a2f14; }
+.pf-sbox .ico { color:#a99b7c; font-size:14px; }
+.pf-sclr { color:#c33; font-weight:700; cursor:pointer; font-size:13px; padding:0 3px; }
+.pf-filters { display:flex; gap:7px; margin-bottom:9px; }
+.pf-fsel { flex:1; background:#fff; border:1px solid #d8cba8; border-radius:9px; padding:7px 11px; font-size:12px; color:#4a3c1c; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+.pf-fsel .cur { font-weight:700; }
+.pf-fsel.on { border-color:#3f7a3f; border-width:1.5px; background:#f2f8ee; color:#2f5c2f; }
+.pf-count { font-size:11px; color:#8a7350; margin-bottom:9px; text-align:center; }
+.pf-hl { background:#ffe28a; border-radius:3px; padding:0 1px; }
+#pf-drop .dropmenu { background:#fff; border:1.5px solid #3f7a3f; border-radius:10px; padding:6px; margin-bottom:9px; }
+#pf-drop .dropitem { padding:8px 11px; border-radius:7px; font-size:12.5px; color:#4a3c1c; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+#pf-drop .dropitem + .dropitem { border-top:1px solid #f0ead8; }
+#pf-drop .dropitem.on { background:#e6f2e3; font-weight:700; color:#2f5c2f; }
+#pf-drop .dropitem .n { font-size:11px; color:#8a7350; }
+/* ── ป้ายราคาขยับ ── */
+.pf-chip .pf-up { font-size:9.5px; font-weight:800; color:#2f8a2f; margin-left:1px; }
+.pf-chip .pf-dn { font-size:9.5px; font-weight:800; color:#c0392b; margin-left:1px; }
+.pf-chip .pf-same { font-size:9.5px; font-weight:700; color:#b8ad88; margin-left:1px; }
 
 /* ── ฟอร์มราคา: ก๊อปจากใบล่าสุด (ยังไม่ยืนยัน) ── */
 /* หมายเหตุ: #pf-edit เป็น "พี่น้อง" ของ #price-lib ไม่ใช่ลูก → ห้ามใช้ #price-lib นำหน้า (CSS เดิมก็ใช้ .pf-fld เปล่าๆ) */
@@ -11325,6 +11364,9 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 .pf-cb-n { margin-left:auto; background:#e8b864; color:#4a3c1c; font-weight:700;
   border-radius:999px; padding:2px 9px; font-size:11.5px; white-space:nowrap; }
 .pf-fld.pf-copied { opacity:.5; border-style:dashed; background:#fbf7ec; }
+.pf-fld.pf-price.pf-typing { border:2px solid #3f7a3f; background:#fff; }
+.pf-fld.pf-price.pf-typing::placeholder { color:#c9c0a8; opacity:1; }   /* เลขเดิมจางอยู่พื้นหลัง */
+.pf-add-btn.pf-add-top { margin:0 0 10px; }
 .pf-row.pf-rcopied .pf-ord { opacity:.5; }
 </style>
 <style>
@@ -11733,6 +11775,8 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 
       <div class="section-h">ค่าใช้จ่าย / หัก</div>
       <div class="expenses">
+        <!-- ── ค่าเปิดสวน: แถวแรกเดี่ยวๆ · ดึงจากสวนอัตโนมัติ (เหมา/รายโล/แยกเบอร์) ── -->
+        <div id="f-gcost-wrap"></div>
         <div class="exp-row">
           <span class="exp-label">ค่าอบ</span>
           <input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-roast" placeholder="—">
@@ -11741,10 +11785,12 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
           <span class="exp-label">ค่ารถ</span>
           <input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-transport" placeholder="—">
         </div>
-        <div class="exp-row">
+        <div class="exp-row" id="f-process-row">
           <span class="exp-label">ค่าจัดทำ</span>
+          <span class="pmode-tog" id="f-process-mode"></span>
           <input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-process" placeholder="—">
         </div>
+        <div id="f-process-calc" style="display:none;"></div>
         <div class="exp-row">
           <span class="exp-label">หักไว้</span>
           <input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-deduct" placeholder="—">
@@ -14963,6 +15009,54 @@ function pfByFruit(fruit) {
   return arr;
 }
 
+// ── ค้นหา + กรองปี/เดือน (ซ้อนบนแท็บผลไม้) ──
+let _pfQuery = '';       // คำค้น (ชื่อเบอร์/ผลไม้)
+let _pfYear = null;      // ปี ค.ศ. (null = ทุกปี)
+let _pfMonth = null;     // เดือน 1-12 (null = ทุกเดือน)
+
+// รายการที่ผ่านตัวกรองทั้งหมด (แท็บ + ปี + เดือน + คำค้น)
+function pfFilteredList() {
+  let arr = pfByFruit(_pfFruitFilter);
+  if (_pfYear != null) arr = arr.filter(f => { const y = (f.date || '').slice(0, 4); return y === String(_pfYear); });
+  if (_pfMonth != null) arr = arr.filter(f => { const m = (f.date || '').slice(5, 7); return m === String(_pfMonth).padStart(2, '0'); });
+  const q = _pfQuery.trim().toLowerCase();
+  if (q) arr = arr.filter(f => {
+    if ((f.fruit || '').toLowerCase().includes(q)) return true;
+    return (f.rows || []).some(r => String(r.name || '').toLowerCase().includes(q));
+  });
+  return arr;
+}
+
+// ไฮไลต์คำค้นในข้อความ
+function pfHi(text) {
+  const q = _pfQuery.trim();
+  if (!q) return pfEsc(text);
+  const t = String(text); const lo = t.toLowerCase(); const ql = q.toLowerCase();
+  let out = '', i = 0;
+  while (i < t.length) {
+    const idx = lo.indexOf(ql, i);
+    if (idx < 0) { out += pfEsc(t.slice(i)); break; }
+    out += pfEsc(t.slice(i, idx)) + '<span class="pf-hl">' + pfEsc(t.slice(idx, idx + q.length)) + '</span>';
+    i = idx + q.length;
+  }
+  return out;
+}
+
+// นับฟอร์มต่อปี/เดือน (สำหรับ dropdown) — อิงแท็บผลไม้ปัจจุบัน
+function pfYearCounts() {
+  const base = pfByFruit(_pfFruitFilter);
+  const m = {}; base.forEach(f => { const y = (f.date || '').slice(0, 4); if (y) m[y] = (m[y] || 0) + 1; });
+  return m;
+}
+function pfMonthCounts() {
+  let base = pfByFruit(_pfFruitFilter);
+  if (_pfYear != null) base = base.filter(f => (f.date || '').slice(0, 4) === String(_pfYear));
+  const m = {}; base.forEach(f => { const mo = (f.date || '').slice(5, 7); if (mo) m[mo] = (m[mo] || 0) + 1; });
+  return m;
+}
+const _TH_MON = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+const _TH_MON_FULL = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
 window.openPriceLib = function () {
   pfLoad();
   const scr = document.getElementById('price-lib');
@@ -14973,8 +15067,25 @@ window.openPriceLib = function () {
 };
 window.pfClose = function () { const s = document.getElementById('price-lib'); if (s) s.style.display = 'none'; };
 
-function pfRowChips(f) {
-  return (f.rows || []).map((r, i) => '<span class="pf-chip"><span class="o">' + (i + 1) + '</span>' + pfEsc(r.name || '—') + ' <b>' + pfFmt(r.price) + '</b></span>').join('');
+// เทียบราคากับ "ใบก่อนหน้า" ของผลไม้เดียวกัน (ต่อเบอร์ที่ชื่อตรงกัน)
+// prevForm = ใบที่วันที่ก่อนหน้าใบนี้ (เรียงใหม่→เก่าแล้ว → ใบถัดลงไปใน list)
+function pfRowChips(f, prevForm) {
+  const prevMap = {};
+  if (prevForm && Array.isArray(prevForm.rows)) {
+    prevForm.rows.forEach(r => { if (r && r.name != null) prevMap[String(r.name).trim()] = Number(r.price); });
+  }
+  return (f.rows || []).map((r, i) => {
+    const price = Number(r.price);
+    const nm = String(r.name || '').trim();
+    let badge = '';
+    if (prevForm && nm && prevMap[nm] != null && !isNaN(price) && !isNaN(prevMap[nm])) {
+      const d = price - prevMap[nm];
+      if (d > 0) badge = ' <span class="pf-up">▲+' + pfFmt(d) + '</span>';
+      else if (d < 0) badge = ' <span class="pf-dn">▼' + pfFmt(d) + '</span>';   // d ติดลบอยู่แล้ว
+      else badge = ' <span class="pf-same">=</span>';
+    }
+    return '<span class="pf-chip"><span class="o">' + (i + 1) + '</span>' + pfHi(r.name || '—') + ' <b>' + pfFmt(r.price) + '</b>' + badge + '</span>';
+  }).join('');
 }
 // ── แสดงทีละ 60 ใบ · เลื่อนถึงล่างสุดโหลดต่อเอง ──
 // เดิมวาดทุกใบพร้อมกัน: 800 ใบ = 16,000 DOM node · หน้ายาว 74,441px (เลื่อน 88 จอ)
@@ -14983,18 +15094,28 @@ const PF_PAGE = 60;
 let _pfShown = PF_PAGE;
 let _pfSenObs = null;
 
-function pfCardHtml(f, admin) {
+function pfCardHtml(f, admin, prevForm) {
   const actions = admin ? '<div class="pf-card-act"><button onclick="pfOpenEdit(\'' + f.id + '\')" title="แก้">✎</button><button class="del" onclick="pfDeleteForm(\'' + f.id + '\')" title="ลบ">🗑</button></div>' : '';
-  return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfEsc(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f) + '</div>' + actions + '</div>';
+  return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfHi(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f, prevForm) + '</div>' + actions + '</div>';
+}
+
+// หาใบก่อนหน้าของผลไม้เดียวกัน (วันที่ < ใบนี้ ที่ใกล้สุด) จากทั้งคลัง
+// ไม่ใช้ใบถัดไปใน list เพราะ list อาจกรอง/ปนผลไม้ → ต้องเทียบในคลังจริง
+function pfPrevSameFruit(f) {
+  if (!f) return null;
+  const fr = (f.fruit || '').trim();
+  const cand = priceForms.filter(x => x && x.id !== f.id && (x.fruit || '').trim() === fr && (x.date || '') < (f.date || ''));
+  cand.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  return cand[0] || null;
 }
 
 // ต่อท้ายอย่างเดียว — ห้ามวาดใหม่ทั้งก้อน ไม่งั้นจอเด้งกลับบนสุดขณะกำลังเลื่อน
 function pfLoadMore() {
-  const list = pfByFruit(_pfFruitFilter);
+  const list = pfFilteredList();
   if (_pfShown >= list.length) { pfSentinelDone(); return; }
   const admin = pfIsAdmin();
   const to = Math.min(_pfShown + PF_PAGE, list.length);
-  const html = list.slice(_pfShown, to).map(f => pfCardHtml(f, admin)).join('');
+  const html = list.slice(_pfShown, to).map(f => pfCardHtml(f, admin, pfPrevSameFruit(f))).join('');
   const sen = document.getElementById('pf-sentinel');
   if (sen) sen.insertAdjacentHTML('beforebegin', html);
   else { const c = document.querySelector('#price-lib .pf-list'); if (c) c.insertAdjacentHTML('beforeend', html); }
@@ -15029,26 +15150,123 @@ function renderPriceLib() {
   const esc = s => pfEsc(s).replace(/'/g, "\\'");
   const tabs = ['<span class="pf-pill' + (_pfFruitFilter === null ? ' on' : '') + '" onclick="pfSetFilter(null)">ทั้งหมด</span>']
     .concat(fruits.map(f => '<span class="pf-pill' + (_pfFruitFilter === f ? ' on' : '') + '" onclick="pfSetFilter(\'' + esc(f) + '\')">' + pfEsc(f) + '</span>')).join('');
-  const list = pfByFruit(_pfFruitFilter);
+  const list = pfFilteredList();
+  const totalUnfiltered = pfByFruit(_pfFruitFilter).length;
+  const filtering = !!(_pfQuery.trim() || _pfYear != null || _pfMonth != null);
   if (_pfShown > list.length) _pfShown = Math.max(PF_PAGE, Math.min(_pfShown, list.length));
+
+  // แถบค้นหา
+  const clr = _pfQuery ? '<span class="pf-sclr" onclick="pfSearchClear()">✕</span>' : '';
+  const searchBar = '<div class="pf-search"><div class="pf-sbox"><span class="ico">🔍</span>'
+    + '<input id="pf-q" type="text" placeholder="ค้นหาเบอร์ / ผลไม้…" value="' + pfEsc(_pfQuery) + '" oninput="pfSearchInput(this.value)">' + clr + '</div></div>';
+
+  // ตัวกรองปี/เดือน
+  const yLbl = _pfYear != null ? (String(_pfYear + 543).slice(-2)) : 'ทุกปี';
+  const mLbl = _pfMonth != null ? _TH_MON[_pfMonth] : 'ทุกเดือน';
+  const filterBar = '<div class="pf-filters">'
+    + '<div class="pf-fsel' + (_pfYear != null ? ' on' : '') + '" onclick="pfToggleDrop(\'year\')"><span>ปี</span><span class="cur">' + yLbl + ' ▾</span></div>'
+    + '<div class="pf-fsel' + (_pfMonth != null ? ' on' : '') + '" onclick="pfToggleDrop(\'month\')"><span>เดือน</span><span class="cur">' + mLbl + ' ▾</span></div>'
+    + '</div><div id="pf-drop"></div>';
+
+  // ตัวนับผล (เฉพาะตอนกรอง)
+  const countBar = filtering
+    ? '<div class="pf-count">พบ ' + list.length + ' ฟอร์ม' + (_pfQuery.trim() ? (' · คำค้น "' + pfEsc(_pfQuery.trim()) + '"') : '') + '</div>'
+    : '';
+
   let listHtml;
   if (!list.length) {
-    listHtml = '<div class="pf-empty">ยังไม่มีฟอร์มราคา' + (_pfFruitFilter ? (' "' + pfEsc(_pfFruitFilter) + '"') : '') + '</div>'
-      + (admin ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ สร้างฟอร์มเลย</button>' : '');
+    listHtml = '<div class="pf-empty">' + (filtering ? 'ไม่พบฟอร์มที่ตรงเงื่อนไข' : ('ยังไม่มีฟอร์มราคา' + (_pfFruitFilter ? (' "' + pfEsc(_pfFruitFilter) + '"') : '')))
+      + '</div>' + (filtering ? '<button class="pf-add-btn" onclick="pfSearchClear()">ล้างตัวกรอง</button>' : (admin ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ สร้างฟอร์มเลย</button>' : ''));
   } else {
     const shown = Math.min(_pfShown, list.length);
-    listHtml = list.slice(0, shown).map(f => pfCardHtml(f, admin)).join('');
+    listHtml = list.slice(0, shown).map(f => pfCardHtml(f, admin, pfPrevSameFruit(f))).join('');
     if (shown < list.length) listHtml += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
   }
   scr.innerHTML =
     '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div></div>'
-    + '<div class="pf-body"><div class="pf-tabs">' + tabs + '</div><div class="pf-list">' + listHtml + '</div>'
-    + (admin && list.length ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
+    + '<div class="pf-body">'
+    + (admin ? '<button class="pf-add-btn pf-add-top" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
+    + searchBar + filterBar
+    + '<div class="pf-tabs">' + tabs + '</div>'
+    + countBar
+    + '<div class="pf-list">' + listHtml + '</div>'
     + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">🧹 ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '')
     + '</div>';
   pfWatchBottom();
 }
-window.pfSetFilter = function (f) { _pfFruitFilter = f; _pfShown = PF_PAGE; renderPriceLib(); };   // เปลี่ยนแท็บ = เริ่มนับ 60 ใหม่
+
+// ── ค้นหา: พิมพ์แล้วกรองสด (ไม่วาดทั้งหน้า — แค่ list + ตัวนับ เพื่อไม่ให้ช่องค้นหาเสีย focus) ──
+let _pfDrop = null;   // dropdown ที่เปิดอยู่: 'year'|'month'|null
+window.pfSearchInput = function (v) {
+  _pfQuery = v || '';
+  _pfShown = PF_PAGE;
+  pfRefreshListOnly();
+};
+window.pfSearchClear = function () {
+  _pfQuery = ''; _pfYear = null; _pfMonth = null; _pfShown = PF_PAGE;
+  renderPriceLib();
+};
+
+// วาดใหม่เฉพาะ list + ตัวนับ (คงช่องค้นหา + focus)
+function pfRefreshListOnly() {
+  const list = pfFilteredList();
+  const admin = pfIsAdmin();
+  const filtering = !!(_pfQuery.trim() || _pfYear != null || _pfMonth != null);
+  const listEl = document.querySelector('#price-lib .pf-list');
+  if (listEl) {
+    if (!list.length) {
+      listEl.innerHTML = '<div class="pf-empty">' + (filtering ? 'ไม่พบฟอร์มที่ตรงเงื่อนไข' : 'ยังไม่มีฟอร์มราคา') + '</div>'
+        + (filtering ? '<button class="pf-add-btn" onclick="pfSearchClear()">ล้างตัวกรอง</button>' : '');
+    } else {
+      const shown = Math.min(_pfShown, list.length);
+      let h = list.slice(0, shown).map(f => pfCardHtml(f, admin, pfPrevSameFruit(f))).join('');
+      if (shown < list.length) h += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
+      listEl.innerHTML = h;
+    }
+  }
+  // อัปเดตตัวนับ
+  let cEl = document.querySelector('#price-lib .pf-count');
+  const txt = filtering ? ('พบ ' + list.length + ' ฟอร์ม' + (_pfQuery.trim() ? (' · คำค้น "' + _pfQuery.trim() + '"') : '')) : '';
+  if (filtering) {
+    if (!cEl) { const tabsEl = document.querySelector('#price-lib .pf-tabs'); if (tabsEl) { cEl = document.createElement('div'); cEl.className = 'pf-count'; tabsEl.insertAdjacentElement('afterend', cEl); } }
+    if (cEl) cEl.textContent = txt;
+  } else if (cEl) { cEl.remove(); }
+  // อัปเดตปุ่มล้าง (✕) ในช่องค้นหา
+  const box = document.querySelector('#price-lib .pf-sbox');
+  if (box) {
+    let x = box.querySelector('.pf-sclr');
+    if (_pfQuery && !x) { x = document.createElement('span'); x.className = 'pf-sclr'; x.textContent = '✕'; x.setAttribute('onclick', 'pfSearchClear()'); box.appendChild(x); }
+    else if (!_pfQuery && x) x.remove();
+  }
+  pfWatchBottom();
+}
+
+// ── dropdown ปี/เดือน ──
+window.pfToggleDrop = function (which) {
+  const host = document.getElementById('pf-drop'); if (!host) return;
+  if (_pfDrop === which) { _pfDrop = null; host.innerHTML = ''; return; }
+  _pfDrop = which;
+  let items = '';
+  if (which === 'year') {
+    const cnt = pfYearCounts();
+    const years = Object.keys(cnt).sort((a, b) => b.localeCompare(a));
+    items += '<div class="dropitem' + (_pfYear == null ? ' on' : '') + '" onclick="pfPickYear(null)"><span>ทุกปี</span></div>';
+    items += years.map(y => '<div class="dropitem' + (_pfYear == Number(y) ? ' on' : '') + '" onclick="pfPickYear(' + y + ')"><span>' + (Number(y) + 543) + '</span><span class="n">' + cnt[y] + ' ฟอร์ม</span></div>').join('');
+  } else {
+    const cnt = pfMonthCounts();
+    items += '<div class="dropitem' + (_pfMonth == null ? ' on' : '') + '" onclick="pfPickMonth(null)"><span>ทุกเดือน</span></div>';
+    for (let mo = 12; mo >= 1; mo--) {
+      const key = String(mo).padStart(2, '0');
+      if (!cnt[key]) continue;
+      items += '<div class="dropitem' + (_pfMonth == mo ? ' on' : '') + '" onclick="pfPickMonth(' + mo + ')"><span>' + _TH_MON_FULL[mo] + '</span><span class="n">' + cnt[key] + ' ฟอร์ม</span></div>';
+    }
+  }
+  host.innerHTML = '<div class="dropmenu">' + items + '</div>';
+};
+window.pfPickYear = function (y) { _pfYear = y; if (y == null) _pfMonth = _pfMonth; _pfDrop = null; _pfShown = PF_PAGE; renderPriceLib(); };
+window.pfPickMonth = function (m) { _pfMonth = m; _pfDrop = null; _pfShown = PF_PAGE; renderPriceLib(); };
+
+window.pfSetFilter = function (f) { _pfFruitFilter = f; _pfShown = PF_PAGE; _pfDrop = null; renderPriceLib(); };   // เปลี่ยนแท็บ = เริ่มนับ 60 ใหม่ (คงค้นหา/ปี/เดือนไว้ ซ้อนกันได้)
 
 // ── ลบรายการคลังราคาที่เก่าเกิน 1 ปี ──
 // เกณฑ์อายุ: ใช้วันที่ราคา (f.date) เป็นหลัก · ถ้าไม่มีใช้ createdAt · ถ้าไม่รู้วันเลย = ไม่ลบ (ปลอดภัย)
@@ -15108,17 +15326,26 @@ function pfRowInputsHtml() {
     + '<input class="pf-fld" placeholder="ชื่อเบอร์" value="' + pfEsc(r.name) + '" oninput="_pfDraftRows[' + i + '].name=this.value">'
     + '<input class="pf-fld pf-price' + cp + '" type="number" inputmode="decimal" placeholder="0" value="' + pfEsc(r.price) + '"'
     + ' oninput="_pfDraftRows[' + i + '].price=this.value;pfConfirmRow(' + i + ',this)"'
-    + ' onfocus="pfConfirmRow(' + i + ',this)">'
+    + ' onfocus="pfCopyFocus(' + i + ',this)" onblur="pfCopyBlur(' + i + ',this)">'
     + '<button class="pf-rowdel" onclick="pfDelRow(' + i + ')" title="ลบเบอร์">✕</button></div>';
   }).join('');
 }
 // ── หาใบล่าสุดไว้เป็นต้นแบบ (ราคาส่วนมากซ้ำเดิม 3-4 วันขยับที → ไม่ต้องพิมพ์ใหม่ทุกครั้ง) ──
 // คืน {src, fruit}: src = ฟอร์มที่จะก๊อป · fruit = ผลไม้ที่เดาให้
-function pfLatestSource(fruit) {
-  if (fruit) { const a = pfByFruit(fruit); return { src: a[0] || null, fruit: fruit }; }
+// beforeDate = วันที่ของฟอร์มที่กำลังสร้าง → เอาใบที่ออก "ก่อนหน้า" วันนั้นที่ใกล้สุด
+// เหตุผล: กำลัง "สร้าง" ราคาของวันนั้น → ต้นแบบต้องเป็นราคาที่ใช้อยู่ก่อนหน้า ไม่ใช่ราคาอนาคต
+// ใช้ < (ไม่ใช่ <=) : เลือกวันที่ 3 → ได้ใบวันที่ 2 เสมอ ไม่ว่าจะมีใบวันที่ 3 อยู่แล้วหรือไม่
+// (ต่างจาก pfFindForm หน้าดึงราคาที่ใช้ <= เพราะนั่นคือการ "ใช้" ราคาของวันนั้น — ตรงวันคือถูกแล้ว)
+function pfLatestSource(fruit, beforeDate) {
+  const pick = (arr) => {
+    if (!beforeDate) return arr[0] || null;
+    return arr.find(f => (f.date || '') < beforeDate) || null;   // arr เรียงใหม่→เก่าแล้ว → เจอตัวแรก = ใกล้สุด
+  };
+  if (fruit) { const a = pfByFruit(fruit); return { src: pick(a), fruit: fruit }; }
   const all = pfByFruit(null);            // เรียงวันที่ใหม่→เก่าอยู่แล้ว
-  const s = all[0] || null;
-  return { src: s, fruit: s ? (s.fruit || '') : '' };
+  const s = pick(all);
+  // ไม่ได้กรองผลไม้ + ไม่มีใบก่อนหน้าเลย → ยังต้องเดาชื่อผลไม้จากใบล่าสุด (แต่ไม่ก๊อปราคา)
+  return { src: s, fruit: s ? (s.fruit || '') : ((all[0] && all[0].fruit) || '') };
 }
 window.pfLatestSource = pfLatestSource;
 
@@ -15134,7 +15361,7 @@ function pfRenderEdit() {
     window._pfDraftRows = rows.map(r => ({ name: r.name || '', price: (r.price === 0 || r.price) ? String(r.price) : '' }));
   } else {
     // ── ฟอร์มใหม่: ก๊อปเบอร์+ราคาจากใบล่าสุดมาให้ แล้วทำเครื่องหมายว่า "ยังไม่ยืนยัน" ──
-    const L = pfLatestSource(fruit);
+    const L = pfLatestSource(fruit, date);            // ← ใช้วันที่ของฟอร์มใหม่เป็นเส้นแบ่ง
     if (!fruit && L.fruit) fruit = L.fruit;            // ไม่ได้กรอง → เดาผลไม้จากใบล่าสุด
     if (L.src && (L.src.rows || []).length) {
       copiedFrom = L.src;
@@ -15152,7 +15379,7 @@ function pfRenderEdit() {
     '<div class="pf-hd"><button class="pf-back" onclick="pfCloseEdit()">← กลับ</button><div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div></div>'
     + '<div class="pf-body">'
     + '<div class="pf-sub">เรียงจากเบอร์ใหญ่/แพงสุด → เล็กสุด · ชื่อเป็นแค่ตัวช่วยจำ</div>'
-    + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '"></div>'
+    + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '" onchange="pfDateChanged(this.value)"></div>'
     + '<div id="pf-copybar">' + pfCopyBarHtml() + '</div>'
     + '<div id="pf-rows">' + pfRowInputsHtml() + '</div>'
     + '<button class="pf-addrow" onclick="pfAddRow()">+ เพิ่มเบอร์</button>'
@@ -15172,6 +15399,28 @@ function pfCopyBarHtml() {
     + '<span class="pf-cb-n">ยังไม่ยืนยัน ' + n + ' เบอร์</span></div>';
 }
 function pfCopyBarUpdate() { const el = document.getElementById('pf-copybar'); if (el) el.innerHTML = pfCopyBarHtml(); }
+
+// ── แตะช่องราคาที่ก๊อปมา = กำลังจะแก้ → ล้างให้พิมพ์ทับได้เลย เลขเดิมจางไปอยู่พื้นหลัง ──
+window.pfCopyFocus = function (i, el) {
+  const r = (window._pfDraftRows || [])[i];
+  if (!r || !r._copied) return;            // แตะครั้งที่ 2 ขึ้นไป = ช่องปกติ ไม่ต้องทำอะไร (ล้างเองได้)
+  el.dataset.oldp = el.value;              // จำเลขเดิมไว้ เผื่อแตะแล้วไม่พิมพ์
+  el.placeholder = el.value;               // เลขเดิม → พื้นหลัง
+  el.value = '';                           // ว่าง → พิมพ์ได้เลย ไม่ต้องลบ
+  el.classList.add('pf-typing');
+  pfConfirmRow(i, el);                     // แตะแล้ว = ยืนยันแล้ว (ตัวนับลด · เอาสีจางออก)
+};
+
+// ออกจากช่องโดยไม่พิมพ์อะไร → เลขเดิมกลับมา (กันเลขหายเพราะแตะพลาด)
+window.pfCopyBlur = function (i, el) {
+  const r = (window._pfDraftRows || [])[i];
+  el.classList.remove('pf-typing');
+  if (!r) return;
+  if (el.dataset.oldp != null) {
+    if (el.value === '') { el.value = el.dataset.oldp; r.price = el.dataset.oldp; }
+    delete el.dataset.oldp;                // ครั้งต่อไปล้างเองได้ (ตั้งใจลบราคา)
+  }
+};
 
 // ยืนยันทีละช่อง — ห้ามวาดแถวใหม่ (จะทำให้แป้นพิมพ์เด้งปิด/เสีย focus)
 window.pfConfirmRow = function (i, el) {
@@ -15203,10 +15452,17 @@ function pfWatchFruit() {
   _pfFruitObs.observe(scr, { childList: true, subtree: true });
 }
 
-// เปลี่ยนผลไม้ → เติมใหม่จากใบล่าสุดของผลไม้นั้น
-function pfRefillFor(fruit) {
-  const a = fruit ? pfByFruit(fruit) : [];
-  const src = a[0] || null;
+// เปลี่ยนวันที่ → เติมใหม่จากใบก่อนหน้าของวันนั้น (input type=date ยิง change ตรงๆ ไม่ต้องใช้ MutationObserver)
+window.pfDateChanged = function (d) {
+  if (_pfEditId) return;                   // แก้ใบเก่า → ไม่ยุ่ง
+  const e = document.getElementById('pf-fruit');
+  pfRefillFor(e ? (e.value || '') : '', d);
+};
+
+// เปลี่ยนผลไม้/วันที่ → เติมใหม่จากใบก่อนหน้าที่ใกล้สุด
+function pfRefillFor(fruit, dateISO) {
+  const d = dateISO || (document.getElementById('pf-date') || {}).value || '';
+  const src = fruit ? pfLatestSource(fruit, d).src : null;
   const typed = (window._pfDraftRows || []).some(r => r && !r._copied && (r.name || r.price));
   if (typed) return;                       // พิมพ์เองไปแล้ว → ห้ามทับของผู้ใช้
   if (src && (src.rows || []).length) {
@@ -15779,11 +16035,13 @@ function renderSoldFoot() {
 }
 
 function renderSummary_form() {
+  // โหมดค่าจัดทำ = คูณ → น้ำหนักเปลี่ยน ต้องคำนวณผลลัพธ์ใหม่ (คูณสด)
+  if (_fProcMode === 'mul' && document.getElementById('f-proc-rate')) { try { procMulCalc(); } catch (e) {} }
   const totalKg = rows.reduce((s, r) => s + totalKgOf(r), 0);
   const quotedAmt = rows.reduce((s, r) => s + totalKgOf(r) * (Number(r.quotedPrice) || 0), 0);
   const soldAmt = rows.reduce((s, r) => s + totalKgOf(r) * (Number(r.soldPrice) || 0), 0);
-  const exp = ['f-roast','f-transport','f-process','f-deduct']
-    .reduce((s, id) => s + (numCv(id) || 0), 0);
+  const exp = ['f-roast','f-transport','f-process','f-deduct','f-gcost']
+    .reduce((s, id) => s + (numCv(id) || 0), 0);   // + ค่าเปิดสวน (จุด 3A)
 
   const hasSold = rows.some(r => Number(r.soldPrice) > 0);
   const profit = hasSold ? soldAmt - quotedAmt - exp : null;
@@ -15970,6 +16228,140 @@ function setOrchardMode(m) {
   document.getElementById('orch-mode-B').style.display = m === 'B' ? '' : 'none';
   renderOrchSummary();
 }
+
+// ═══════════ ค่าเปิดสวน (ดึงจากสวนอัตโนมัติ) + ค่าจัดทำโหมดคูณ ═══════════
+// เก็บลง expenses: gardenCost(ผลลัพธ์) · gardenCostType('lump'|'kg-all'|'kg-grade') · gardenCostEdited(แก้เอง)
+//                  processMode('manual'|'mul') · processRate(เรทตอนคูณ)
+// สำคัญ: ค่าจัดทำโหมดคูณ "เก็บผลลัพธ์" ลง f-process เหมือนเดิม → สูตรหักทั้ง 2 ที่ (15829/18683) ไม่ต้องแก้เลย
+let _fGCostType = null;      // แบบที่เลือกอยู่
+let _fGCostEdited = false;   // พิมพ์ทับเองแล้วหรือยัง
+let _fProcMode = 'manual';   // โหมดค่าจัดทำ
+
+// คิดยอดค่าเปิดสวนทั้ง 3 แบบจากข้อมูลสวน
+function gardenCostOptions(g) {
+  if (!g) return null;
+  const out = { lump: null, 'kg-all': null, 'kg-grade': null };
+  if (g.lumpTotal) out.lump = Number(g.lumpTotal) || 0;
+  // รายโล + แยกเบอร์ = ต้องมี collections (ผลผลิตที่ชั่งแล้ว)
+  const cols = Array.isArray(g.collections) ? g.collections : [];
+  const totalKg = cols.reduce((s, c) => s + (Number(c.kg) || 0), 0);
+  if (g.kgPrice && totalKg) out['kg-all'] = totalKg * (Number(g.kgPrice) || 0);
+  if (Array.isArray(g.gradePrices) && g.gradePrices.length) {
+    // แยกเบอร์: ผลรวม kg ต่อเบอร์ × ราคาเบอร์ (เลียนแบบ computePayOwnerLines)
+    const priceMap = {}; g.gradePrices.forEach(gp => { if (gp && gp.grade != null) priceMap[String(gp.grade).trim()] = Number(gp.price) || 0; });
+    let sum = 0, any = false;
+    const kgByGrade = {};
+    cols.forEach(c => { (c.rows || c.items || []).forEach(it => {
+      const gr = String(it.grade || it.name || '').trim(); if (!gr) return;
+      kgByGrade[gr] = (kgByGrade[gr] || 0) + (Number(it.kg) || 0);
+    }); });
+    Object.keys(kgByGrade).forEach(gr => { if (priceMap[gr] != null) { sum += kgByGrade[gr] * priceMap[gr]; any = true; } });
+    if (any) out['kg-grade'] = sum;
+  }
+  return out;
+}
+
+const _GCOST_LBL = { lump: 'เหมา', 'kg-all': 'รายโล', 'kg-grade': 'แยกเบอร์' };
+
+// หา g ของบิลที่เปิดอยู่ (บิลรวมผูก gardenId · บิลธรรมดาไม่มี)
+// อ่านสวนจาก localStorage ตรงๆ — ตัวแปร gardens อยู่คนละ <script> scope (สมุดตีราคา vs เล่มสวน) เข้าไม่ถึง
+function _curBillGarden() {
+  if (typeof editingId === 'undefined' || !editingId) return null;
+  const q = (typeof state !== 'undefined' && state.quotes) ? state.quotes.find(x => x && x.id === editingId) : null;
+  const gid = q ? q.gardenId : null;
+  if (!gid) return null;
+  let gs = null;
+  try { gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]'); } catch (e) { gs = []; }
+  if (!Array.isArray(gs)) return null;
+  return gs.find(x => x && x.id === gid) || null;
+}
+
+function renderGardenCost() {
+  const host = document.getElementById('f-gcost-wrap'); if (!host) return;
+  const g = _curBillGarden();
+  const opts = g ? gardenCostOptions(g) : null;
+  const hasAny = opts && (opts.lump != null || opts['kg-all'] != null || opts['kg-grade'] != null);
+  // บิลไม่ผูกสวน หรือสวนไม่มีราคา → ช่องกรอกเอง
+  if (!hasAny) {
+    host.innerHTML = '<div class="exp-row"><span class="exp-label">ค่าเปิดสวน</span>'
+      + '<input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-gcost" placeholder="—"'
+      + ' oninput="_fGCostEdited=true;renderSummary_form()"></div>';
+    return;
+  }
+  // มีสวน → แสดงตัวเลือก + ยอดที่เลือก (แก้เองได้)
+  const chips = Object.keys(_GCOST_LBL).map(t => {
+    if (opts[t] == null) return '';
+    const on = (_fGCostType === t && !_fGCostEdited) ? ' on' : '';
+    return '<div class="gcost-sel' + on + '" onclick="pickGardenCost(\'' + t + '\')">' + _GCOST_LBL[t]
+      + '<span class="v">' + fmt(Math.round(opts[t])) + '</span></div>';
+  }).join('');
+  const curVal = document.getElementById('f-gcost') ? document.getElementById('f-gcost').value : '';
+  host.innerHTML =
+    '<div class="gcost-box">'
+    + '<div class="gcost-top"><span class="exp-label">ค่าเปิดสวน</span>'
+    + '<input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-gcost" placeholder="—" value="' + gbEscapeHtml(curVal) + '"'
+    + ' oninput="_fGCostEdited=true;gcostSyncChips();renderSummary_form()"></div>'
+    + '<div class="gcost-types">' + chips + '</div>'
+    + '<div class="gcost-hint">📇 ดึงจากสวน "' + gbEscapeHtml(g.name || '') + '" — แตะเลือกแบบที่ใช้จริง หรือพิมพ์แก้เอง</div>'
+    + '</div>';
+}
+
+// แตะเลือกแบบ → เติมยอด (ยกเลิกสถานะแก้เอง)
+window.pickGardenCost = function (t) {
+  const g = _curBillGarden(); const opts = g ? gardenCostOptions(g) : null;
+  if (!opts || opts[t] == null) return;
+  _fGCostType = t; _fGCostEdited = false;
+  const inp = document.getElementById('f-gcost'); if (inp) inp.value = fmt(Math.round(opts[t]));
+  renderGardenCost(); renderSummary_form();
+  if (typeof haptic === 'function') haptic(8);
+};
+
+// พิมพ์แก้เอง → ตัวเลือกจางลง (แต่ยังกดเปลี่ยนได้)
+window.gcostSyncChips = function () {
+  document.querySelectorAll('.gcost-sel').forEach(e => e.classList.remove('on'));
+};
+
+// ── ค่าจัดทำ: สลับโหมด ใส่เอง / คูณ ──
+window.setProcessMode = function (m) {
+  _fProcMode = m;
+  renderProcessMode();
+  renderSummary_form();
+};
+
+function renderProcessMode() {
+  const tog = document.getElementById('f-process-mode');
+  const calc = document.getElementById('f-process-calc');
+  const inp = document.getElementById('f-process');
+  if (!tog || !calc || !inp) return;
+  tog.innerHTML =
+    '<span class="pm' + (_fProcMode === 'manual' ? ' on' : '') + '" onclick="setProcessMode(\'manual\')">ใส่เอง</span>'
+    + '<span class="pm' + (_fProcMode === 'mul' ? ' on' : '') + '" onclick="setProcessMode(\'mul\')">คูณ ✕</span>';
+  if (_fProcMode === 'mul') {
+    inp.style.display = 'none';                         // ซ่อนช่องใส่เอง
+    const kg = rows.reduce((s, r) => s + totalKgOf(r), 0);
+    const rate = (window._fProcRate != null) ? window._fProcRate : (numCv('f-process') && kg ? (numCv('f-process') / kg) : '');
+    calc.style.display = '';
+    calc.innerHTML =
+      '<div class="pcalc"><span class="pkg">' + fmt(kg) + ' กก.</span><span class="pop">×</span>'
+      + '<input class="prate" type="text" data-comma="1" inputmode="decimal" id="f-proc-rate" placeholder="0" value="' + gbEscapeHtml(rate === '' ? '' : String(rate)) + '" oninput="procMulCalc()">'
+      + '<span class="peq">=</span><span class="pres" id="f-proc-res">' + fmt(Math.round((Number(rate) || 0) * kg)) + '</span></div>'
+      + '<div class="gcost-hint" style="margin-left:2px">' + fmt(kg) + ' = น้ำหนักรวมทุกเบอร์ (ดึงมาเอง) · พิมพ์แค่เรทต่อโล</div>';
+  } else {
+    inp.style.display = '';
+    calc.style.display = 'none'; calc.innerHTML = '';
+  }
+}
+
+// คูณสด: น้ำหนักรวม × เรท → เก็บผลลัพธ์ลง f-process (สูตรหักไม่ต้องแก้)
+window.procMulCalc = function () {
+  const kg = rows.reduce((s, r) => s + totalKgOf(r), 0);
+  const rate = numCv('f-proc-rate') || 0;
+  window._fProcRate = document.getElementById('f-proc-rate') ? document.getElementById('f-proc-rate').value : rate;
+  const res = Math.round(rate * kg);
+  const kgEl = document.querySelector('#f-process-calc .pkg'); if (kgEl) kgEl.textContent = fmt(kg) + ' กก.';   // น้ำหนักเปลี่ยน → อัปเดตป้าย
+  const resEl = document.getElementById('f-proc-res'); if (resEl) resEl.textContent = fmt(res);
+  const inp = document.getElementById('f-process'); if (inp) inp.value = res ? String(res) : '';   // เก็บผลลัพธ์
+};
 
 function makeOrchRow(d = {}) {
   return {
@@ -17856,12 +18248,20 @@ function readForm() {
       quotedPrice: Number(r.quotedPrice) || 0,
       soldPrice: Number(r.soldPrice) || 0,
     })),
-    expenses: {
+    expenses: (() => {
+      // โหมดคูณ: บังคับคำนวณผลลัพธ์ล่าสุดลง f-process ก่อนอ่าน (กันค่าเก่าค้าง)
+      if (_fProcMode === 'mul' && document.getElementById('f-proc-rate')) { try { procMulCalc(); } catch (e) {} }
+      return {
       roasting: numCv('f-roast') || 0,
       transport: numCv('f-transport') || 0,
-      processing: numCv('f-process') || 0,
+      processing: numCv('f-process') || 0,      // โหมดคูณเก็บผลลัพธ์ไว้แล้ว → สูตรหักอ่านตรงนี้ได้เลย
       deduct: numCv('f-deduct') || 0,
-    },
+      gardenCost: numCv('f-gcost') || 0,         // ค่าเปิดสวน (ผลลัพธ์)
+      gardenCostType: _fGCostType || '',         // แบบที่เลือก (จำไว้)
+      gardenCostEdited: !!_fGCostEdited,          // พิมพ์แก้เองไหม
+      processMode: _fProcMode || 'manual',        // โหมดค่าจัดทำ
+      processRate: (_fProcMode === 'mul') ? (numCv('f-proc-rate') || 0) : 0,   // เรทตอนคูณ
+      }; })(),
     updatedAt: Date.now(),
   };
 }
@@ -18001,6 +18401,11 @@ function resetForm() {
   planGrades = [...PLAN_DEFAULT_GRADES];
   formType = 'wholesale';
   orchMode = 'A';
+  // ── รีเซ็ตสถานะค่าเปิดสวน + ค่าจัดทำ ──
+  _fGCostType = null; _fGCostEdited = false; _fProcMode = 'manual'; window._fProcRate = null;
+  { const _gc = document.getElementById('f-gcost'); if (_gc) _gc.value = ''; }
+  if (typeof renderGardenCost === 'function') renderGardenCost();
+  if (typeof renderProcessMode === 'function') renderProcessMode();
   ['f-customer','f-market','f-roast','f-transport','f-process','f-deduct',
    'f-orch-buy','f-orch-transport','f-orch-other','f-orch-totalkg',
    'f-pk-transport','f-pk-other',
@@ -18253,6 +18658,14 @@ function loadQuote(id) {
     document.getElementById('f-transport').value = q.expenses?.transport || '';
     document.getElementById('f-process').value = q.expenses?.processing || '';
     document.getElementById('f-deduct').value = q.expenses?.deduct || '';
+    // ── คืนสถานะค่าเปิดสวน + ค่าจัดทำ (ที่จำไว้) ──
+    _fGCostType = q.expenses?.gardenCostType || null;
+    _fGCostEdited = !!(q.expenses?.gardenCostEdited);
+    _fProcMode = q.expenses?.processMode || 'manual';
+    window._fProcRate = (q.expenses?.processRate) || null;
+    renderGardenCost();
+    { const _gc = document.getElementById('f-gcost'); if (_gc && q.expenses?.gardenCost) _gc.value = fmt(Math.round(q.expenses.gardenCost)); }
+    renderProcessMode();
     rows = (q.rows || []).map(r => makeRow(r));
     if (rows.length === 0) rows = [makeRow()];
     applyFormType();
@@ -18636,7 +19049,7 @@ function calcQuoteSummary(q) {
   const totalKg = _rows.reduce((s, r) => s + _kgOf(r), 0);
   const quoted = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.quotedPrice) || 0), 0);
   const sold = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.soldPrice) || 0), 0);
-  const exp = (q.expenses?.roasting || 0) + (q.expenses?.transport || 0) + (q.expenses?.processing || 0) + (q.expenses?.deduct || 0);
+  const exp = (q.expenses?.roasting || 0) + (q.expenses?.transport || 0) + (q.expenses?.processing || 0) + (q.expenses?.deduct || 0) + (q.expenses?.gardenCost || 0);
   const hasSold = _rows.some(r => (Number(r.soldPrice) || 0) > 0);
   const profit = hasSold ? sold - quoted - exp : null;
   return { totalKg, quoted, sold, exp, profit, hasSold };
