@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1101;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (101)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1102;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (102)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -13677,7 +13677,8 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     const _ffm = document.getElementById('f-fruit-mount');
     if (_ffm && window.fpFieldHtml && !document.getElementById('f-fruit')) {
-      _ffm.innerHTML = window.fpFieldHtml('f-fruit', 'ลำไย');
+      // ② คลังมีผลไม้ชนิดเดียว → เลือกให้เลย · หลายชนิด → ว่างไว้ให้เลือกเอง (เดิมฝัง 'ลำไย' ตายตัว)
+      _ffm.innerHTML = window.fpFieldHtml('f-fruit', (typeof window.fpDefaultFruit === 'function') ? window.fpDefaultFruit() : '');
     }
   } catch (e) {}
 });
@@ -14626,6 +14627,20 @@ loadFruitNames();
   function isAdmin() { return !!(typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'admin'); }
   function fcolor(nm) { return (typeof fruitColor === 'function') ? fruitColor(nm) : '#b0a07a'; }
 
+  // ── เทียบชื่อผลไม้แบบจัดมาตรฐาน ──
+  // "ลำไย" (ำ ตัวเดียว U+0E33) กับ "ลําไย" (นิคหิต+า U+0E4D U+0E32) ตาเห็นเหมือนกันเป๊ะ แต่คนละรหัส
+  // เดิมเทียบ f.name === val ตรงๆ → ชื่อที่อยู่ในคลังจริงขึ้นป้าย "⚠ ไม่อยู่ในคลัง" ผิดๆ
+  const _fkey = (s) => (typeof window.fruitCleanName === 'function')
+    ? window.fruitCleanName(s) : String(s == null ? '' : s).trim();
+
+  // ── ผลไม้ตั้งต้นของฟอร์มใหม่ ──
+  // เดิมฝัง 'ลำไย' ตายในโค้ด → ถ้าคลังไม่มีชื่อนี้ ทุกบิลใหม่จะได้ชื่อนอกคลังทันทีโดยผู้ใช้ไม่รู้ตัว
+  // ใหม่: คลังมีชนิดเดียว → เลือกให้เลย · มากกว่านั้น → ปล่อยว่างให้เลือกเอง
+  window.fpDefaultFruit = function () {
+    const l = window.fruitNames || [];
+    return (l.length === 1 && l[0] && l[0].name) ? l[0].name : '';
+  };
+
   // ---- CSS (global · ไม่ผูก #garden-view เพราะใช้ในหน้าบิลด้วย) ----
   const CSS = `
   .fp-wrap{width:100%;min-width:0;flex:1 1 auto;}
@@ -14731,7 +14746,7 @@ loadFruitNames();
   // ---- field markup (แทน <input> เดิม · คง id เป็น hidden) ----
   window.fpFieldHtml = function (id, val) {
     val = val || '';
-    const inLib = !!val && (window.fruitNames || []).some(f => f.name === val);
+    const inLib = !!val && (window.fruitNames || []).some(f => _fkey(f.name) === _fkey(val));
     const warn = (val && !inLib) ? ' fp-warn' : '';
     const inner = val
       ? `<span class="fp-dot" style="background:${fcolor(val)}"></span><span class="fp-name">${esc(val)}</span>${!inLib ? '<span class="fp-badge">⚠ ไม่อยู่ในคลัง</span>' : ''}`
@@ -14873,9 +14888,9 @@ loadFruitNames();
     }
     // ── จัดลำดับฉลาด: กลุ่ม "กำลังขาย" (มี record ใน 90 วัน) / "ผลไม้อื่น" ──
     const stat = fpUsageStats();
-    const chipOf = (f) => `<span class="fp-chip ${f.name === cur ? 'sel' : ''}" onclick='fpPick(${JSON.stringify(f.name)})'>`
+    const chipOf = (f) => `<span class="fp-chip ${_fkey(f.name) === _fkey(cur) ? 'sel' : ''}" onclick='fpPick(${JSON.stringify(f.name)})'>`
       + `<span class="fp-dot" style="background:${f.color || '#b0a07a'}"></span>${esc(f.name)}</span>`;
-    const inLib = list.some(f => f.name === cur);
+    const inLib = list.some(f => _fkey(f.name) === _fkey(cur));
     let topChip = '';
     if (cur && !inLib) {
       topChip = `<span class="fp-chip warn sel" onclick='fpPick(${JSON.stringify(cur)})'>`
@@ -18261,7 +18276,7 @@ function readForm() {
       date: document.getElementById('f-date').value || todayISO(),
       customer: document.getElementById('f-customer').value.trim(),
       market: document.getElementById('f-market').value.trim(),
-      fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
+      fruit: document.getElementById('f-fruit').value.trim(),
       planGrades: [...planGrades],
       planDays: planDays.map(d => ({
         type: d.type,
@@ -18294,7 +18309,7 @@ function readForm() {
       date: document.getElementById('f-date').value || todayISO(),
       customer: document.getElementById('f-customer').value.trim(),
       market: document.getElementById('f-market').value.trim(),
-      fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
+      fruit: document.getElementById('f-fruit').value.trim(),
       multiDayGrades: [...multiDayGrades],
       multiDayRows: multiDayRows.filter(r => totalBasketsMD(r) > 0 || r.date).map(r => {
         const baskets = {};
@@ -18323,7 +18338,7 @@ function readForm() {
       date: document.getElementById('f-date').value || todayISO(),
       customer: document.getElementById('f-customer').value.trim(),
       market: document.getElementById('f-market').value.trim(),
-      fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
+      fruit: document.getElementById('f-fruit').value.trim(),
       perkgRows: perkgRows.filter(r => r.grade).map(r => ({
         grade: r.grade,
         kg: Number(r.kg) || 0,
@@ -18346,7 +18361,7 @@ function readForm() {
       date: document.getElementById('f-date').value || todayISO(),
       customer: document.getElementById('f-customer').value.trim(),
       market: document.getElementById('f-market').value.trim(),
-      fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
+      fruit: document.getElementById('f-fruit').value.trim(),
       orchRows: orchMode === 'A' ? orchRows.filter(r => r.grade).map(r => ({
         grade: r.grade,
         baskets: Number(r.baskets) || 0,
@@ -18375,7 +18390,7 @@ function readForm() {
     date: document.getElementById('f-date').value || todayISO(),
     customer: document.getElementById('f-customer').value.trim(),
     market: document.getElementById('f-market').value.trim(),
-    fruit: document.getElementById('f-fruit').value.trim() || 'ลำไย',
+    fruit: document.getElementById('f-fruit').value.trim(),
     rows: rows.filter(r => r.grade).map(r => ({
       // คงข้อมูลกลุ่มวันของบิลรวมไว้ตอนบันทึก (ไม่มีผลกับการคำนวณเงิน)
       ...(r._date != null ? { _date: r._date } : {}),
@@ -18410,6 +18425,15 @@ function readForm() {
 function saveQuote() {
   const q = readForm();
   if (!q.customer) { toast('ใส่ชื่อลูกค้า/สวนก่อน'); return; }
+  // ① บังคับเลือกผลไม้ — เดิมถ้าว่างระบบเดาให้เป็น 'ลำไย' → เกิดชื่อนอกคลังโดยผู้ใช้ไม่รู้ตัว
+  if (!q.fruit) {
+    toast('เลือกผลไม้ก่อน');
+    const _fw = document.getElementById('f-fruit');
+    const _wrap = _fw && _fw.closest('.fp-wrap');
+    if (_wrap) { _wrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (typeof fpOpen === 'function') setTimeout(() => fpOpen('f-fruit'), 280);
+    return;
+  }
   let hasRows = false;
   if (q.type === 'orchard') {
     hasRows = (q.orchMode === 'A' && q.orchRows.length > 0) || (q.orchMode === 'B' && q.orchPctRows.length > 0);
@@ -18733,7 +18757,7 @@ function loadQuote(id) {
   if (typeof setupOrigBillDrawer === 'function') setupOrigBillDrawer(q);
   document.getElementById('f-customer').value = q.customer || '';
   document.getElementById('f-market').value = q.market || '';
-  { const _fe = document.getElementById('f-fruit'); if (_fe) { _fe.value = q.fruit || 'ลำไย'; if (window.fpRefreshField) window.fpRefreshField('f-fruit'); } }
+  { const _fe = document.getElementById('f-fruit'); if (_fe) { _fe.value = q.fruit || ''; if (window.fpRefreshField) window.fpRefreshField('f-fruit'); } }
   try { if (window.fruitFillDatalist) window.fruitFillDatalist('f-fruit-list'); } catch (e) {}
   document.getElementById('f-date').value = q.date || todayISO();
 
@@ -24097,7 +24121,7 @@ function openSendToQuote() {
     };
     _existing.rows = rows;
     _existing.date = todayISO();
-    _existing.fruit = g.fruit || 'ลำไย';
+    _existing.fruit = g.fruit || '';
     _existing.customer = g.name || '';
     _existing.fromBills = dates;
     _existing.isMergedBill = isMerged;
@@ -24126,7 +24150,7 @@ function openSendToQuote() {
     date: todayISO(),
     customer: g.name || '',
     market: '',
-    fruit: g.fruit || 'ลำไย',
+    fruit: g.fruit || '',
     rows,
     expenses: { roasting:0, transport:0, processing:0, deduct:0 },
     gardenId: g.id,
