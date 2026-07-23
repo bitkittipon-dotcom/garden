@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1102;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (102)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1104;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (104)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11341,6 +11341,20 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .pcalc .prate { width:60px; text-align:center; background:#fff; border:2px solid #5a7a3a; border-radius:7px; padding:6px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; }
 .pcalc .pres { flex:1; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#3a6b2a; }
 
+/* ── จุดสีผลไม้บนการ์ดสวน (B5 จุดนูนวาว) ── */
+/* box-sizing กำหนดเอง: แอปนี้ไม่ได้ตั้ง * { box-sizing } ไว้ → ถ้าไม่ระบุ จุดจะกลายเป็น 16px (12+ขอบ 2×2) */
+.lc-fruit-dot { box-sizing:border-box; display:inline-block; width:12px; height:12px; border-radius:50%;
+  vertical-align:-1px; margin:0 4px 0 1px; border:2px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.14),
+             inset 0 1.5px 1.5px rgba(255,255,255,.55),
+             inset 0 -1.5px 1.5px rgba(0,0,0,.18); }
+
+/* จุดขนาดเล็กสำหรับการ์ดบิล (.lc-fruit ที่นั่นเป็น 11px ไม่ใช่ 14px แบบเล่มสวน) */
+.lc-fruit-dot.sm { width:9px; height:9px; border-width:1.5px; vertical-align:0; margin:0 3px 0 0;
+  box-shadow:0 0 0 .5px rgba(0,0,0,.14),
+             inset 0 1px 1px rgba(255,255,255,.55),
+             inset 0 -1px 1px rgba(0,0,0,.18); }
+
 /* ── บิลรวม: แถวหัวข้อวัน ── */
 tr.mg-dayhdr td { background:#e6dcc0; border-top:2.5px solid #b8942f; border-bottom:1px solid #d4c69e;
   padding:5px 9px; text-align:left; font-family:'IBM Plex Sans Thai',sans-serif; }
@@ -14598,7 +14612,11 @@ window.fruitCleanName = fruitCleanName;
 function fruitColor(name) {
   if (!name) return '#b0a07a';
   const nm = String(name).trim();
-  const f = (window.fruitNames || []).find(x => x.name === nm);
+  // เทียบแบบจัดมาตรฐาน: "ลำไย"(ำ U+0E33) กับ "ลําไย"(นิคหิต+า) ตาเห็นเหมือนกันแต่คนละรหัส
+  // เดิมเทียบ x.name === nm ตรงๆ → ชื่อที่อยู่ในคลังจริงกลับได้สีเทา (#b0a07a) แทนสีที่ตั้งไว้
+  const key = (v) => (typeof window.fruitCleanName === 'function') ? window.fruitCleanName(v) : String(v == null ? '' : v).trim();
+  const k = key(nm);
+  const f = (window.fruitNames || []).find(x => x && key(x.name) === k);
   return (f && f.color) ? f.color : '#b0a07a';
 }
 window.fruitColor = fruitColor;
@@ -15156,7 +15174,7 @@ let _pfSenObs = null;
 
 function pfCardHtml(f, admin, prevForm) {
   const actions = admin ? '<div class="pf-card-act"><button onclick="pfOpenEdit(\'' + f.id + '\')" title="แก้">✎</button><button class="del" onclick="pfDeleteForm(\'' + f.id + '\')" title="ลบ">🗑</button></div>' : '';
-  return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + pfHi(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f, prevForm) + '</div>' + actions + '</div>';
+  return '<div class="pf-card' + (admin ? ' has-act' : '') + '"><div class="pf-card-top"><span class="pf-card-name">' + (f.fruit ? '<span class="lc-fruit-dot" style="background:' + fruitColor(f.fruit) + '"></span>' : '') + pfHi(f.fruit || '—') + '</span><span class="pf-card-date">' + pfDateLabel(f.date) + '</span></div><div class="pf-chips">' + pfRowChips(f, prevForm) + '</div>' + actions + '</div>';
 }
 
 // หาใบก่อนหน้าของผลไม้เดียวกัน (วันที่ < ใบนี้ ที่ใกล้สุด) จากทั้งคลัง
@@ -19312,7 +19330,7 @@ function renderList() {
           <button class="lc-pencil" data-qid="${q.id}" title="จัดการ" aria-label="จัดการ"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
         </div>
         <div class="list-card-top">
-          <div><span class="lc-name">${escapeHtml(q.customer || '—')}</span><span class="lc-fruit">${escapeHtml(q.fruit||'')}</span></div>
+          <div><span class="lc-name">${escapeHtml(q.customer || '—')}</span><span class="lc-fruit">${q.fruit ? `<span class="lc-fruit-dot sm" style="background:${fruitColor(q.fruit)}"></span>` : ''}${escapeHtml(q.fruit||'')}</span></div>
           <div class="lc-date">${fmtDate(q.date)}</div>
         </div>
         <div class="list-card-bot">
@@ -22108,7 +22126,7 @@ function renderListView() {
         <div class="lc-row1">
           <div class="lc-name-block">
             <span class="lc-name">${gbEscapeHtml(g.name||'')}</span>
-            <span class="lc-fruit">— <span class="lc-fruit-name">${gbEscapeHtml(g.fruit||'—')}</span></span>
+            <span class="lc-fruit">— ${g.fruit ? `<span class="lc-fruit-dot" style="background:${fruitColor(g.fruit)}"></span>` : ''}<span class="lc-fruit-name">${gbEscapeHtml(g.fruit||'—')}</span></span>
           </div>
           <div class="lc-row1-right">
             ${row1Chips.join('')}
