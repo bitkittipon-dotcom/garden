@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1098;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (98)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1100;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (100)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -1367,7 +1367,9 @@ window.supaReady = false;
   /* ── Expenses ───────────────────────────── */
   .expenses {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* minmax(0,1fr) สำคัญ: 1fr เฉยๆ = minmax(auto,1fr) → คอลัมน์พองตามความกว้างตั้งต้นของ <input>
+       (grid item .exp-row มี min-width:auto) จนกริดล้นจอ = ช่องเกินหายบนมือถือ */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px 14px;
     padding: 8px 4px;
     margin-top: 4px;
@@ -11282,16 +11284,55 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   }
 
 
-/* ── ค่าเปิดสวน (ดึงจากสวน) ── */
-.gcost-box { background:#f7efd8; border:1.5px solid #cbb884; border-radius:11px; padding:10px; margin-bottom:10px; }
-.gcost-top { display:flex; align-items:center; gap:9px; margin-bottom:9px; }
-.gcost-types { display:flex; gap:6px; flex-wrap:wrap; }
-.gcost-sel { flex:1; min-width:76px; text-align:center; border:1.5px solid #cbb884; border-radius:8px; padding:7px 4px; font-size:12px; color:#6b5a33; background:#fff; cursor:pointer; line-height:1.35; }
-.gcost-sel .v { display:block; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#3a6b2a; margin-top:2px; }
-.gcost-sel.on { border-color:#3f7a3f; border-width:2px; background:#eef7ec; color:#2f5c2f; font-weight:700; }
-.gcost-hint { font-size:10.5px; color:#8a7350; margin-top:7px; }
+/* ── รายได้เพิ่มเติม: ตารางแตกหัวเขียว + ปุ่ม + popup ── */
+.section-h.inc-h { border-left-color:#3f9a5a; color:#2f7a3f; }
+.inc-tbl { margin-bottom:9px; }
+.inc-tbl table { width:100%; border-collapse:collapse; }
+.inc-tbl th { background:#2f5c2f; color:#e8f2e0; font-family:'IBM Plex Sans Thai',sans-serif; font-size:11px; font-weight:600; padding:7px 9px; text-align:left; }
+.inc-tbl th:last-child { text-align:right; }
+.inc-tbl td { background:#f2f8ee; border-bottom:1px solid #d8e8d0; padding:8px 9px; font-size:13px; color:#2f2a1c; }
+.inc-tbl td.amt { text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:#2f7a3f; }
+.inc-tbl td.del { text-align:center; width:34px; }
+.inc-tbl td.del button { border:none; background:none; color:#c33; font-size:13px; cursor:pointer; }
+.inc-tbl .foot td { background:#e6f0e0; font-family:'IBM Plex Sans Thai',sans-serif; font-weight:700; color:#2f5c2f; font-size:12.5px; }
+.inc-tbl .foot td.amt { font-family:'JetBrains Mono',monospace; font-size:14px; }
+.inc-add-btn { width:100%; padding:11px; border:1.5px dashed #7cb88c; border-radius:11px; background:#f2f8ee; color:#2f7a3f; font-weight:700; font-size:13px; font-family:inherit; cursor:pointer; margin-bottom:12px; }
+.inc-add-btn:active { background:#e6f0e0; }
+.inc-pop-bg { position:fixed; inset:0; z-index:9000; background:rgba(40,35,25,.5); display:flex; align-items:center; justify-content:center; padding:24px; }
+.inc-pop { background:#fdf8ec; border-radius:16px; padding:18px; width:100%; max-width:340px; box-shadow:0 12px 40px rgba(0,0,0,.3); }
+.inc-pop h3 { margin:0 0 14px; font-size:15px; color:#4a3c1c; }
+.inc-lbl { font-size:12px; color:#8a7350; margin:0 0 5px; font-weight:600; }
+.inc-in { width:100%; border:1.5px solid #d8cba8; border-radius:10px; padding:11px 13px; font-size:14px; margin-bottom:13px; font-family:inherit; color:#3a2f14; background:#fff; }
+.inc-in.money { font-family:'JetBrains Mono',monospace; font-weight:700; text-align:right; }
+.inc-pop-btns { display:flex; gap:9px; }
+.inc-pop-btns button { flex:1; padding:12px; border:none; border-radius:11px; font-weight:700; font-size:13.5px; font-family:inherit; cursor:pointer; }
+.inc-cancel { background:#eee5cf; color:#6b5a33; }
+.inc-ok { background:#2f8a4a; color:#fff; }
+
+/* ── ค่าเปิดสวน: แถวปกติ + ป้ายแบบเล็ก (สูงเท่าแถวอื่น) ── */
+/* กินเต็มบรรทัด: เซลล์ในกริดแถวเดียวกันจะยืดสูงเท่ากัน — ถ้าไม่ span แถวข้างๆ จะถูกลากให้พองตาม */
+#f-gcost-wrap, #f-process-row, #f-process-calc { grid-column: 1 / -1; }
+.expenses > .exp-row, .expenses > div { min-width: 0; }   /* กันเซลล์พองดันคอลัมน์ */
+.gc-row { min-width:0; }
+.exp-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gc-badge { flex:0 0 auto; border:1px solid #9fc48f; background:#eef7ec; color:#3f6b2a;
+  border-radius:6px; padding:2px 8px; font-size:10.5px; font-weight:700; font-family:inherit;
+  white-space:nowrap; cursor:pointer; line-height:1.5; }
+.gc-badge .car { font-size:8px; opacity:.65; }
+.gc-badge.edited { border-color:#d8cba8; border-style:dashed; background:#fbf7ec; color:#8a7350; }
+.gc-hint { grid-column:1 / -1; font-size:10px; color:#a99b7c; margin:-5px 0 0; padding-left:2px; }
+#gc-drop { grid-column:1 / -1; }
+.gc-sheet { border:1.5px solid #cbb884; border-radius:11px; background:#fdf8ec; padding:9px; margin:6px 0 2px; }
+.gc-gname { font-size:10.5px; color:#8a7350; margin-bottom:6px; }
+.gc-it { display:flex; justify-content:space-between; align-items:center; gap:8px;
+  padding:8px 10px; border-radius:8px; font-size:12.5px; color:#4a3c1c; cursor:pointer; }
+.gc-it + .gc-it { border-top:1px solid #f0ead8; }
+.gc-it.on { background:#e6f2e3; font-weight:700; color:#2f5c2f; }
+.gc-it .v { font-family:'JetBrains Mono',monospace; font-weight:700; color:#3a6b2a; white-space:nowrap; }
+.gc-it.na { cursor:default; color:#b0a582; }
+.gc-it.na .v { color:#c0b596; font-weight:400; }
 /* ── ค่าจัดทำ: ปุ่มสลับโหมด + คูณ ── */
-.pmode-tog { display:flex; gap:6px; margin-left:auto; margin-right:8px; }
+.pmode-tog { display:flex; gap:6px; margin-left:auto; margin-right:8px; flex:0 0 auto; align-items:center; line-height:1; }
 .pmode-tog .pm { border:1.5px solid #d8cba8; border-radius:7px; padding:3px 10px; font-size:11px; color:#8a7350; background:#fff; cursor:pointer; }
 .pmode-tog .pm.on { border-color:#5a7a3a; border-width:2px; background:#eef4e6; color:#3f6b2a; font-weight:700; }
 .pcalc { display:flex; align-items:center; gap:7px; padding:7px 2px; }
@@ -11772,6 +11813,10 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
         <tbody id="sold-body"></tbody>
         <tfoot id="sold-foot"></tfoot>
       </table>
+
+      <!-- ── รายได้เพิ่มเติม: ตารางแตกหัวเขียว · กรอกเอง · นับเป็นรายได้ (บวกเข้ายอดขาย) ── -->
+      <div id="f-income-wrap"></div>
+      <button class="inc-add-btn" onclick="incOpenAdd()">+ เพิ่มรายการ</button>
 
       <div class="section-h">ค่าใช้จ่าย / หัก</div>
       <div class="expenses">
@@ -16039,11 +16084,12 @@ function renderSummary_form() {
   if (_fProcMode === 'mul' && document.getElementById('f-proc-rate')) { try { procMulCalc(); } catch (e) {} }
   const totalKg = rows.reduce((s, r) => s + totalKgOf(r), 0);
   const quotedAmt = rows.reduce((s, r) => s + totalKgOf(r) * (Number(r.quotedPrice) || 0), 0);
-  const soldAmt = rows.reduce((s, r) => s + totalKgOf(r) * (Number(r.soldPrice) || 0), 0);
+  const incomeAmt = incTotal();                     // รายได้เพิ่มเติม → บวกเข้ายอดขาย
+  const soldAmt = rows.reduce((s, r) => s + totalKgOf(r) * (Number(r.soldPrice) || 0), 0) + incomeAmt;
   const exp = ['f-roast','f-transport','f-process','f-deduct','f-gcost']
     .reduce((s, id) => s + (numCv(id) || 0), 0);   // + ค่าเปิดสวน (จุด 3A)
 
-  const hasSold = rows.some(r => Number(r.soldPrice) > 0);
+  const hasSold = rows.some(r => Number(r.soldPrice) > 0) || incomeAmt > 0;   // มีรายได้เพิ่มก็ถือว่าขายแล้ว (A)
   const profit = hasSold ? soldAmt - quotedAmt - exp : null;
   const pct = (hasSold && quotedAmt > 0) ? (profit / quotedAmt * 100) : null;
 
@@ -16281,30 +16327,57 @@ function renderGardenCost() {
   const g = _curBillGarden();
   const opts = g ? gardenCostOptions(g) : null;
   const hasAny = opts && (opts.lump != null || opts['kg-all'] != null || opts['kg-grade'] != null);
-  // บิลไม่ผูกสวน หรือสวนไม่มีราคา → ช่องกรอกเอง
-  if (!hasAny) {
-    host.innerHTML = '<div class="exp-row"><span class="exp-label">ค่าเปิดสวน</span>'
-      + '<input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-gcost" placeholder="—"'
-      + ' oninput="_fGCostEdited=true;renderSummary_form()"></div>';
-    return;
+  const cur = document.getElementById('f-gcost');
+  const curVal = cur ? cur.value : '';
+  // ── ป้ายแบบ (เหมา/รายโล/แยกเบอร์) — เล็ก อยู่ในแถวเดียวกัน ไม่กินความสูง ──
+  let badge = '';
+  if (hasAny) {
+    const n = ['lump', 'kg-all', 'kg-grade'].filter(t => opts[t] != null).length;
+    badge = '<button type="button" class="gc-badge' + (_fGCostEdited ? ' edited' : '') + '" onclick="gcToggleDrop()">'
+      + gcBadgeText(n) + '</button>';
   }
-  // มีสวน → แสดงตัวเลือก + ยอดที่เลือก (แก้เองได้)
-  const chips = Object.keys(_GCOST_LBL).map(t => {
-    if (opts[t] == null) return '';
-    const on = (_fGCostType === t && !_fGCostEdited) ? ' on' : '';
-    return '<div class="gcost-sel' + on + '" onclick="pickGardenCost(\'' + t + '\')">' + _GCOST_LBL[t]
-      + '<span class="v">' + fmt(Math.round(opts[t])) + '</span></div>';
-  }).join('');
-  const curVal = document.getElementById('f-gcost') ? document.getElementById('f-gcost').value : '';
   host.innerHTML =
-    '<div class="gcost-box">'
-    + '<div class="gcost-top"><span class="exp-label">ค่าเปิดสวน</span>'
+    '<div class="exp-row gc-row">'
+    + '<span class="exp-label">ค่าเปิดสวน</span>'
+    + badge
     + '<input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-gcost" placeholder="—" value="' + gbEscapeHtml(curVal) + '"'
-    + ' oninput="_fGCostEdited=true;gcostSyncChips();renderSummary_form()"></div>'
-    + '<div class="gcost-types">' + chips + '</div>'
-    + '<div class="gcost-hint">📇 ดึงจากสวน "' + gbEscapeHtml(g.name || '') + '" — แตะเลือกแบบที่ใช้จริง หรือพิมพ์แก้เอง</div>'
-    + '</div>';
+    + ' oninput="_fGCostEdited=true;gcMarkEdited();renderSummary_form()">'
+    + '</div>'
+    + (hasAny ? '<div class="gc-hint">📇 ' + gbEscapeHtml(g.name || '') + '</div>' : '')
+    + '<div id="gc-drop"></div>';
 }
+
+// ข้อความบนป้าย — แก้เองแล้วก็บอกให้รู้ว่าไม่ผูกกับแบบไหน
+function gcBadgeText(n) {
+  const lbl = _fGCostEdited ? 'แก้เอง' : (_fGCostType ? _GCOST_LBL[_fGCostType] : 'เลือกแบบ');
+  return lbl + (n > 1 || !_fGCostType ? ' <span class="car">▾</span>' : '');
+}
+
+// พิมพ์แก้เอง → เปลี่ยนแค่ป้าย ห้ามวาดแถวใหม่ (แป้นพิมพ์จะเด้งปิด/เสีย focus)
+window.gcMarkEdited = function () {
+  const b = document.querySelector('.gc-badge'); if (!b) return;
+  const g = _curBillGarden(); const opts = g ? gardenCostOptions(g) : null;
+  const n = opts ? ['lump', 'kg-all', 'kg-grade'].filter(t => opts[t] != null).length : 0;
+  b.classList.add('edited');
+  b.innerHTML = gcBadgeText(n);
+};
+
+// แตะป้าย → กาง/พับ แผ่นเลือกแบบ (โชว์ยอดทั้ง 3 แบบ + ชื่อสวน)
+window.gcToggleDrop = function () {
+  const host = document.getElementById('gc-drop'); if (!host) return;
+  if (host.innerHTML.trim()) { host.innerHTML = ''; return; }
+  const g = _curBillGarden(); const opts = g ? gardenCostOptions(g) : null;
+  if (!opts) return;
+  const items = ['lump', 'kg-all', 'kg-grade'].map(t => {
+    const has = opts[t] != null;
+    return '<div class="gc-it' + ((_fGCostType === t && !_fGCostEdited) ? ' on' : '') + (has ? '' : ' na') + '"'
+      + (has ? ' onclick="pickGardenCost(\'' + t + '\')"' : '') + '>'
+      + '<span>' + _GCOST_LBL[t] + '</span>'
+      + '<span class="v">' + (has ? fmt(Math.round(opts[t])) : 'ไม่มีข้อมูล') + '</span></div>';
+  }).join('');
+  host.innerHTML = '<div class="gc-sheet"><div class="gc-gname">📇 ดึงจากสวน "' + gbEscapeHtml(g.name || '') + '"</div>'
+    + items + '</div>';
+};
 
 // แตะเลือกแบบ → เติมยอด (ยกเลิกสถานะแก้เอง)
 window.pickGardenCost = function (t) {
@@ -16314,11 +16387,6 @@ window.pickGardenCost = function (t) {
   const inp = document.getElementById('f-gcost'); if (inp) inp.value = fmt(Math.round(opts[t]));
   renderGardenCost(); renderSummary_form();
   if (typeof haptic === 'function') haptic(8);
-};
-
-// พิมพ์แก้เอง → ตัวเลือกจางลง (แต่ยังกดเปลี่ยนได้)
-window.gcostSyncChips = function () {
-  document.querySelectorAll('.gcost-sel').forEach(e => e.classList.remove('on'));
 };
 
 // ── ค่าจัดทำ: สลับโหมด ใส่เอง / คูณ ──
@@ -16345,12 +16413,80 @@ function renderProcessMode() {
       '<div class="pcalc"><span class="pkg">' + fmt(kg) + ' กก.</span><span class="pop">×</span>'
       + '<input class="prate" type="text" data-comma="1" inputmode="decimal" id="f-proc-rate" placeholder="0" value="' + gbEscapeHtml(rate === '' ? '' : String(rate)) + '" oninput="procMulCalc()">'
       + '<span class="peq">=</span><span class="pres" id="f-proc-res">' + fmt(Math.round((Number(rate) || 0) * kg)) + '</span></div>'
-      + '<div class="gcost-hint" style="margin-left:2px">' + fmt(kg) + ' = น้ำหนักรวมทุกเบอร์ (ดึงมาเอง) · พิมพ์แค่เรทต่อโล</div>';
+      + '<div class="gc-hint" style="margin:2px 0 0 2px">' + fmt(kg) + ' = น้ำหนักรวมทุกเบอร์ (ดึงมาเอง) · พิมพ์แค่เรทต่อโล</div>';
   } else {
     inp.style.display = '';
     calc.style.display = 'none'; calc.innerHTML = '';
   }
 }
+
+// ═══════════ รายได้เพิ่มเติม (กรอกเอง · นับเป็นรายได้ · บวกเข้ายอดขาย) ═══════════
+// เก็บใน q.extraIncome = [{name, amount}] · รวมยอดบวกเข้า sold ทั้งสูตร live + การ์ด
+let _fIncome = [];   // [{name, amount}] ของบิลที่เปิดอยู่
+
+function incTotal() {
+  return _fIncome.reduce((s, it) => s + (Number(it.amount) || 0), 0);
+}
+
+function renderIncome() {
+  const host = document.getElementById('f-income-wrap'); if (!host) return;
+  if (!_fIncome.length) { host.innerHTML = ''; return; }   // ไม่มีรายการ = ไม่โชว์ตาราง (แค่ปุ่ม)
+  const rows = _fIncome.map((it, i) =>
+    '<tr><td>' + pfEsc(it.name || '—') + '</td>'
+    + '<td class="amt">' + fmt(Number(it.amount) || 0) + '</td>'
+    + '<td class="del"><button onclick="incDelete(' + i + ')" title="ลบ">✕</button></td></tr>'
+  ).join('');
+  host.innerHTML =
+    '<div class="section-h inc-h">💰 รายได้เพิ่มเติม</div>'
+    + '<div class="inc-tbl"><table>'
+    + '<tr><th>รายการ</th><th>จำนวนเงิน</th><th></th></tr>'
+    + rows
+    + '<tr class="foot"><td>รวมรายได้เพิ่ม</td><td class="amt">+' + fmt(incTotal()) + '</td><td></td></tr>'
+    + '</table></div>';
+}
+
+// ── popup เพิ่มรายการ (2 ช่อง: ชื่อ + จำนวนเงิน) ──
+window.incOpenAdd = function () {
+  const host = document.getElementById('inc-pop-host') || (() => {
+    const d = document.createElement('div'); d.id = 'inc-pop-host'; document.body.appendChild(d); return d;
+  })();
+  host.innerHTML =
+    '<div class="inc-pop-bg" onclick="if(event.target===this)incCloseAdd()">'
+    + '<div class="inc-pop">'
+    + '<h3>💰 เพิ่มรายได้</h3>'
+    + '<div class="inc-lbl">ชื่อรายการ</div>'
+    + '<input id="inc-name" class="inc-in" type="text" placeholder="เช่น ขายเปลือกลำไย" autocomplete="off">'
+    + '<div class="inc-lbl">จำนวนเงิน (บาท)</div>'
+    + '<input id="inc-amt" class="inc-in money" type="text" data-comma="1" inputmode="decimal" placeholder="0">'
+    + '<div class="inc-pop-btns"><button class="inc-cancel" onclick="incCloseAdd()">ยกเลิก</button>'
+    + '<button class="inc-ok" onclick="incConfirmAdd()">✓ เพิ่ม</button></div>'
+    + '</div></div>';
+  setTimeout(() => { const n = document.getElementById('inc-name'); if (n) n.focus(); }, 60);
+};
+
+window.incCloseAdd = function () {
+  const host = document.getElementById('inc-pop-host'); if (host) host.innerHTML = '';
+};
+
+window.incConfirmAdd = function () {
+  const nameEl = document.getElementById('inc-name');
+  const amtEl = document.getElementById('inc-amt');
+  const name = (nameEl ? nameEl.value : '').trim();
+  const amt = amtEl ? (numCv('inc-amt') || 0) : 0;
+  if (!name && !amt) { incCloseAdd(); return; }         // ว่างทั้งคู่ = ยกเลิก
+  if (!amt) { if (typeof toast === 'function') toast('ใส่จำนวนเงินด้วย'); return; }
+  _fIncome.push({ name: name || 'รายได้เพิ่ม', amount: amt });
+  incCloseAdd();
+  renderIncome();
+  renderSummary_form();                                  // กำไรอัปเดตทันที
+  if (typeof haptic === 'function') haptic(8);
+};
+
+window.incDelete = function (i) {
+  _fIncome.splice(i, 1);
+  renderIncome();
+  renderSummary_form();
+};
 
 // คูณสด: น้ำหนักรวม × เรท → เก็บผลลัพธ์ลง f-process (สูตรหักไม่ต้องแก้)
 window.procMulCalc = function () {
@@ -18262,6 +18398,7 @@ function readForm() {
       processMode: _fProcMode || 'manual',        // โหมดค่าจัดทำ
       processRate: (_fProcMode === 'mul') ? (numCv('f-proc-rate') || 0) : 0,   // เรทตอนคูณ
       }; })(),
+    extraIncome: _fIncome.map(it => ({ name: it.name || '', amount: Number(it.amount) || 0 })),   // รายได้เพิ่มเติม
     updatedAt: Date.now(),
   };
 }
@@ -18403,9 +18540,11 @@ function resetForm() {
   orchMode = 'A';
   // ── รีเซ็ตสถานะค่าเปิดสวน + ค่าจัดทำ ──
   _fGCostType = null; _fGCostEdited = false; _fProcMode = 'manual'; window._fProcRate = null;
+  _fIncome = [];   // เคลียร์รายได้เพิ่มเติม
   { const _gc = document.getElementById('f-gcost'); if (_gc) _gc.value = ''; }
   if (typeof renderGardenCost === 'function') renderGardenCost();
   if (typeof renderProcessMode === 'function') renderProcessMode();
+  if (typeof renderIncome === 'function') renderIncome();
   ['f-customer','f-market','f-roast','f-transport','f-process','f-deduct',
    'f-orch-buy','f-orch-transport','f-orch-other','f-orch-totalkg',
    'f-pk-transport','f-pk-other',
@@ -18666,6 +18805,9 @@ function loadQuote(id) {
     renderGardenCost();
     { const _gc = document.getElementById('f-gcost'); if (_gc && q.expenses?.gardenCost) _gc.value = fmt(Math.round(q.expenses.gardenCost)); }
     renderProcessMode();
+    // ── คืนรายได้เพิ่มเติม ──
+    _fIncome = (Array.isArray(q.extraIncome) ? q.extraIncome : []).map(it => ({ name: (it && it.name) || '', amount: Number(it && it.amount) || 0 }));
+    renderIncome();
     rows = (q.rows || []).map(r => makeRow(r));
     if (rows.length === 0) rows = [makeRow()];
     applyFormType();
@@ -19048,9 +19190,10 @@ function calcQuoteSummary(q) {
   const _kgOf = (r) => (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
   const totalKg = _rows.reduce((s, r) => s + _kgOf(r), 0);
   const quoted = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.quotedPrice) || 0), 0);
-  const sold = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.soldPrice) || 0), 0);
+  const incomeAmt = (Array.isArray(q.extraIncome) ? q.extraIncome : []).reduce((s, it) => s + (Number(it && it.amount) || 0), 0);
+  const sold = _rows.reduce((s, r) => s + _kgOf(r) * (Number(r.soldPrice) || 0), 0) + incomeAmt;   // + รายได้เพิ่ม
   const exp = (q.expenses?.roasting || 0) + (q.expenses?.transport || 0) + (q.expenses?.processing || 0) + (q.expenses?.deduct || 0) + (q.expenses?.gardenCost || 0);
-  const hasSold = _rows.some(r => (Number(r.soldPrice) || 0) > 0);
+  const hasSold = _rows.some(r => (Number(r.soldPrice) || 0) > 0) || incomeAmt > 0;   // มีรายได้เพิ่มก็นับ (A)
   const profit = hasSold ? sold - quoted - exp : null;
   return { totalKg, quoted, sold, exp, profit, hasSold };
 }
