@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1100;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (100)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1101;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (101)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -16411,7 +16411,7 @@ function renderProcessMode() {
     calc.style.display = '';
     calc.innerHTML =
       '<div class="pcalc"><span class="pkg">' + fmt(kg) + ' กก.</span><span class="pop">×</span>'
-      + '<input class="prate" type="text" data-comma="1" inputmode="decimal" id="f-proc-rate" placeholder="0" value="' + gbEscapeHtml(rate === '' ? '' : String(rate)) + '" oninput="procMulCalc()">'
+      + '<input class="prate" type="text" data-comma="1" inputmode="decimal" id="f-proc-rate" placeholder="0" value="' + gbEscapeHtml(rate === '' ? '' : String(rate)) + '" oninput="procMulCalc();renderSummary_form()">'
       + '<span class="peq">=</span><span class="pres" id="f-proc-res">' + fmt(Math.round((Number(rate) || 0) * kg)) + '</span></div>'
       + '<div class="gc-hint" style="margin:2px 0 0 2px">' + fmt(kg) + ' = น้ำหนักรวมทุกเบอร์ (ดึงมาเอง) · พิมพ์แค่เรทต่อโล</div>';
   } else {
@@ -16489,6 +16489,10 @@ window.incDelete = function (i) {
 };
 
 // คูณสด: น้ำหนักรวม × เรท → เก็บผลลัพธ์ลง f-process (สูตรหักไม่ต้องแก้)
+// ⚠ ห้ามเรียก renderSummary_form() ในนี้ — renderSummary_form เรียก procMulCalc อยู่แล้ว = วนไม่จบ
+//    ผู้เรียกต้องสั่งวาดสรุปเอง (ช่องเรทใช้ oninput="procMulCalc();renderSummary_form()")
+//    บั๊ก build 1097-1100: ช่องเรทเรียกแค่ procMulCalc() → ตัวเลขในช่องเปลี่ยนแต่ยอดหัก/กำไรบนจอไม่ขยับ
+//    (ช่องค่าใช้จ่ายคงที่ 4 ช่องมี listener ตอนเปิดแอป · ช่องที่สร้างทีหลังต้องผูก oninput เอง)
 window.procMulCalc = function () {
   const kg = rows.reduce((s, r) => s + totalKgOf(r), 0);
   const rate = numCv('f-proc-rate') || 0;
