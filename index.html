@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1104;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (104)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1105;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (105)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -5098,7 +5098,12 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
       background: linear-gradient(180deg,rgba(255,255,255,0.35),transparent);
       border-radius: 6px 6px 0 0;
     }
-    #garden-view .lc-bar-fill.over { animation: lcOverPulse 2.4s ease-in-out infinite; }
+    #garden-view .lc-bar-fill.over { animation: lcOverPulse 2.4s ease-in-out infinite;
+    /* B3: แสงฟุ้งเข้าชุดกับป้ายน้ำหนัก (.lc-curlbl.over) · แทน inset เงาดำฐานที่ทำให้ดูทึบ
+       lcOverPulse ใช้ filter:brightness ไม่ชนกับ box-shadow → เงาจะเต้นตามไปด้วย */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6),
+                0 0 14px rgba(40,224,106,0.8),
+                0 0 4px rgba(40,224,106,1); }
     @keyframes lcOverPulse { 0%,100%{filter:brightness(1);} 50%{filter:brightness(1.08);} }
     @media (prefers-reduced-motion: reduce) { #garden-view .lc-bar-fill.over { animation: none; } }
 
@@ -22083,9 +22088,12 @@ function renderListView() {
       const tgtPct  = isExceeded ? (totKg > 0 ? (tgtKg / totKg) * 100 : 100) : 100;
       const pctTxt = Math.round(rawPct) + '%';
       const gradScale = isExceeded ? 100 : (fillPct > 0 ? Math.round(10000 / Math.max(fillPct, 1)) : 100);
+      // ไล่สี A2 — เดิมโทนอุ่นกิน 75% ของหลอด (เขียวโผล่แค่ช่วง 75-100%) เลยรู้สึกเหลืองเยอะกว่าเขียว
+      //         ใหม่: เขียวเริ่มที่ 55% · ช่วงเหลืองแคบลง
+      // เลยเป้า B3 — เดิม #34c759→#0a7a30 ท้ายเข้มจนดูทึบ · ใหม่สว่างทั้งหลอด (แสงฟุ้งอยู่ใน CSS .over)
       const fillStyle = isExceeded
-        ? `width:100%;background:linear-gradient(90deg,#34c759,#0a7a30);`
-        : `width:${fillPct}%;background:linear-gradient(90deg,#ef9f27 0%,#f0c060 30%,#fcd34d 50%,#97c459 75%,#639922 100%);background-size:${gradScale}% 100%;background-repeat:no-repeat;`;
+        ? `width:100%;background:linear-gradient(90deg,#8dff9b,#28e06a 55%,#12c956);`
+        : `width:${fillPct}%;background:linear-gradient(90deg,#ef9f27 0%,#f0b03a 20%,#ecc84e 38%,#b9cd57 55%,#7ab63c 75%,#479a1c 100%);background-size:${gradScale}% 100%;background-repeat:no-repeat;`;
       let pctColor = '#b85a00';
       if (isExceeded) pctColor = '#166534';
       else if (rawPct >= 90) pctColor = '#2c4a08';
