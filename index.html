@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1105;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (105)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1106;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (106)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11326,6 +11326,22 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .gc-badge .car { font-size:8px; opacity:.65; }
 .gc-badge.edited { border-color:#d8cba8; border-style:dashed; background:#fbf7ec; color:#8a7350; }
 .gc-hint { grid-column:1 / -1; font-size:10px; color:#a99b7c; margin:-5px 0 0; padding-left:2px; }
+/* 🌳 ชื่อสวน — อยู่เหนือแถวค่าเปิดสวน */
+.gc-treeline { grid-column:1 / -1; display:flex; align-items:center; gap:5px; font-size:11px; color:#5a7a3a; font-weight:600; margin:0 0 3px; padding-left:2px; }
+.gc-treeline .ic { font-size:13px; }
+/* ── ค่าจัดทำ คูณแยกเบอร์ ── */
+.pg-tbl { grid-column:1 / -1; margin:6px 0 2px; }
+.pg-line { display:grid; grid-template-columns:52px 1fr auto 58px 60px; align-items:center; gap:7px; padding:6px 2px; border-bottom:1px dotted var(--paper-line); }
+.pg-line .gr { font-weight:700; color:#4a3c1c; font-size:12.5px; }
+.pg-line .kg { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6b5a33; text-align:right; white-space:nowrap; }
+.pg-line .x { color:#8a7350; font-weight:700; font-size:12px; }
+.pg-line .rate { width:56px; text-align:center; background:#fff; border:1.5px solid #5a7a3a; border-radius:6px; padding:5px 4px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#2a1c0c; }
+/* ช่องที่ตามช่องแรก (ยังไม่แก้เอง) — เลขจาง เอียง บอกว่า "ตามช่องแรก" */
+.pg-line .rate.copied { color:#aa9c72; border-color:#cdbf95; font-weight:600; font-style:italic; }
+.pg-line .res { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; color:#3a6b2a; text-align:right; white-space:nowrap; }
+.pg-foot { grid-column:1 / -1; display:flex; justify-content:space-between; align-items:center; padding:8px 4px 2px; font-weight:700; color:#3f6b2a; }
+.pg-foot .v { font-family:'JetBrains Mono',monospace; font-size:15px; }
+.pg-note { grid-column:1 / -1; font-size:10px; color:#a99b7c; margin:3px 0 0 2px; line-height:1.4; }
 #gc-drop { grid-column:1 / -1; }
 .gc-sheet { border:1.5px solid #cbb884; border-radius:11px; background:#fdf8ec; padding:9px; margin:6px 0 2px; }
 .gc-gname { font-size:10.5px; color:#8a7350; margin-bottom:6px; }
@@ -16319,7 +16335,20 @@ function setOrchardMode(m) {
 // สำคัญ: ค่าจัดทำโหมดคูณ "เก็บผลลัพธ์" ลง f-process เหมือนเดิม → สูตรหักทั้ง 2 ที่ (15829/18683) ไม่ต้องแก้เลย
 let _fGCostType = null;      // แบบที่เลือกอยู่
 let _fGCostEdited = false;   // พิมพ์ทับเองแล้วหรือยัง
-let _fProcMode = 'manual';   // โหมดค่าจัดทำ
+let _fProcMode = 'manual';   // โหมดค่าจัดทำ (manual/mul/grade)
+// คูณแยกเบอร์: เก็บเรทต่อเบอร์ { [grade]: {v, own} } · own=true แปลว่าผู้ใช้แก้ช่องนั้นเอง (ไม่ตามช่องแรก)
+let _fProcGrades = {};
+// จำเรทครั้งก่อน "ข้ามบิล" ผ่าน localStorage
+const _PROC_MEM_KEY = 'thodsapon_proc_lastrate_v1';
+function _procMemLoad() {
+  try { return JSON.parse(localStorage.getItem(_PROC_MEM_KEY) || '{}') || {}; } catch (e) { return {}; }
+}
+function _procMemSave(patch) {
+  try {
+    const cur = _procMemLoad();
+    localStorage.setItem(_PROC_MEM_KEY, JSON.stringify(Object.assign(cur, patch)));
+  } catch (e) {}
+}
 
 // คิดยอดค่าเปิดสวนทั้ง 3 แบบจากข้อมูลสวน
 function gardenCostOptions(g) {
@@ -16375,13 +16404,13 @@ function renderGardenCost() {
       + gcBadgeText(n) + '</button>';
   }
   host.innerHTML =
-    '<div class="exp-row gc-row">'
+    (hasAny ? '<div class="gc-treeline"><span class="ic">🌳</span><span>' + gbEscapeHtml(g.name || '') + '</span></div>' : '')
+    + '<div class="exp-row gc-row">'
     + '<span class="exp-label">ค่าเปิดสวน</span>'
     + badge
     + '<input class="exp-input" type="text" data-comma="1" inputmode="decimal" id="f-gcost" placeholder="—" value="' + gbEscapeHtml(curVal) + '"'
     + ' oninput="_fGCostEdited=true;gcMarkEdited();renderSummary_form()">'
     + '</div>'
-    + (hasAny ? '<div class="gc-hint">📇 ' + gbEscapeHtml(g.name || '') + '</div>' : '')
     + '<div id="gc-drop"></div>';
 }
 
@@ -16430,7 +16459,19 @@ window.pickGardenCost = function (t) {
 // ── ค่าจัดทำ: สลับโหมด ใส่เอง / คูณ ──
 window.setProcessMode = function (m) {
   _fProcMode = m;
+  // เข้าโหมดแยกเบอร์แล้วยังไม่มีเรทในบิลนี้ → เติมจากที่จำข้ามบิลไว้
+  if (m === 'grade' && (!_fProcGrades || !Object.keys(_fProcGrades).length)) {
+    const mem = _procMemLoad();
+    if (mem.grade && typeof mem.grade === 'object') {
+      _fProcGrades = {};
+      Object.keys(mem.grade).forEach(k => {
+        const s = mem.grade[k] || {};
+        _fProcGrades[k] = { v: (s.v != null ? s.v : ''), own: !!s.own };
+      });
+    }
+  }
   renderProcessMode();
+  if (m === 'grade') procGradeApply();   // เขียนผลรวมลง f-process ทันที
   renderSummary_form();
 };
 
@@ -16441,22 +16482,126 @@ function renderProcessMode() {
   if (!tog || !calc || !inp) return;
   tog.innerHTML =
     '<span class="pm' + (_fProcMode === 'manual' ? ' on' : '') + '" onclick="setProcessMode(\'manual\')">ใส่เอง</span>'
-    + '<span class="pm' + (_fProcMode === 'mul' ? ' on' : '') + '" onclick="setProcessMode(\'mul\')">คูณ ✕</span>';
+    + '<span class="pm' + (_fProcMode === 'mul' ? ' on' : '') + '" onclick="setProcessMode(\'mul\')">คูณรวม</span>'
+    + '<span class="pm' + (_fProcMode === 'grade' ? ' on' : '') + '" onclick="setProcessMode(\'grade\')">แยกเบอร์</span>';
   if (_fProcMode === 'mul') {
     inp.style.display = 'none';                         // ซ่อนช่องใส่เอง
     const kg = rows.reduce((s, r) => s + totalKgOf(r), 0);
-    const rate = (window._fProcRate != null) ? window._fProcRate : (numCv('f-process') && kg ? (numCv('f-process') / kg) : '');
+    let rate = (window._fProcRate != null) ? window._fProcRate : (numCv('f-process') && kg ? (numCv('f-process') / kg) : '');
+    if (rate === '' || rate == null) { const m = _procMemLoad(); if (m.mul != null && m.mul !== '') rate = m.mul; }   // จำข้ามบิล
     calc.style.display = '';
     calc.innerHTML =
       '<div class="pcalc"><span class="pkg">' + fmt(kg) + ' กก.</span><span class="pop">×</span>'
       + '<input class="prate" type="text" data-comma="1" inputmode="decimal" id="f-proc-rate" placeholder="0" value="' + gbEscapeHtml(rate === '' ? '' : String(rate)) + '" oninput="procMulCalc();renderSummary_form()">'
       + '<span class="peq">=</span><span class="pres" id="f-proc-res">' + fmt(Math.round((Number(rate) || 0) * kg)) + '</span></div>'
       + '<div class="gc-hint" style="margin:2px 0 0 2px">' + fmt(kg) + ' = น้ำหนักรวมทุกเบอร์ (ดึงมาเอง) · พิมพ์แค่เรทต่อโล</div>';
+    if (rate !== '' && rate != null) procMulCalc();      // เติมเรทที่จำไว้ → คิดผลลัพธ์ลง f-process ทันที
+  } else if (_fProcMode === 'grade') {
+    inp.style.display = 'none';
+    calc.style.display = '';
+    renderProcGrades();
   } else {
     inp.style.display = '';
     calc.style.display = 'none'; calc.innerHTML = '';
   }
 }
+
+// ── รวมเบอร์ในบิล (บิลรวมยุบเบอร์เดียวกันข้ามวัน) → [{grade, kg}] ──
+function procGradeList() {
+  const map = new Map();
+  rows.forEach(r => {
+    const g = (typeof _mgShown === 'function') ? (_mgShown(r) || '') : (r.grade || '');
+    if (!g && !totalKgOf(r)) return;
+    const key = g || '—';
+    map.set(key, (map.get(key) || 0) + totalKgOf(r));
+  });
+  return [...map.entries()].map(([grade, kg]) => ({ grade, kg }));
+}
+
+// เรทที่ "ใช้จริง" ของเบอร์ (own=ของตัวเอง · ไม่ own=ตามช่องแรก)
+function _procEff(list, i) {
+  const st = _fProcGrades[list[i].grade] || {};
+  if (st.own) return st.v;
+  if (st.v !== '' && st.v != null) return st.v;
+  const first = _fProcGrades[list[0].grade] || {};
+  return (first.v !== '' && first.v != null) ? first.v : '';
+}
+
+function procGradeTotal() {
+  const list = procGradeList();
+  return list.reduce((s, r, i) => s + (Number(_procEff(list, i)) || 0) * r.kg, 0);
+}
+
+// เขียนผลรวมลง f-process (สูตรหักอ่านตรงนี้ เหมือนคูณรวม) + จำข้ามบิล
+function procGradeApply() {
+  const total = procGradeTotal();
+  const inp = document.getElementById('f-process'); if (inp) inp.value = total ? String(Math.round(total)) : '';
+  _procMemSave({ grade: _fProcGrades });
+}
+
+function renderProcGrades() {
+  const calc = document.getElementById('f-process-calc'); if (!calc) return;
+  const list = procGradeList();
+  if (!list.length) { calc.innerHTML = '<div class="gc-hint" style="margin:4px 0 0 2px">ยังไม่มีเบอร์ในบิล</div>'; return; }
+  const firstGrade = list[0].grade;
+  const lines = list.map((r, i) => {
+    const st = _fProcGrades[r.grade] || {};
+    const own = !!st.own;
+    let shown, cls;
+    if (i === 0) { shown = (st.v != null ? st.v : ''); cls = ''; }
+    else if (own) { shown = (st.v != null ? st.v : ''); cls = ''; }
+    else { const f = _fProcGrades[firstGrade] || {}; shown = (f.v != null ? f.v : ''); cls = shown !== '' ? 'copied' : ''; }
+    const eff = _procEff(list, i);
+    const res = (Number(eff) || 0) * r.kg;
+    return '<div class="pg-line">'
+      + '<span class="gr">' + gbEscapeHtml(r.grade) + '</span>'
+      + '<span class="kg">' + fmt(r.kg) + ' กก.</span>'
+      + '<span class="x">×</span>'
+      + '<input class="rate ' + cls + '" type="text" inputmode="decimal" data-i="' + i + '" value="' + gbEscapeHtml(String(shown)) + '"'
+      + ' onfocus="procGradeFocus(' + i + ',this)" oninput="procGradeInput(' + i + ',this)">'
+      + '<span class="res" data-i="' + i + '">' + (res ? fmt(Math.round(res)) : '—') + '</span>'
+      + '</div>';
+  }).join('');
+  calc.innerHTML = '<div class="pg-tbl">' + lines
+    + '<div class="pg-foot"><span>รวมค่าจัดทำ</span><span class="v" id="pg-total">' + fmt(Math.round(procGradeTotal())) + '</span></div>'
+    + '<div class="pg-note">ช่องแรก (' + gbEscapeHtml(firstGrade) + ') เป็นต้นแบบ · ช่องอื่นตัวจาง = ตามช่องแรก · แตะพิมพ์ทับได้เลย</div>'
+    + '</div>';
+}
+
+// แตะช่องที่ยังตามช่องแรก → เคลียร์ว่างให้พิมพ์ทับทันที (ไม่ต้องลบ)
+window.procGradeFocus = function (i, el) {
+  const list = procGradeList(); if (i === 0 || !list[i]) return;
+  const st = _fProcGrades[list[i].grade] || {};
+  if (st.own) return;                       // แก้เองแล้ว = ช่องปกติ
+  el.value = ''; el.classList.remove('copied');
+};
+
+// พิมพ์เรท → อัปเดตผลลัพธ์ + ช่องที่ยังตามช่องแรก (ไม่ re-render กัน focus หลุด)
+window.procGradeInput = function (i, el) {
+  const list = procGradeList(); if (!list[i]) return;
+  const grade = list[i].grade;
+  const st = _fProcGrades[grade] || (_fProcGrades[grade] = { v: '', own: false });
+  st.v = el.value;
+  if (i !== 0) st.own = (el.value !== '');   // พิมพ์=ยึดเอง · ลบหมด=กลับไปตามช่องแรก
+  // อัปเดตทุกแถว: ช่องจางตามช่องแรก + ผลลัพธ์
+  const linEls = document.querySelectorAll('#f-process-calc .pg-line');
+  list.forEach((r, j) => {
+    const stj = _fProcGrades[r.grade] || {};
+    const rt = linEls[j] ? linEls[j].querySelector('.rate') : null;
+    const rs = linEls[j] ? linEls[j].querySelector('.res') : null;
+    if (rt && j !== 0 && !stj.own) {
+      const f = _fProcGrades[list[0].grade] || {};
+      rt.value = (f.v != null ? f.v : '');
+      rt.classList.toggle('copied', rt.value !== '');
+    }
+    const eff = _procEff(list, j);
+    const res = (Number(eff) || 0) * r.kg;
+    if (rs) rs.textContent = res ? fmt(Math.round(res)) : '—';
+  });
+  const tot = document.getElementById('pg-total'); if (tot) tot.textContent = fmt(Math.round(procGradeTotal()));
+  procGradeApply();
+  renderSummary_form();
+};
 
 // ═══════════ รายได้เพิ่มเติม (กรอกเอง · นับเป็นรายได้ · บวกเข้ายอดขาย) ═══════════
 // เก็บใน q.extraIncome = [{name, amount}] · รวมยอดบวกเข้า sold ทั้งสูตร live + การ์ด
@@ -18427,18 +18572,20 @@ function readForm() {
       soldPrice: Number(r.soldPrice) || 0,
     })),
     expenses: (() => {
-      // โหมดคูณ: บังคับคำนวณผลลัพธ์ล่าสุดลง f-process ก่อนอ่าน (กันค่าเก่าค้าง)
+      // โหมดคูณ/แยกเบอร์: บังคับคำนวณผลลัพธ์ล่าสุดลง f-process ก่อนอ่าน (กันค่าเก่าค้าง)
       if (_fProcMode === 'mul' && document.getElementById('f-proc-rate')) { try { procMulCalc(); } catch (e) {} }
+      if (_fProcMode === 'grade') { try { procGradeApply(); } catch (e) {} }
       return {
       roasting: numCv('f-roast') || 0,
       transport: numCv('f-transport') || 0,
-      processing: numCv('f-process') || 0,      // โหมดคูณเก็บผลลัพธ์ไว้แล้ว → สูตรหักอ่านตรงนี้ได้เลย
+      processing: numCv('f-process') || 0,      // โหมดคูณ/แยกเบอร์เก็บผลลัพธ์ไว้แล้ว → สูตรหักอ่านตรงนี้ได้เลย
       deduct: numCv('f-deduct') || 0,
       gardenCost: numCv('f-gcost') || 0,         // ค่าเปิดสวน (ผลลัพธ์)
       gardenCostType: _fGCostType || '',         // แบบที่เลือก (จำไว้)
       gardenCostEdited: !!_fGCostEdited,          // พิมพ์แก้เองไหม
-      processMode: _fProcMode || 'manual',        // โหมดค่าจัดทำ
-      processRate: (_fProcMode === 'mul') ? (numCv('f-proc-rate') || 0) : 0,   // เรทตอนคูณ
+      processMode: _fProcMode || 'manual',        // โหมดค่าจัดทำ (manual/mul/grade)
+      processRate: (_fProcMode === 'mul') ? (numCv('f-proc-rate') || 0) : 0,   // เรทตอนคูณรวม
+      processGrades: (_fProcMode === 'grade') ? JSON.parse(JSON.stringify(_fProcGrades || {})) : null,   // เรทแยกเบอร์
       }; })(),
     extraIncome: _fIncome.map(it => ({ name: it.name || '', amount: Number(it.amount) || 0 })),   // รายได้เพิ่มเติม
     updatedAt: Date.now(),
@@ -18590,7 +18737,7 @@ function resetForm() {
   formType = 'wholesale';
   orchMode = 'A';
   // ── รีเซ็ตสถานะค่าเปิดสวน + ค่าจัดทำ ──
-  _fGCostType = null; _fGCostEdited = false; _fProcMode = 'manual'; window._fProcRate = null;
+  _fGCostType = null; _fGCostEdited = false; _fProcMode = 'manual'; window._fProcRate = null; _fProcGrades = {};
   _fIncome = [];   // เคลียร์รายได้เพิ่มเติม
   { const _gc = document.getElementById('f-gcost'); if (_gc) _gc.value = ''; }
   if (typeof renderGardenCost === 'function') renderGardenCost();
@@ -18853,6 +19000,8 @@ function loadQuote(id) {
     _fGCostEdited = !!(q.expenses?.gardenCostEdited);
     _fProcMode = q.expenses?.processMode || 'manual';
     window._fProcRate = (q.expenses?.processRate) || null;
+    _fProcGrades = (q.expenses?.processGrades && typeof q.expenses.processGrades === 'object')
+      ? JSON.parse(JSON.stringify(q.expenses.processGrades)) : {};
     renderGardenCost();
     { const _gc = document.getElementById('f-gcost'); if (_gc && q.expenses?.gardenCost) _gc.value = fmt(Math.round(q.expenses.gardenCost)); }
     renderProcessMode();
