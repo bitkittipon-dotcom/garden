@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1106;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (106)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1123;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (123)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -1467,6 +1467,25 @@ window.supaReady = false;
     display: flex; gap: 10px;
     margin-top: 16px;
   }
+  /* ── บิลดูอย่างเดียว (ไม่มีสิทธิ์แก้ไขบิล) ── */
+  .bill-ro-banner {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin: 0 0 12px; padding: 8px 12px; border-radius: 9px;
+    background: rgba(180,120,60,0.14); border: 1px solid rgba(150,95,45,0.4);
+    color: #7a4a12; font-size: 12.5px; font-weight: 800;
+  }
+  #view-new.bill-ro .paper form,
+  #view-new.bill-ro .form-plan,
+  #view-new.bill-ro #form-plan,
+  #view-new.bill-ro .expenses,
+  #view-new.bill-ro .meta-grid,
+  #view-new.bill-ro .rows-wrap,
+  #view-new.bill-ro .section-body { pointer-events: none; opacity: 0.72; }
+  #view-new.bill-ro .btn-row { display: none !important; }
+  #view-new.bill-ro .meta-input,
+  #view-new.bill-ro input,
+  #view-new.bill-ro select,
+  #view-new.bill-ro textarea { pointer-events: none; background: rgba(0,0,0,0.03); }
   .btn {
     flex: 1;
     background: var(--accent);
@@ -1995,6 +2014,47 @@ window.supaReady = false;
   border: 2px solid #2d1f10; box-shadow: 0 1px 3px rgba(0,0,0,0.45);
 }
 @keyframes lib-mail-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+/* ── ปุ่มจดหมายลอย V3 (ทุกหน้า · มุมบนขวา · กรอบทองเด่น) ── */
+/* ── ปุ่มจดหมายในบาร์ (ทุกหน้า) · 2 สไตล์: ทอง(หน้าแรก) + ไม้วอลนัท(หน้า vintage) ── */
+.mail-hdr {
+  position: relative; width: 38px; height: 38px; padding: 0; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.mail-hdr:active { transform: scale(0.93); }
+.mail-hdr svg { width: 19px; height: 19px; display: block; }
+/* ทอง (หน้าแรก topbar) */
+.mail-hdr.gold {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.35);
+}
+/* ไม้วอลนัท (เข้าชุดปุ่มกล้อง/settings หน้า vintage) */
+.mail-hdr.walnut {
+  border-radius: 6px;
+  background: linear-gradient(180deg, #7a5318 0%, #5a3818 35%, #3a2010 75%, #2a1408 100%);
+  border: 1.5px solid #1a0e04;
+  box-shadow: inset 0 1px 0 rgba(212,175,55,0.45), inset 0 -2px 4px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.35);
+}
+.mail-hdr-count {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box;
+  border-radius: 8px; background: #c0392b; color: #fff;
+  font-size: 9px; font-weight: 800; line-height: 1; font-family: 'Sarabun', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid #1a1108; box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+}
+.mail-hdr-count.hide { display: none; }
+/* ตำแหน่งในหัวสวน (list/detail) — ชิดขวาคู่กับปุ่มอื่น */
+#garden-view .ph .mail-hdr.walnut { position: absolute; top: 50%; transform: translateY(-50%); }
+#garden-view .ph .mail-hdr.walnut:active { transform: translateY(-50%) scale(0.93); }
+.mail-float-count {
+  position: absolute; top: -6px; right: -6px;
+  min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box;
+  border-radius: 9px; background: #c0392b; color: #fff;
+  font-size: 10px; font-weight: 800; line-height: 1; font-family: 'Sarabun', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid #2d1f10; box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+}
 /* ── ปุ่มซิงค์ลอย มุมขวาล่าง (หน้า Library) ── */
 .home-sync-fab {
   position: fixed; z-index: 60;
@@ -2388,6 +2448,15 @@ window.supaReady = false;
 }
 .user-badge.admin { background: rgba(180,40,40,0.2); color: #ff8a78; border-color: rgba(180,40,40,0.5); }
 .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+/* ── sub-option "แก้ไขบิล" ซ้อนใต้ profitView ── */
+.perm-sub-wrap { grid-column: 1 / -1; margin-top: 2px; padding-left: 14px; position: relative; }
+.perm-sub-wrap::before { content: ''; position: absolute; left: 5px; top: -2px; bottom: 50%; width: 11px; border-left: 2px solid rgba(212,175,55,0.3); border-bottom: 2px solid rgba(212,175,55,0.3); border-radius: 0 0 0 5px; }
+.perm-sub { display: flex; align-items: center; gap: 7px; background: rgba(212,175,55,0.07); border: 1px dashed rgba(212,175,55,0.35); border-radius: 6px; padding: 7px 10px; margin-left: 8px; font-size: 12px; color: #f4e8c8; cursor: pointer; }
+.perm-sub input { accent-color: #e8a23c; }
+.perm-sub-st { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.perm-sub-st.edit { background: rgba(122,182,60,0.2); color: #9bd45c; }
+.perm-sub-st.view { background: rgba(180,120,60,0.2); color: #e0a86a; }
+.perm-sub-hint { font-size: 9px; color: #a8946a; margin: 5px 0 0 24px; line-height: 1.5; }
 .perm-chk {
   display: flex; align-items: center; gap: 6px;
   background: rgba(0,0,0,0.2);
@@ -4561,6 +4630,10 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     overflow: hidden;
     white-space: nowrap;
   }
+  /* จำกัดความกว้างชื่อ/ป้าย ให้ clip (ellipsis) ก่อนถึงปุ่มจดหมาย+กล้อง (padding ไม่ตัด text) */
+  /* จำกัดความกว้างชื่อสวน detail ให้ clip (ellipsis) ก่อนถึงปุ่มจดหมาย (ชื่อยาวจะล้นทับ) */
+  #detail-view .ph .title-th, #detail-view .ph .sub { padding: 0; max-width: 146px; margin-left: auto; margin-right: auto; }
+  #detail-view .ph .sub { margin-top: 2px; }
   /* ── ตราสถานะเล็ก หน้าชื่อสวน (สีเดิมของแอป) ── */
   #garden-view .ph .ns-hd-stamp {
     display: inline-block;
@@ -5028,10 +5101,19 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     }
     #garden-view .lc-daycard .d { font-size: 12px; font-weight: 800; color: #5a3818; line-height: 1; font-family: 'JetBrains Mono', monospace; }
     #garden-view .lc-daycard .m { font-size: 8px; color: #9a8a63; font-weight: 600; margin-top: 1px; }
-    #garden-view .lc-daycard.last { border-color: #4a6928; background: #f1f7e8; }
-    #garden-view .lc-daycard.last .d { color: #4a6928; }
     /* ── กดชิปวัน → ขยายทุกใบ แถวเดียวเลื่อนแนวนอน (ตอนย่อ = ขนาดเดิม) ── */
     #garden-view .lc-daycard { cursor: pointer; transition: min-width .3s cubic-bezier(.22,.61,.36,1), background .25s, border-color .25s, box-shadow .25s; }
+    /* ── ปุ่ม "+" เข้าเก็บเที่ยวใหม่ (variant C — glow + pulse) ท้ายแถววัน ── */
+    #garden-view .lc-addcard {
+      display: inline-flex; align-items: center; justify-content: center; align-self: stretch;
+      min-width: 32px; flex-shrink: 0; border-radius: 8px; cursor: pointer;
+      background: #fff;
+      border: 1.5px solid #22c55e;
+    }
+    #garden-view .lc-addcard:active { transform: scale(.94); }
+    #garden-view .lc-addcard svg { display: block; }
+    /* trips=0 → ปุ่ม + ต่อท้ายบรรทัดข้อความ (fixed height) */
+    #garden-view .lc-addcard.inline { align-self: center; min-height: 30px; margin-left: 8px; vertical-align: middle; }
     #garden-view .lc-daycard:active { transform: scale(.96); }
     #garden-view .lc-daycard .lc-body { width: 0; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .3s ease, opacity .2s ease, margin .3s ease; }
     #garden-view .lc-daycard .lc-sep { height: 1px; background: rgba(74,105,40,.25); margin: 3px 0 4px; }
@@ -5044,7 +5126,6 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-daywrap.open::-webkit-scrollbar { height: 5px; }
     #garden-view .lc-daywrap.open::-webkit-scrollbar-thumb { background: rgba(74,105,40,.4); border-radius: 3px; }
     #garden-view .lc-daywrap.open .lc-daycard { min-width: 96px; border-color: #4a6928; background: #f4faec; box-shadow: 0 2px 6px rgba(74,105,40,.22); }
-    #garden-view .lc-daywrap.open .lc-daycard.last { background: #eef7e0; }
     /* เงาจางขอบขวา บอกว่าเลื่อนซ้าย-ขวาดูต่อได้ */
     #garden-view .lc-drow:has(.lc-daywrap.open)::after { content: ''; position: absolute; top: 0; right: 0; bottom: 6px; width: 24px; pointer-events: none; background: linear-gradient(90deg, rgba(240,228,192,0), rgba(240,228,192,0.92)); }
     /* ── กล่องกำไร/ขาดทุนบนการ์ด ── */
@@ -5063,18 +5144,20 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-pb-arr { font-size: 8px; vertical-align: 1px; margin-right: 1px; }
     #garden-view .lc-pbox.gain .lc-pb-amt, #garden-view .lc-pbox.gain .lc-pb-pct { color: #2f7d1f; }
     #garden-view .lc-pbox.loss .lc-pb-amt, #garden-view .lc-pbox.loss .lc-pb-pct { color: #b5281b; }
-    #garden-view .lc-pb-view { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s, opacity .2s, margin .25s; }
-    #garden-view .lc-pbox.open .lc-pb-view { max-height: 34px; opacity: 1; margin-top: 7px; }
-    #garden-view .lc-pb-viewbtn { display: block; width: 100%; text-align: center; font-size: 11.5px; font-weight: 800; border-radius: 7px; padding: 5px; border: 1px solid; background: #fff; cursor: pointer; font-family: inherit; }
+    #garden-view .lc-pb-view { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s, opacity .2s, margin .25s; display:flex; gap:6px; }
+    #garden-view .lc-pbox.open .lc-pb-view { max-height: 40px; opacity: 1; margin-top: 7px; }
+    #garden-view .lc-pb-viewbtn { display: block; width: 100%; flex:1; text-align: center; font-size: 11.5px; font-weight: 800; border-radius: 7px; padding: 5px; border: 1px solid; background: #fff; cursor: pointer; font-family: inherit; }
     #garden-view .lc-pbox.gain .lc-pb-viewbtn { color: #2f7d1f; border-color: #4a9e3a; }
     #garden-view .lc-pbox.loss .lc-pb-viewbtn { color: #b5281b; border-color: #c0392b; }
+    #garden-view .lc-pb-sumbtn { color: #8a6f2f; border-color: #c9a24a; background:linear-gradient(180deg,#fbf6ea,#f5eeda); }
     #garden-view .lc-daywrap.open .lc-daycard .lc-body { width: 100%; max-height: 170px; opacity: 1; margin-top: 4px; }
 
     #garden-view .lc-bar-row {
       display: flex;
       align-items: center;
       gap: 9px;
-      margin-top: 30px;   /* เผื่อที่ให้หมุด/ป้ายลอยด้านบน */
+      margin-top: 24px;    /* เผื่อป้ายน้ำหนักลอยด้านบน (เป้าย้ายลงล่างแล้ว) */
+      margin-bottom: 6px;  /* เผื่อป้ายเป้าใต้หลอด — net 0 กับ margin-top ที่ลด (การ์ดไม่โต) */
     }
     #garden-view .lc-bar-track {
       flex: 1;
@@ -5138,19 +5221,20 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     }
     #garden-view .lc-curlbl.over::after { border-top-color: #14cf5a; }
     #garden-view .lc-curlbl .lc-up { width: 11px; height: 11px; flex-shrink: 0; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.22)); }
-    /* เป้า — ลอยปลายหลอด ไม่มีกรอบ + ขีดแดงที่ปลาย */
+    /* เป้า — ป้ายอยู่ใต้หลอด กึ่งกลางที่ขีดตำแหน่ง + ขีดแดงในหลอด */
     #garden-view .lc-tgt-end {
       position: absolute; bottom: 18px; right: 0; transform: translateX(50%);
       font-size: 10.5px; font-weight: 700; color: #c0392b; white-space: nowrap; z-index: 4;
     }
     #garden-view .lc-tgt-cap {
       position: absolute; top: -4px; bottom: -4px; right: 0; width: 2px;
-      background: rgba(192,57,43,0.6); border-radius: 2px; z-index: 3;
+      background: rgba(192,57,43,0.7); border-radius: 2px; z-index: 3;
     }
-    /* เลยเป้า — label เหนือเส้นขีดแดง */
-    #garden-view .lc-tgt-ticklbl {
-      position: absolute; bottom: 18px; transform: translateX(-50%);
-      font-size: 10.5px; font-weight: 700; color: #c0392b; white-space: nowrap; z-index: 4;
+    /* ป้ายเป้าใต้หลอด (ทั้งปกติ+เลยเป้า) — กึ่งกลางที่ขีดตำแหน่ง + กึ่งกลางแนวตั้งในช่องไฟ */
+    #garden-view .lc-tgt-blabel {
+      position: absolute; top: calc(100% + 5.5px); transform: translateX(-50%);
+      font-size: 9.5px; font-weight: 700; line-height: 1; color: #c0392b; white-space: nowrap;
+      font-variant-numeric: tabular-nums; z-index: 4;
     }
 
     #garden-view .lc-bar-pct {
@@ -7380,59 +7464,72 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   }
 
   /* Progress bar (V2 — gradient ตาม %) */
-  #garden-view .ns-progress-wrap { margin: 10px 0 6px; }
+  #garden-view .ns-progress-wrap { margin: 24px 0 6px; }
   #garden-view .ns-progress-track {
     position: relative;
-    height: 24px;
-    background: #f5e9c5;
-    border: 1px solid rgba(107,68,35,0.3);
-    border-radius: 3px;
+    height: 12px;
+    background: linear-gradient(180deg,#d8c89e,#e6d6ab);
+    border: 1px solid rgba(90,56,24,0.5);
+    border-radius: 7px;
+    box-shadow: inset 0 1px 3px rgba(90,56,24,0.28);
     overflow: visible;
   }
   #garden-view .ns-progress-fill {
     height: 100%;
-    border-radius: 3px 0 0 3px;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 3px rgba(0,0,0,0.12);
     transition: width 0.3s ease;
   }
+  #garden-view .ns-progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 50% 0;
+    background: linear-gradient(180deg,rgba(255,255,255,0.35),transparent);
+    border-radius: 6px 6px 0 0;
+  }
   #garden-view .ns-progress-fill.over {
-    background: #4ade80 !important;
-    border-radius: 3px;
+    border-radius: 6px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 14px rgba(40,224,106,0.8), 0 0 4px rgba(40,224,106,1);
   }
   #garden-view .ns-progress-target {
     position: absolute;
-    top: -3px;
-    width: 2px;
-    height: 30px;
-    background: #6b4423;
+    top: -4px;
+    bottom: -4px;
+    height: auto;
+    width: 0;
+    border-left: 2px solid #c0392b;
+    background: none;
+    z-index: 2;
   }
-  #garden-view .ns-progress-target::after {
-    content: 'เป้า';
-    position: absolute;
-    top: -14px;
-    right: -10px;
-    font-size: 9px;
-    color: #6b4423;
-    font-weight: 700;
-    white-space: nowrap;
-  }
+  #garden-view .ns-progress-target::after { content: none; }
   /* over-target marker (set by user) */
   #garden-view .ns-progress-over-marker {
     position: absolute;
-    top: -3px;
-    width: 2px;
-    height: 30px;
-    background: #4ade80;
+    top: -4px;
+    bottom: -4px;
+    height: auto;
+    width: 0;
+    border-left: 2px solid #14a04a;
+    background: none;
+    z-index: 2;
   }
-  #garden-view .ns-progress-over-marker::after {
-    content: 'เกินเป้า';
-    position: absolute;
-    top: -14px;
-    right: -16px;
-    font-size: 9px;
-    color: #166534;
-    font-weight: 700;
-    white-space: nowrap;
+  #garden-view .ns-progress-over-marker::after { content: none; }
+  /* pill "now" ลอยบนหลอด — สไตล์เดียวกับหน้าสรุป (.gsum-wcur) */
+  #garden-view .ns-progress-cur {
+    position: absolute; bottom: 18px; transform: translateX(-50%); white-space: nowrap;
+    font-weight: 800; font-size: 10.5px; padding: 2.5px 8px 3px;
+    display: inline-flex; align-items: center; gap: 4px; border-radius: 9px; line-height: 1.15;
+    color: #fff; background: linear-gradient(135deg,#7ed957,#2f7d3f);
+    border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 2px 4px rgba(0,0,0,0.28);
+    z-index: 7; font-family: 'JetBrains Mono', monospace;
   }
+  #garden-view .ns-progress-cur.over { background: linear-gradient(135deg,#6af07a,#14cf5a); box-shadow: 0 0 0 1px rgba(255,255,255,0.25),0 2px 8px rgba(30,220,95,0.5); }
+  #garden-view .ns-progress-cur::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #2f7d3f; border-bottom: 0; }
+  #garden-view .ns-progress-cur.over::after { border-top-color: #14cf5a; }
+  #garden-view .ns-progress-cur.clampR::after { left: auto; right: 9px; transform: none; }
+  #garden-view .ns-progress-cur .up { width: 11px; height: 11px; }
   /* bar row with button beside */
   #garden-view .ns-bar-row {
     display: flex;
@@ -7480,9 +7577,15 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-top: 10px;
+    margin-top: 18px;
     font-size: 11px;
     color: #5a3818;
+  }
+  /* ป้ายเป้า 🎯 ใต้หลอด detail — กึ่งกลางที่เส้น marker */
+  #garden-view .ns-progress-tgtblabel {
+    position: absolute; top: calc(100% + 5.5px); transform: translateX(-50%);
+    font-size: 9.5px; font-weight: 700; line-height: 1; color: #c0392b; white-space: nowrap;
+    font-variant-numeric: tabular-nums; z-index: 4;
   }
   #garden-view .ns-progress-labels .now {
     font-weight: 800;
@@ -11376,6 +11479,176 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
              inset 0 1px 1px rgba(255,255,255,.55),
              inset 0 -1px 1px rgba(0,0,0,.18); }
 
+/* ═══════════ หน้าสรุปสวนเต็มจอ (garden summary overlay) ═══════════ */
+.gsum-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column;
+  overflow:hidden; font-family:'IBM Plex Sans Thai',sans-serif; }
+.gsum-ov.open { display:flex; }
+.gsum-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:11px 14px;
+  display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+.gsum-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8;
+  border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+.gsum-hd .ti { flex:1; min-width:0; }
+.gsum-hd .ti .t1 { font-weight:800; font-size:16px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gsum-hd .ti .t2 { font-size:10.5px; color:#c9b88a; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gsum-hd .badge { background:#f3ecd4; border:1px solid #c9a24a; color:#6b5320; border-radius:999px;
+  padding:2px 9px; font-size:10.5px; font-weight:800; white-space:nowrap; }
+.gsum-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 12px 30px; }
+.gsum-body .wrap { max-width:460px; margin:0 auto; }
+
+/* กล่องกำไร B1 */
+.gsum-hero { background:linear-gradient(180deg,#faf5e8,#f3ecd8); border-radius:14px; border:1px solid #c9a24a;
+  padding:14px 16px 15px; box-shadow:0 2px 8px rgba(201,162,74,.13), inset 0 1px 0 rgba(255,255,255,.5); }
+.gsum-hero.loss { }
+.gsum-hero .hd2 { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+.gsum-hero .hd2 .ic { font-size:13px; }
+.gsum-hero .hd2 .lbl { font-size:11.5px; color:#8a6f2f; font-weight:700; letter-spacing:.2px; }
+.gsum-hero .hd2 .pct { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px;
+  color:#2f7d1f; background:rgba(74,158,58,.12); border-radius:999px; padding:2px 9px; }
+.gsum-hero.loss .hd2 .pct { color:#b5281b; background:rgba(181,40,27,.1); }
+.gsum-hero .amt { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:33px; color:#1f6b12; line-height:1.05; letter-spacing:.3px; }
+.gsum-hero.loss .amt { color:#a01e12; }
+.gsum-hero .amt .cur { font-size:15px; color:#7a9b5a; font-weight:700; margin-left:3px; }
+.gsum-hero.loss .amt .cur { color:#b58a82; }
+.gsum-hero .cmp { margin-top:12px; padding-top:12px; border-top:1px solid rgba(201,162,74,.28); }
+.gsum-cbar { display:flex; align-items:center; gap:9px; margin:6px 0; }
+.gsum-cbar .k { font-size:11px; color:#8a7350; width:30px; font-weight:600; }
+.gsum-cbar .tk { flex:1; height:10.5px; background:rgba(255,255,255,.65); border-radius:99px; overflow:hidden; box-shadow:inset 0 1px 1px rgba(0,0,0,.05); }
+.gsum-cbar .fl { height:100%; border-radius:99px; }
+.gsum-cbar.c .fl { background:linear-gradient(90deg,#c99450,#b5732a); }
+.gsum-cbar.s .fl { background:linear-gradient(90deg,#5ab048,#2f7d1f); }
+.gsum-cbar .n { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px; color:#5a4a2a; width:60px; text-align:right; }
+
+/* กล่องสถิติ C1 */
+.gsum-stats { background:#fff; border-radius:14px; border:1px solid #c9a24a; overflow:hidden; box-shadow:0 3px 9px rgba(201,162,74,.16); margin-top:10px; }
+.gsum-stats .g { display:grid; grid-template-columns:1fr 1fr; }
+.gsum-scell { padding:14px 12px; text-align:center; position:relative; }
+.gsum-scell.top { background:linear-gradient(180deg,#f9f3e2,#f4edd7); }
+.gsum-scell .k { font-size:11px; color:#8a7350; font-weight:600; margin-bottom:4px; }
+.gsum-scell .v { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; color:#2a1c0c; letter-spacing:.3px; line-height:1; }
+.gsum-scell .v small { font-size:10.5px; color:#a99b7c; font-weight:600; margin-left:2px; }
+.gsum-scell.top .k { color:#8a6f2f; font-weight:700; }
+.gsum-scell.top .v { color:#5a4415; }
+.gsum-scell:nth-child(odd)::after { content:''; position:absolute; top:22%; bottom:22%; right:0; width:1px; background:#e0d6bd; }
+.gsum-scell.top:nth-child(odd)::after { background:rgba(201,162,74,.3); }
+.gsum-scell.top::before { content:''; position:absolute; left:14%; right:14%; bottom:0; height:1px; background:linear-gradient(90deg,transparent,#c9a24a,transparent); opacity:.55; }
+
+/* หัวข้อ section */
+.gsum-sec { font-size:11px; font-weight:800; color:#7a6533; margin:14px 2px 7px; text-transform:uppercase; letter-spacing:.3px; }
+
+/* หลอดน้ำหนัก vs เป้า (ลอย) */
+.gsum-wbar { display:flex; align-items:center; gap:9px; margin-top:24px; margin-bottom:16px; padding:0 4px; }
+.gsum-wtrack { flex:1; height:12px; background:linear-gradient(180deg,#d8c89e,#e6d6ab); border:1px solid rgba(90,56,24,.5); border-radius:7px; box-shadow:inset 0 1px 3px rgba(90,56,24,.28); position:relative; }
+.gsum-wfill { height:100%; border-radius:6px; position:relative; overflow:hidden; box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 3px rgba(0,0,0,.12); }
+.gsum-wfill::after { content:""; position:absolute; inset:0 0 50% 0; background:linear-gradient(180deg,rgba(255,255,255,.35),transparent); border-radius:6px 6px 0 0; }
+.gsum-wfill.over { box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 14px rgba(40,224,106,.8),0 0 4px rgba(40,224,106,1); }
+.gsum-wtick { position:absolute; top:-4px; bottom:-4px; width:0; border-left:2px solid #c0392b; z-index:2; }
+.gsum-wcur { position:absolute; bottom:18px; transform:translateX(-50%); white-space:nowrap; font-weight:800; font-size:10.5px; padding:2.5px 8px 3px; display:inline-flex; align-items:center; gap:4px; border-radius:9px; line-height:1.15; color:#fff; background:linear-gradient(135deg,#7ed957,#2f7d3f); border:1px solid rgba(255,255,255,.4); box-shadow:0 2px 4px rgba(0,0,0,.28); z-index:7; }
+.gsum-wcur.over { background:linear-gradient(135deg,#6af07a,#14cf5a); box-shadow:0 0 0 1px rgba(255,255,255,.25),0 2px 8px rgba(30,220,95,.5); }
+.gsum-wcur::after { content:""; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#2f7d3f; border-bottom:0; }
+.gsum-wcur.over::after { border-top-color:#14cf5a; }
+.gsum-wcur.clampR::after { left:auto; right:9px; transform:none; }
+.gsum-wtgtl { position:absolute; bottom:18px; transform:translateX(-50%); font-size:10.5px; font-weight:700; color:#c0392b; white-space:nowrap; z-index:4; }
+.gsum-wcur .up { width:11px; height:11px; }
+/* ป้ายเป้าใต้หลอด (ปกติ+เลยเป้า) กึ่งกลางที่ขีดตำแหน่ง + วงเล็บแดงปลายหลอด */
+.gsum-wtgtblabel { position:absolute; top:calc(100% + 5.5px); transform:translateX(-50%); font-size:9.5px; font-weight:700; line-height:1; color:#c0392b; white-space:nowrap; font-variant-numeric:tabular-nums; z-index:4; }
+.gsum-wtgtcap { position:absolute; top:-4px; bottom:-4px; right:0; width:2px; background:rgba(192,57,43,0.7); border-radius:2px; z-index:3; }
+.gsum-wpct { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12px; }
+
+/* น้ำหนักต่อเบอร์ (สไตล์ "เก็บไปแล้ว") */
+.gsum-gradebox { background:rgba(255,250,235,.35); border:1px solid rgba(107,68,35,.4); border-radius:5px; padding:12px 12px 10px; box-shadow:inset 0 0 0 1px rgba(212,175,55,.25); }
+.gsum-gradeh { text-align:center; font-size:14px; color:#3a1e0f; font-weight:800; letter-spacing:.5px; margin:0 0 12px; padding:0 0 4px; text-decoration:underline; text-decoration-color:#8b6f3f; text-underline-offset:5px; text-decoration-thickness:1.5px; }
+.gsum-grow { padding:6px 0; }
+.gsum-gtop { display:grid; grid-template-columns:60px 1fr 54px 26px 64px 26px; align-items:baseline; gap:4px; }
+.gsum-gname { font-family:'JetBrains Mono',monospace; font-weight:800; color:#5a3818; font-size:13px; }
+.gsum-gnum { font-family:'JetBrains Mono',monospace; font-weight:800; color:#2a1810; text-align:right; font-size:13px; }
+.gsum-gunit { color:#6b4423; font-weight:600; font-size:10px; text-align:left; padding-left:2px; }
+.gsum-gbarwrap { display:flex; align-items:center; gap:8px; margin-top:5px; }
+.gsum-gtrack { flex:1; height:6px; background:rgba(107,68,35,.1); border-radius:3px; overflow:hidden; }
+.gsum-gfill { height:100%; background:#639922; border-radius:3px; }
+.gsum-gpct { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#6b4423; width:34px; text-align:right; }
+.gsum-gtotal { display:flex; justify-content:center; align-items:baseline; gap:14px; margin-top:8px; padding-top:10px; border-top:1.5px solid rgba(107,68,35,.4); }
+/* ยอดขายต่อเบอร์ (V3 · หลอด 4px) — คอลัมน์ เบอร์ ตก. × นน = รวมกก. × ราคา = ยอด */
+.gsum-scgrid { display:grid; grid-template-columns:44px 40px 16px 26px 16px 52px 16px 34px 16px 1fr; align-items:baseline; gap:0; }
+.gsum-schead { font-size:8.5px; color:#a0906a; font-weight:700; padding:0 2px 6px; }
+.gsum-schead > span { text-align:center; }
+.gsum-schead > span:nth-child(1) { text-align:left; }
+.gsum-schead > span:nth-child(2) { text-align:right; }
+.gsum-schead > span:nth-child(10) { text-align:right; }
+.gsum-scrow { padding:8px 2px; }
+.gsum-scline { font-family:'JetBrains Mono',monospace; font-size:11.5px; }
+.gsum-scline .gname { text-align:left; font-weight:800; color:#5a3818; font-size:13px; }
+.gsum-scline .op { text-align:center; color:#8a7350; font-weight:700; }
+.gsum-scline .n { text-align:center; color:#4a3c1c; font-weight:700; }
+.gsum-scline .nR { text-align:right; color:#4a3c1c; font-weight:700; }
+.gsum-scline .sub2 { text-align:center; color:#7a6533; font-weight:700; }
+.gsum-scline .res { text-align:right; color:#2f7d1f; font-weight:800; font-size:12px; }
+.gsum-scline .daylbl { text-align:left; color:#a0906a; font-weight:600; font-size:9.5px; font-family:'IBM Plex Sans Thai',sans-serif; grid-column:1 / 2; }
+.gsum-scbar { display:flex; align-items:center; gap:8px; margin-top:6px; padding-left:44px; }
+.gsum-scbar .tk { flex:1; height:4px; background:rgba(107,68,35,.09); border-radius:3px; overflow:hidden; }
+.gsum-scbar .fl { height:100%; background:#639922; border-radius:3px; }
+.gsum-scbar .pc { font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700; color:#6b4423; width:32px; text-align:right; }
+/* เบอร์ที่แยกหลายวัน: หัวเบอร์ + บรรทัดย่อยรายวัน */
+.gsum-scmulti .mhead { display:flex; justify-content:space-between; align-items:baseline; padding:2px 2px 0; }
+.gsum-scmulti .mhead .gn { font-family:'JetBrains Mono',monospace; font-weight:800; color:#5a3818; font-size:13px; }
+.gsum-scmulti .mhead .mtot { font-family:'JetBrains Mono',monospace; font-weight:800; color:#2f7d1f; font-size:12px; }
+.gsum-scmulti .mline { display:grid; grid-template-columns:52px 40px 16px 26px 16px 52px 16px 34px 16px 1fr; align-items:baseline; gap:0; font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 2px 0; }
+.gsum-scmulti .mline .d { text-align:left; color:#a0906a; font-weight:600; font-size:9px; font-family:'IBM Plex Sans Thai',sans-serif; }
+.gsum-scmulti .mline .op { text-align:center; color:#8a7350; font-weight:700; }
+.gsum-scmulti .mline .n { text-align:center; color:#4a3c1c; font-weight:700; }
+.gsum-scmulti .mline .nR { text-align:right; color:#4a3c1c; font-weight:700; }
+.gsum-scmulti .mline .sub2 { text-align:center; color:#7a6533; font-weight:700; }
+.gsum-scmulti .mline .res { text-align:right; color:#3a6b2a; font-weight:700; }
+/* รายได้เพิ่ม (ไร้กรอบ) ในยอดขายต่อเบอร์ */
+.gsum-scinc { display:grid; grid-template-columns:1fr auto; align-items:center; padding:8px 2px 4px; margin-top:2px; }
+.gsum-scinc .nm { color:#8a6a2f; font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:5px; }
+.gsum-scinc .nm .bd { font-size:8.5px; background:#c9a24a; color:#fff; border-radius:3px; padding:1px 5px; font-weight:800; }
+.gsum-scinc .v { font-family:'JetBrains Mono',monospace; font-weight:800; color:#2f7d1f; font-size:12.5px; }
+/* ค่าจัดทำแยกเบอร์: กรอบสี่เหลี่ยม ไม่มีเส้นคั่นระหว่างเบอร์ */
+.gsum-procbox { border:1px solid rgba(107,68,35,.35); border-radius:6px; margin:8px 12px; padding:9px 10px 6px; background:#f5ecc8; }
+.gsum-proch { font-size:11px; color:#7a5a2a; font-weight:700; margin-bottom:6px; text-align:center; }
+.gsum-pgrid { display:grid; grid-template-columns:44px 40px 16px 26px 16px 54px 16px 30px 16px 1fr; align-items:baseline; gap:0; font-family:'JetBrains Mono',monospace; font-size:11px; padding:5px 0; }
+.gsum-pgrid .gname { text-align:left; font-weight:800; color:#5a3818; font-size:12.5px; }
+.gsum-pgrid .op { text-align:center; color:#8a7350; font-weight:700; }
+.gsum-pgrid .n { text-align:center; color:#4a3c1c; font-weight:700; }
+.gsum-pgrid .nR { text-align:right; color:#4a3c1c; font-weight:700; }
+.gsum-pgrid .sub2 { text-align:center; color:#7a6533; font-weight:700; }
+.gsum-pgrid .res { text-align:right; color:#b5732a; font-weight:800; font-size:11.5px; }
+.gsum-phead { font-size:8px; color:#a0906a; font-weight:700; padding:0 0 5px; }
+.gsum-phead > span { text-align:center; }
+.gsum-phead > span:nth-child(1) { text-align:left; }
+.gsum-phead > span:nth-child(2) { text-align:right; }
+.gsum-phead > span:nth-child(10) { text-align:right; }
+.gsum-procfoot { display:flex; justify-content:space-between; padding:6px 0 2px; margin-top:4px; border-top:1px dashed rgba(107,68,35,.3); font-size:11.5px; }
+.gsum-procfoot .l { color:#7a5a2a; font-weight:700; }
+.gsum-procfoot .v { font-family:'JetBrains Mono',monospace; font-weight:800; color:#b5732a; }
+.gsum-gtlbl { font-size:14px; color:#3a1e0f; font-weight:800; letter-spacing:.5px; }
+
+/* ตาราง (ค่าใช้จ่าย + ข้อมูล) */
+.gsum-tbl { background:#fff; border-radius:12px; border:1px solid #e0d6bd; overflow:hidden; }
+.gsum-trow { display:flex; justify-content:space-between; padding:7px 12px; font-size:12.5px; border-bottom:1px solid #e0d6bd; }
+.gsum-trow:last-child { border-bottom:none; }
+.gsum-trow .k { color:#4a3c1c; }
+.gsum-trow .k small { color:#8a7350; font-size:10.5px; }
+.gsum-trow .v { font-family:'JetBrains Mono',monospace; font-weight:700; color:#2a1c0c; }
+.gsum-trow .v.txt { font-family:inherit; font-weight:600; text-align:right; }
+.gsum-trow.total { background:#f7f2e2; font-weight:800; }
+/* กรอบค่าใช้จ่าย — เข้าชุดกับกรอบยอดขาย (พื้น+เหลี่ยมมุมเหมือน .gsum-gradebox) · กล่องค่าจัดทำคงสีเดิม */
+.gsum-exptbl { background:rgba(255,250,235,.35); border:1px solid rgba(107,68,35,.4); border-radius:5px; box-shadow:inset 0 0 0 1px rgba(212,175,55,.25); padding:6px 12px 10px; }
+.gsum-exptbl .gsum-trow { padding-left:0; padding-right:0; }
+.gsum-exptbl > .gsum-trow:first-child { border-bottom:none; }   /* ค่าเปิดสวน — ไม่มีเส้นคั่น */
+.gsum-exptbl .gsum-procbox { margin-left:0; margin-right:0; }    /* จัด margin ให้พอดีกรอบ (สี/กรอบเดิม) */
+.gsum-gtotal.gsum-expfoot { border-top:none; margin-top:2px; padding-top:2px; }   /* รวมค่าใช้จ่าย — ไม่มีเส้นคั่นด้านบน */
+.gsum-trow.total .v { color:#b5281b; }
+.gsum-trow .dot { display:inline-block; width:10px; height:10px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.15),inset 0 1px 1px rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.2); vertical-align:-1px; margin-right:4px; }
+
+/* ค้างจ่าย */
+.gsum-pay { margin-top:9px; border-radius:12px; padding:10px 13px; background:linear-gradient(135deg,#fff4e6,#ffe8cc); border:1.5px solid #e0a860; }
+.gsum-pay .r { display:flex; justify-content:space-between; padding:3px 0; font-size:12.5px; }
+.gsum-pay .r .k { color:#8a6a2f; font-weight:600; }
+.gsum-pay .r .v { font-family:'JetBrains Mono',monospace; font-weight:700; color:#8a5a1f; }
+.gsum-pay .r.big { border-top:1.5px solid #e0b878; margin-top:4px; padding-top:6px; font-size:14px; }
+.gsum-pay .r.big .v { color:#b5281b; font-weight:800; }
+
 /* ── บิลรวม: แถวหัวข้อวัน ── */
 tr.mg-dayhdr td { background:#e6dcc0; border-top:2.5px solid #b8942f; border-bottom:1px solid #d4c69e;
   padding:5px 9px; text-align:left; font-family:'IBM Plex Sans Thai',sans-serif; }
@@ -11649,6 +11922,7 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
     <button class="topbar-back" id="topbar-back" onclick="smartBack()" style="display:none;">← กลับ</button>
     <div class="topbar-brand">THODSAPON<span class="topbar-ver" id="topbar-ver"></span></div>
     <script>(function(){var e=document.getElementById('topbar-ver');if(e)e.textContent='v.'+(window.__APP_BUILD||'');})();</script>
+    <button class="mail-hdr gold" style="margin-right:auto;display:none;" onclick="mailNotifClick()" title="กล่องจดหมาย" aria-label="กล่องจดหมาย"><svg viewBox="0 0 24 24" fill="none" stroke="#e8c97a" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="mail-hdr-count hide">0</span></button>
     <div class="user-chip" onclick="toggleUserMenu(event)">
       <span class="avatar" id="user-avatar">L</span>
       <span id="user-name">เลก</span>
@@ -11748,6 +12022,7 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
       </button>
       <span class="brand-en">/ บัญชีตีราคา</span>
     </div>
+    <button class="mail-hdr walnut" style="display:none;margin-right:6px;align-self:center;" onclick="mailNotifClick()" title="กล่องจดหมาย" aria-label="กล่องจดหมาย"><svg viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="mail-hdr-count hide">0</span></button>
     <button class="brand-cam-btn" onclick="quoteOpenCam()" title="ถ่ายบิล"><span class="bcb-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8 H7 L9 5 H15 L17 8 H20 V19 H4 Z" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span>บิล</span></button>
   </div>
   <nav class="tabs">
@@ -11780,6 +12055,7 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
       <div class="orig-drawer-tabs" id="orig-drawer-tabs"></div>
       <div class="orig-drawer-body" id="orig-drawer-body"></div>
     </div>
+    <div id="bill-ro-banner" class="bill-ro-banner" style="display:none;">👁 ดูอย่างเดียว · แก้ไข/บันทึกบิลไม่ได้</div>
     <div class="paper">
       <button id="orig-bill-trigger" class="orig-bill-trigger" onclick="toggleOrigBillDrawer()" style="display:none;">
         📑 ดูบิลต้นฉบับ
@@ -12556,15 +12832,16 @@ const NOTEBOOK_LABELS = {
   report: '📕 รายงาน',
   gardenDelete: '🗑️ ลบสวนได้',
   profitView: '📊 เห็นกำไร/ขาดทุน',
+  billEdit: '✏️ แก้ไขบิล',
 };
 const USERS_KEY = 'thodsapon_users';
 const SESSION_KEY = 'thodsapon_session';
 const DEFAULT_USERS = [
-  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true, profitView: true } },
+  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true, profitView: true, billEdit: true } },
 ];
 
 function loadUsers() {
-  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false, profitView: false };
+  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false, profitView: false, billEdit: false };
   try {
     const raw = localStorage.getItem(USERS_KEY);
     if (!raw) { saveUsers(DEFAULT_USERS); return DEFAULT_USERS.map(u => ({...u, perms: {...u.perms}})); }
@@ -12840,6 +13117,7 @@ function logout() {
   document.getElementById('app-shell').style.display = 'none';
   document.getElementById('login-pw').value = '';
   document.getElementById('user-menu').classList.remove('open');
+  if (typeof updateMailNotif === 'function') updateMailNotif();   // ซ่อนปุ่มจดหมายลอยตอนออกจากระบบ
 }
 function enterApp() {
   document.getElementById('login-page').style.display = 'none';
@@ -13265,6 +13543,7 @@ function goHome() {
   haptic(10);
   // ล้างสถานะดูสวนอย่างเดียว กันค้าง
   _roFromBook = false;
+  window._billFromGarden = false;   // กันค้าง: กลับหน้าหลักแล้วล้าง flag เปิดบิลจากสวน
   const _gvRo = document.getElementById('garden-view');
   if (_gvRo) _gvRo.classList.remove('gv-readonly');
   const inBook = document.getElementById('book-view').style.display !== 'none';
@@ -13288,6 +13567,24 @@ function goHome() {
 }
 // Smart back for Quote Book — ถ้าอยู่ใน new/summary/settings → กลับ list, ถ้า list → home
 function quoteBackOrHome() {
+  // เปิดบิลมาจากหน้าสวน → กดกลับ กลับหน้าสวน (ไม่ใช่หน้าหลัก)
+  if (window._billFromGarden) {
+    window._billFromGarden = false;
+    if (typeof haptic === 'function') haptic(10);
+    if (settings.sound) { try { playClose(); } catch (e) {} }
+    document.getElementById('book-view').style.display = 'none';
+    document.getElementById('home-view').style.display = 'none';
+    const gv = document.getElementById('garden-view');
+    if (gv) gv.style.display = '';
+    document.getElementById('topbar').style.display = 'none';
+    document.getElementById('topbar-back').style.display = 'none';
+    const vsb = document.getElementById('vintage-settings-btn'); if (vsb) vsb.style.display = 'none';
+    const bm = document.getElementById('bookmark-tail');
+    if (bm) { bm.classList.remove('show'); bm.style.display = 'none'; }
+    document.querySelectorAll('.page-corner-curl').forEach(c => c.style.display = 'none');
+    if (typeof window.initGardenBook === 'function') window.initGardenBook();
+    return;
+  }
   const v = (typeof state !== 'undefined' && state.view) ? state.view : 'list';
   if (v !== 'list') {
     if (typeof switchView === 'function') switchView('list');
@@ -13299,6 +13596,9 @@ function quoteBackOrHome() {
 
 // Smart back button: garden detail → garden list → home
 function smartBack() {
+  // เปิดบิลจากหน้าสวนแล้วอยู่ในหน้าตีราคา → กลับหน้าสวน (ใช้ตรรกะเดียวกับปุ่มกลับในบิล)
+  const _bv = document.getElementById('book-view');
+  if (window._billFromGarden && _bv && _bv.style.display !== 'none') { quoteBackOrHome(); return; }
   const gv = document.getElementById('garden-view');
   // โหมดดูสวนอย่างเดียว (เปิดจากบิล) → ตรวจจาก class จริงบนหน้าจอ (กันสถานะค้าง) → ปิดแล้วกลับไปบิล
   if (gv && gv.classList.contains('gv-readonly')) { closeGardenFull(); return; }
@@ -13396,7 +13696,17 @@ function renderUsers() {
       const checked = u.perms[p] ? 'checked' : '';
       const dis = isAdmin ? 'disabled' : '';
       const disCls = isAdmin ? 'disabled' : '';
-      return `<label class="perm-chk ${disCls}"><input type="checkbox" ${checked} ${dis} onchange="togglePerm(${idx}, '${p}', this.checked)"><span>${NOTEBOOK_LABELS[p]}</span></label>`;
+      const chk = `<label class="perm-chk ${disCls}"><input type="checkbox" ${checked} ${dis} onchange="togglePerm(${idx}, '${p}', this.checked)"><span>${NOTEBOOK_LABELS[p]}</span></label>`;
+      // sub-option "แก้ไขบิล" ซ้อนใต้ "เห็นกำไร/ขาดทุน" — แสดงเมื่อ profitView เปิด
+      if (p === 'profitView' && u.perms.profitView) {
+        const beChecked = u.perms.billEdit ? 'checked' : '';
+        const stCls = u.perms.billEdit ? 'edit' : 'view';
+        const stTxt = u.perms.billEdit ? 'แก้ได้' : 'ดูอย่างเดียว';
+        const hint = u.perms.billEdit ? 'เปิด = แก้บิลได้เต็ม' : 'ปิดอยู่ = เปิดบิลดูได้ แต่แก้ไม่ได้';
+        const subChk = `<div class="perm-sub-wrap"><label class="perm-sub"><input type="checkbox" ${beChecked} ${dis} onchange="togglePerm(${idx}, 'billEdit', this.checked)"><span>${NOTEBOOK_LABELS.billEdit}</span><span class="perm-sub-st ${stCls}">${stTxt}</span></label><div class="perm-sub-hint">${hint}</div></div>`;
+        return chk + subChk;
+      }
+      return chk;
     }).join('');
     return `
       <div class="user-row">
@@ -13412,6 +13722,7 @@ function renderUsers() {
         ${isAdmin ? '' : `
         <div class="user-actions">
           <button class="user-act" onclick="changePw(${idx})">เปลี่ยนรหัส</button>
+          <button class="user-act" onclick="changeId(${idx})">เปลี่ยน ID</button>
           <button class="user-act" onclick="changeName(${idx})">แก้ชื่อ</button>
           <button class="user-act danger" onclick="delUser(${idx})">ลบ</button>
         </div>`}
@@ -13422,10 +13733,14 @@ function renderUsers() {
 function togglePerm(idx, perm, val) {
   if (users[idx].role === 'admin') return;
   users[idx].perms[perm] = val;
+  // ปิด "เห็นกำไร/ขาดทุน" → ล้าง "แก้ไขบิล" ด้วย (sub ต้องอยู่ใต้ profitView เสมอ)
+  if (perm === 'profitView' && !val) users[idx].perms.billEdit = false;
   saveUsers(users);
   toast(`${val?'เปิด':'ปิด'} ${NOTEBOOK_LABELS[perm]} ของ ${users[idx].name}`);
   console.log('[PERM]', currentUser.id, '→', users[idx].id, perm, val);
   if (users[idx].id === currentUser.id) { currentUser = users[idx]; renderBooks(); }
+  // toggle profitView → วาดใหม่เพื่อโชว์/ซ่อน sub "แก้ไขบิล"
+  if (perm === 'profitView' && typeof renderUsers === 'function') renderUsers();
   // sync to cloud
   if (window.supaReady) {
     _cloudUpdateUser(users[idx].id, { perms: users[idx].perms }).catch(()=>{});
@@ -13433,7 +13748,7 @@ function togglePerm(idx, perm, val) {
 }
 function changePw(idx) {
   openAuthModal(`เปลี่ยนรหัส: ${users[idx].name}`,
-    `<label class="login-label" style="margin-top:0;">รหัสใหม่</label><input class="login-input" type="text" id="new-pw" autocomplete="off">`,
+    `<label class="login-label" style="margin-top:0;">รหัสใหม่</label><input class="login-input" type="text" id="new-pw" autocomplete="off" value="${escapeHtml(users[idx].pw || '')}" data-old="1" onfocus="if(this.dataset.old){this.value='';this.dataset.old='';}">`,
     () => {
       const v = document.getElementById('new-pw').value.trim();
       if (!v) { toast('ใส่รหัสใหม่'); return false; }
@@ -13444,6 +13759,38 @@ function changePw(idx) {
       // sync to cloud (set new hash)
       if (window.supaReady) {
         _cloudChangePw(users[idx].id, v).catch(()=>{});
+      }
+    });
+}
+function changeId(idx) {
+  const u = users[idx];
+  if (!u) return;
+  const oldId = u.id;
+  openAuthModal(`เปลี่ยน ID: ${u.name}`,
+    `<label class="login-label" style="margin-top:0;">ID ใหม่ (ใช้ล็อกอิน)</label><input class="login-input" type="text" id="new-id" autocomplete="off" value="${escapeHtml(oldId || '')}" data-old="1" onfocus="if(this.dataset.old){this.value='';this.dataset.old='';}"><div class="login-hint" style="margin-top:6px;font-size:11px;color:#8a7350;">ID ใช้สำหรับล็อกอิน · ห้ามซ้ำกับคนอื่น</div>`,
+    () => {
+      const v = document.getElementById('new-id').value.trim();
+      if (!v) { toast('ใส่ ID ใหม่'); return false; }
+      if (v === oldId) { return; }   // ไม่เปลี่ยน = ปิดเฉยๆ
+      // กัน ID ซ้ำกับคนอื่น (เทียบแบบไม่สนตัวพิมพ์ใหญ่-เล็ก เหมือนตอนล็อกอิน)
+      const dup = users.some((x, i) => i !== idx && x && String(x.id).toLowerCase() === v.toLowerCase());
+      if (dup) { toast('ID นี้มีคนใช้แล้ว'); return false; }
+      // เช็ค "เป็นบัญชีตัวเอง" ก่อนแก้ id — เพราะ currentUser อาจอ้าง object เดียวกับ users[idx]
+      // (ถ้าแก้ users[idx].id ก่อน currentUser.id จะเปลี่ยนตามทันที ทำให้เทียบ oldId ไม่เจอ)
+      const isSelf = !!(currentUser && currentUser.id === oldId);
+      users[idx].id = v;
+      saveUsers(users);
+      // ถ้าเป็นบัญชีที่กำลังล็อกอินอยู่ → อัปเดต session + currentUser ให้ล็อกอินครั้งหน้าได้
+      if (isSelf) {
+        currentUser.id = v;
+        setSession({ id: v, loginAt: Date.now() });
+      }
+      toast(`เปลี่ยน ID เป็น ${v} แล้ว`);
+      console.log('[CHID]', oldId, '→', v);
+      renderUsers();
+      // sync to cloud — เปลี่ยน primary key ฝั่ง cloud (best-effort)
+      if (window.supaReady) {
+        _cloudUpdateUser(oldId, { id: v }).catch(() => {});
       }
     });
 }
@@ -14680,6 +15027,15 @@ loadFruitNames();
     return (l.length === 1 && l[0] && l[0].name) ? l[0].name : '';
   };
 
+  // เช็คว่าชื่อผลไม้ "อยู่ในคลัง" ไหม (เทียบแบบจัดมาตรฐาน: ลำไย/ลําไย ตาเห็นเหมือนกันถือว่าตรง)
+  // ใช้ตอนบันทึกบิล+สวน กันชื่อนอกคลังหลุดเข้า (เดิม saveGarden เช็คแค่ "ไม่ว่าง" → ค่านอกคลังผ่าน)
+  window.fruitInLib = function (nm) {
+    if (!nm) return false;
+    const key = (v) => (typeof window.fruitCleanName === 'function') ? window.fruitCleanName(v) : String(v == null ? '' : v).trim();
+    const k = key(nm);
+    return (window.fruitNames || []).some(f => f && key(f.name) === k);
+  };
+
   // ---- CSS (global · ไม่ผูก #garden-view เพราะใช้ในหน้าบิลด้วย) ----
   const CSS = `
   .fp-wrap{width:100%;min-width:0;flex:1 1 auto;}
@@ -15282,7 +15638,7 @@ function renderPriceLib() {
     if (shown < list.length) listHtml += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
   }
   scr.innerHTML =
-    '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div></div>'
+    '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div>' + mailBtnHtml('walnut', 'margin-left:auto;') + '</div>'
     + '<div class="pf-body">'
     + (admin ? '<button class="pf-add-btn pf-add-top" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
     + searchBar + filterBar
@@ -15292,6 +15648,7 @@ function renderPriceLib() {
     + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">🧹 ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '')
     + '</div>';
   pfWatchBottom();
+  if (typeof updateMailNotif === 'function') updateMailNotif();
 }
 
 // ── ค้นหา: พิมพ์แล้วกรองสด (ไม่วาดทั้งหน้า — แค่ list + ตัวนับ เพื่อไม่ให้ช่องค้นหาเสีย focus) ──
@@ -18593,11 +18950,13 @@ function readForm() {
 }
 
 function saveQuote() {
+  // ── กันบันทึกถ้าไม่มีสิทธิ์แก้ไขบิล (ดูอย่างเดียว) ──
+  if (typeof canEditBill === 'function' && !canEditBill()) { toast('คุณมีสิทธิ์ดูบิลอย่างเดียว แก้ไขไม่ได้'); return; }
   const q = readForm();
   if (!q.customer) { toast('ใส่ชื่อลูกค้า/สวนก่อน'); return; }
-  // ① บังคับเลือกผลไม้ — เดิมถ้าว่างระบบเดาให้เป็น 'ลำไย' → เกิดชื่อนอกคลังโดยผู้ใช้ไม่รู้ตัว
-  if (!q.fruit) {
-    toast('เลือกผลไม้ก่อน');
+  // ① บังคับผลไม้ "อยู่ในคลัง" — เดิมเช็คแค่ว่าง → เปิดบิลเก่าที่มีชื่อนอกคลังกดบันทึกก็ผ่าน
+  if (!q.fruit || (typeof window.fruitInLib === 'function' && !window.fruitInLib(q.fruit))) {
+    toast(q.fruit ? 'ผลไม้นี้ไม่มีในคลัง — เลือกจากรายการ' : 'เลือกผลไม้ก่อน');
     const _fw = document.getElementById('f-fruit');
     const _wrap = _fw && _fw.closest('.fp-wrap');
     if (_wrap) { _wrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
@@ -18766,6 +19125,7 @@ function resetForm() {
   applyFormType();
   setOrchardMode('A');
   renderRows();
+  if (typeof applyBillReadonly === 'function') applyBillReadonly();
 }
 
 // ── จดหมายแจ้งเตือนบิลแจ้งตรวจ (เห็นเฉพาะ admin) · รับทราบรายตัวต่อเครื่อง ──
@@ -18787,18 +19147,37 @@ function reviewUnseenCount() {
   const seen = reviewLoadSeen();
   return state.quotes.filter(q => q && q.pendingReview && !seen.has(q.id)).length;
 }
+// คืน HTML ปุ่มจดหมายในหัวบาร์ (เฉพาะผู้มีสิทธิ์ตีราคา) · variant: 'gold' | 'walnut'
+// ใส่ posStyle เพิ่มได้ (เช่นตำแหน่งขวาในหัวสวน)
+function mailBtnHtml(variant, posStyle) {
+  const canSee = (typeof currentUser !== 'undefined' && currentUser && ((currentUser.role === 'admin') || (currentUser.perms && currentUser.perms.quote)));
+  if (!canSee) return '';
+  const cnt = (typeof reviewUnseenCount === 'function') ? reviewUnseenCount() : 0;
+  const badgeHide = cnt > 0 ? '' : ' hide';
+  const badgeTxt = cnt > 99 ? '99+' : String(cnt);
+  const ps = posStyle ? ` style="${posStyle}"` : '';
+  return `<button class="mail-hdr ${variant||'walnut'}"${ps} onclick="mailNotifClick()" title="กล่องจดหมาย" aria-label="กล่องจดหมาย">`
+    + `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>`
+    + `<span class="mail-hdr-count${badgeHide}">${badgeTxt}</span></button>`;
+}
 function updateMailNotif() {
   const btn = document.getElementById('lib-mail-btn');
-  if (!btn) return;
-  const isAdmin = (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'admin');
-  const cnt = isAdmin ? reviewUnseenCount() : 0;
-  if (isAdmin && cnt > 0) {
-    const c = document.getElementById('lib-mail-count');
-    if (c) c.textContent = cnt > 99 ? '99+' : String(cnt);
-    btn.style.display = '';
-  } else {
-    btn.style.display = 'none';
-  }
+  // เห็นเมื่อ "มีสิทธิ์ตีราคา" (เดิม: เฉพาะ admin) · admin มีสิทธิ์นี้อยู่แล้ว
+  const canSee = (typeof currentUser !== 'undefined' && currentUser && ((currentUser.role === 'admin') || (currentUser.perms && currentUser.perms.quote)));
+  const lp = document.getElementById('login-page');
+  const atLogin = lp && lp.style.display !== 'none' && getComputedStyle(lp).display !== 'none';
+  const cnt = (canSee && typeof reviewUnseenCount === 'function') ? reviewUnseenCount() : 0;
+  // ปุ่มเดิมในบาร์ Library — ซ่อนถาวร (ใช้ปุ่มในหัวบาร์แต่ละหน้าแทน)
+  if (btn) btn.style.display = 'none';
+  // ปุ่มจดหมายในหัวบาร์ทุกหน้า (.mail-hdr) — อัปเดต badge + ซ่อนตอน login/ไม่มีสิทธิ์
+  document.querySelectorAll('.mail-hdr').forEach(el => {
+    el.style.display = (canSee && !atLogin) ? '' : 'none';
+    const c = el.querySelector('.mail-hdr-count');
+    if (c) {
+      if (cnt > 0) { c.textContent = cnt > 99 ? '99+' : String(cnt); c.classList.remove('hide'); }
+      else c.classList.add('hide');
+    }
+  });
 }
 function mailNotifClick() {
   if (typeof haptic === 'function') haptic(10);
@@ -18903,6 +19282,9 @@ window.openQuoteBill = function (quoteId) {
   const exists = state && Array.isArray(state.quotes) && state.quotes.some(x => x.id === quoteId);
   if (!exists) { if (typeof toast === 'function') toast('บิลถูกลบไปแล้ว'); return; }
   if (typeof haptic === 'function') haptic(10);
+  // จำว่าเปิดบิลนี้จากหน้าสวนไหม → กดกลับจะได้กลับหน้าสวน
+  const _gv = document.getElementById('garden-view');
+  window._billFromGarden = !!(_gv && _gv.style.display !== 'none');
   const bookView = document.getElementById('book-view');
   const inBook = bookView && bookView.style.display !== 'none';
   if (inBook) {
@@ -19013,7 +19395,17 @@ function loadQuote(id) {
     applyFormType();
     renderRows();
   }
+  // ── บิลดูอย่างเดียว: ไม่มีสิทธิ์แก้ไขบิล → ล็อกฟอร์ม + ซ่อนปุ่มบันทึก + แถบเตือน ──
+  applyBillReadonly();
   switchView('new');
+}
+// เปิด/ปิดโหมดดูอย่างเดียวของฟอร์มบิล ตามสิทธิ์ canEditBill()
+function applyBillReadonly() {
+  const sec = document.getElementById('view-new');
+  const bn = document.getElementById('bill-ro-banner');
+  const ro = (typeof canEditBill === 'function') ? !canEditBill() : false;
+  if (sec) sec.classList.toggle('bill-ro', ro);
+  if (bn) bn.style.display = ro ? 'flex' : 'none';
 }
 
 async function delQuote(id, ev) {
@@ -22004,13 +22396,303 @@ function buildStampBox(s, gid) {
       <div class="lc-pb-row"><span>ขาย</span><span class="v">${fmtNum(Number(s.sold) || 0)}</span></div>
       <div class="lc-pb-sep"></div>
       <div class="lc-pb-net"><span class="lc-pb-pct"><span class="lc-pb-arr">${arrow}</span>${pctTxt}</span><span class="lc-pb-amt">${amtTxt}</span></div>
-      <div class="lc-pb-view"><button class="lc-pb-viewbtn" onclick="event.stopPropagation();window.openQuoteBill('${qid}')">📄 ดูบิล</button></div>
+      <div class="lc-pb-view"><button class="lc-pb-viewbtn lc-pb-sumbtn" onclick="event.stopPropagation();window.openGardenSummary('${gid}','${qid}')">ดูสรุป</button><button class="lc-pb-viewbtn" onclick="event.stopPropagation();window.openQuoteBill('${qid}')">📄 ดูบิล</button></div>
     </div>`;
 }
 window.lcStampClick = function (ev, el) {
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
   try { el.classList.toggle('open'); } catch (e) {}
 };
+
+// ═══════════ หน้าสรุปสวนเต็มจอ ═══════════
+// รวมเบอร์จากบิล (บิลรวมยุบเบอร์เดียวกันข้ามวัน) → [{grade, baskets, kg}]
+function gsumGradeList(q) {
+  const map = new Map();
+  const _rows = (q && Array.isArray(q.rows)) ? q.rows : [];
+  _rows.forEach(r => {
+    if (!r || typeof r !== 'object') return;
+    const g = (typeof _mgShown === 'function') ? (_mgShown(r) || '') : (r.grade || '');
+    const kg = (typeof totalKgOf === 'function') ? totalKgOf(r) : ((Number(r.baskets) || 0) * (Number(r.kgPer) || 20) + (Number(r.extra) || 0));
+    const bk = Number(r.baskets) || 0;
+    const sold = Number(r.soldPrice) || 0;
+    const kgPer = Number(r.kgPer) || 0;
+    if (!g && !kg) return;
+    const key = g || '—';
+    const cur = map.get(key) || { grade: key, baskets: 0, kg: 0, amt: 0, lines: [] };
+    cur.baskets += bk; cur.kg += kg; cur.amt += kg * sold;
+    // เก็บรายวัน (ราคาอาจต่างกัน) — extra ใส่ในบรรทัดถ้ามี
+    cur.lines.push({ date: r._date || null, baskets: bk, kg: kg, kgPer: kgPer, extra: Number(r.extra) || 0, sold: sold });
+    map.set(key, cur);
+  });
+  const out = [...map.values()];
+  out.forEach(gr => {
+    // ราคาเดียวกันทุกวันไหม (นับเฉพาะ line ที่มีราคา >0)
+    const priced = gr.lines.filter(l => l.sold > 0);
+    const prices = [...new Set(priced.map(l => l.sold))];
+    gr.uniform = prices.length <= 1;            // 0 หรือ 1 ราคา = รวมได้
+    gr.sold = prices.length === 1 ? prices[0] : 0;
+    // นน.เฉลี่ยต่อตะกร้า (ใช้ตอนรวม: kg/baskets) — บิลปกติ kgPer เท่ากันหมด
+    gr.kgPerAvg = gr.baskets > 0 ? (gr.kg / gr.baskets) : (gr.lines[0] ? gr.lines[0].kgPer : 0);
+  });
+  return out.sort((a, b) => b.kg - a.kg);
+}
+
+window.openGardenSummary = function (gardenId, quoteId) {
+  try {
+    const g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gardenId) : null;
+    const q = (state && Array.isArray(state.quotes)) ? state.quotes.find(x => x && x.id === quoteId) : null;
+    if (!q) { if (typeof toast === 'function') toast('ไม่พบบิล'); return; }
+    const s = (typeof calcQuoteSummary === 'function') ? calcQuoteSummary(q) : null;
+    if (!s) { if (typeof toast === 'function') toast('คำนวณสรุปไม่ได้'); return; }
+
+    const fmt = (n) => (typeof fmtNum === 'function') ? fmtNum(Math.round(Number(n) || 0)) : String(Math.round(Number(n) || 0));
+    const gName = (g && g.name) || (q.customer) || '—';
+    const fruit = (g && g.fruit) || q.fruit || '';
+    const dot = fruit ? `<span class="dot" style="background:${(typeof fruitColor === 'function') ? fruitColor(fruit) : '#b0a07a'}"></span>` : '';
+
+    // การเงิน — ใช้ stamp เดียวกับที่การ์ดโชว์ (กันเลขไม่ตรงกัน) · ถ้าไม่มี stamp คำนวณสดจาก calcQuoteSummary
+    const st = (g && g.stamp && g.stamp.quoteId === q.id) ? g.stamp : (q.stamp || null);
+    const isWholesale = !(s.isOrchard || s.isPerkg || s.isMultiday || s.isPlan);
+    const profit = st ? Math.round(Number(st.amount) || 0) : Math.round(Number(s.profit) || 0);
+    const gain = profit >= 0;
+    const sold = st ? Math.round(Number(st.sold) || 0) : Math.round(Number(s.sold) || 0);
+    const cost = st ? Math.round(Number(st.cost) || 0) : Math.round(isWholesale ? ((Number(s.quoted) || 0) + (Number(s.exp) || 0)) : (Number(s.exp) || 0));
+    const pct = (st && st.pct != null) ? Number(st.pct) : ((cost > 0) ? (profit / cost * 100) : null);
+    const pctTxt = (pct === null) ? '—' : (Math.abs(pct).toFixed(1) + '%');
+    const totalKg = Math.round(Number(s.totalKg) || 0);
+    const maxCS = Math.max(cost, sold, 1);
+
+    // ต่อโล
+    const profitPerKg = totalKg > 0 ? (profit / totalKg) : null;
+    const soldPerKg = totalKg > 0 ? (sold / totalKg) : null;
+    const costPerKg = totalKg > 0 ? (cost / totalKg) : null;
+    const perKg = (v) => (v === null) ? '—' : (Math.round(v * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // หัวข้อ
+    const statusTxt = (g && (g.status === 'done' || g.closedAt)) ? 'ปิดสวนแล้ว' : (g && g.status === 'collecting') ? 'กำลังเก็บ' : '';
+    const nColl = (g && Array.isArray(g.collections)) ? g.collections.length : 0;
+    document.getElementById('gsum-t1').textContent = gName;
+    document.getElementById('gsum-t2').innerHTML = `🌳 ${gbEscapeHtml(fruit || '—')}${statusTxt ? ' · ' + statusTxt : ''}${nColl ? ' · เก็บ ' + nColl + ' เที่ยว' : ''}`;
+    const badgeEl = document.getElementById('gsum-badge');
+    const dealAmt = (g && g.dealType === 'lump' && g.lumpTotal) ? g.lumpTotal : 0;
+    if (dealAmt) { badgeEl.style.display = ''; badgeEl.textContent = 'เหมา ' + fmt(dealAmt); }
+    else badgeEl.style.display = 'none';
+
+    // ── ① กล่องกำไร B1 ──
+    let html = `
+      <div class="gsum-hero ${gain ? '' : 'loss'}">
+        <div class="hd2"><span class="ic">💰</span><span class="lbl">กำไรสุทธิ</span><span class="pct">${gain ? '▲' : '▼'} ${pctTxt} ต่อทุน</span></div>
+        <div class="amt">${gain ? '+' : '−'}${fmt(Math.abs(profit))}<span class="cur">บ.</span></div>
+        <div class="cmp">
+          <div class="gsum-cbar c"><span class="k">ทุน</span><div class="tk"><div class="fl" style="width:${Math.round(cost / maxCS * 100)}%"></div></div><span class="n">${fmt(cost)}</span></div>
+          <div class="gsum-cbar s"><span class="k">ขาย</span><div class="tk"><div class="fl" style="width:${Math.round(sold / maxCS * 100)}%"></div></div><span class="n">${fmt(sold)}</span></div>
+        </div>
+      </div>`;
+
+    // ── ② สถิติ C1 (แสดงต่อโลเฉพาะมีน้ำหนัก) ──
+    if (totalKg > 0) {
+      html += `
+      <div class="gsum-stats"><div class="g">
+        <div class="gsum-scell top"><div class="k">น้ำหนักรวม</div><div class="v">${fmt(totalKg)}<small>กก.</small></div></div>
+        <div class="gsum-scell top"><div class="k">กำไร/โล</div><div class="v">${perKg(profitPerKg)}<small>บ.</small></div></div>
+        <div class="gsum-scell"><div class="k">ขายเฉลี่ย/โล</div><div class="v">${perKg(soldPerKg)}<small>บ.</small></div></div>
+        <div class="gsum-scell"><div class="k">ทุนเฉลี่ย/โล</div><div class="v">${perKg(costPerKg)}<small>บ.</small></div></div>
+      </div></div>`;
+    }
+
+    // ── ③ หลอดน้ำหนัก vs เป้า (เฉพาะมีเป้า) ──
+    const tgtKg = (g && Number(g.expectedKg)) || 0;
+    if (totalKg > 0 && tgtKg > 0) {
+      const rawPct = (totalKg / tgtKg) * 100;
+      const over = rawPct > 100;
+      const near = !over && rawPct >= 90;   // ใกล้เป้า → pill หลบ (ตรรกะ A)
+      const tgtPct = over ? (tgtKg / totalKg * 100) : 100;
+      let pc = '#b85a00';
+      if (over) pc = '#166534'; else if (rawPct >= 90) pc = '#2c4a08'; else if (rawPct >= 60) pc = '#4a6928'; else if (rawPct >= 30) pc = '#854f0b';
+      const fillStyle = over
+        ? `width:100%;background:#28e06a;`
+        : `width:${Math.min(100, rawPct)}%;background:${pctFillColor(rawPct)};`;
+      const curLbl = over
+        ? `<span>${fmt(totalKg)}</span><svg class="up" viewBox="0 0 24 24"><path d="M12 4l8 9H4z" fill="#ff2d2d"/></svg>`
+        : fmt(totalKg);
+      // ── ตรรกะ A: pill (over→ปลายขวา · near→76% ลูกศรเฉียง · ปกติ→ตามค่า) ──
+      const pillLeft = over ? 100 : (near ? 76 : Math.min(100, rawPct));
+      const pillTx = over ? 'translateX(-100%)' : 'translateX(-50%)';
+      const pillCls = over ? 'over' : (near ? 'clampR' : '');
+      // เป้า: ป้ายใต้หลอด กึ่งกลางที่ขีดตำแหน่ง (ปกติ=วงเล็บปลาย 100% · เลยเป้า=เส้นแดง tgtPct%)
+      const tgtEls = over
+        ? `<span class="gsum-wtick" style="left:${tgtPct}%"></span><span class="gsum-wtgtblabel" style="left:${tgtPct}%">🎯 ${fmt(tgtKg)}</span>`
+        : `<span class="gsum-wtgtcap"></span><span class="gsum-wtgtblabel" style="left:100%">🎯 ${fmt(tgtKg)}</span>`;
+      html += `
+      <div class="gsum-sec">น้ำหนัก vs เป้า</div>
+      <div class="gsum-wbar">
+        <div class="gsum-wtrack">
+          <div class="gsum-wfill ${over ? 'over' : ''}" style="${fillStyle}"></div>
+          ${tgtEls}
+          <span class="gsum-wcur ${pillCls}" style="left:${pillLeft}%;transform:${pillTx};">${curLbl}</span>
+        </div>
+        <span class="gsum-wpct" style="color:${pc}">${Math.round(rawPct)}%</span>
+      </div>`;
+    }
+
+    // ── ④ ยอดขาย/น้ำหนักต่อเบอร์ ──
+    const grades = gsumGradeList(q);
+    if (grades.length) {
+      const maxKg = Math.max(...grades.map(x => x.kg), 1);
+      const totBk = grades.reduce((s2, x) => s2 + x.baskets, 0);
+      const totKgG = grades.reduce((s2, x) => s2 + x.kg, 0);
+      const gradeAmt = grades.reduce((s2, x) => s2 + (Number(x.amt) || 0), 0);
+      // รายได้เพิ่มเติม (ชื่อ+ยอด · ไม่มีเบอร์) → แสดงต่อท้าย + บวกเข้ายอดขายรวม
+      const incList = (Array.isArray(q.extraIncome) ? q.extraIncome : []).filter(it => it && (Number(it.amount) || 0) !== 0);
+      const incAmt = incList.reduce((s2, it) => s2 + (Number(it.amount) || 0), 0);
+      const totAmt = gradeAmt + incAmt;
+      const anySold = grades.some(gr => (Number(gr.amt) || 0) > 0) || incAmt > 0;
+      const fmtDay = (d) => d ? (typeof fmtDate === 'function' ? fmtDate(d) : d) : '';
+      const incHtml = incList.map(it => `<div class="gsum-scinc"><span class="nm"><span class="bd">เพิ่ม</span>${gbEscapeHtml(it.name || 'รายได้เพิ่ม')}</span><span class="v">+${fmt(Number(it.amount) || 0)}</span></div>`).join('');
+
+      if (anySold) {
+        // มีราคาขาย → ตาราง V3: เบอร์ ตก. × นน = รวมกก. × ราคา = ยอด · หลอด 4px
+        let rowsHtml = grades.map(gr => {
+          const p = totKgG ? Math.round((gr.kg / totKgG) * 100) : 0;
+          const barPct = Math.round((gr.kg / maxKg) * 100);
+          const kgPer = Math.round(gr.kgPerAvg) || 20;
+          const bar = `<div class="gsum-scbar"><div class="tk"><div class="fl" style="width:${barPct}%"></div></div><span class="pc">${p}%</span></div>`;
+          if (gr.uniform) {
+            // ราคาเดียว → รวมบรรทัดเดียว
+            return `<div class="gsum-scrow">
+              <div class="gsum-scgrid gsum-scline">
+                <span class="gname">${gbEscapeHtml(gr.grade)}</span>
+                <span class="nR">${fmt(gr.baskets)}</span><span class="op">×</span><span class="n">${fmt(kgPer)}</span><span class="op">=</span><span class="sub2">${fmt(gr.kg)}</span><span class="op">×</span><span class="n">${gr.sold ? fmt(gr.sold) : '—'}</span><span class="op">=</span><span class="res">${fmt(gr.amt)}</span>
+              </div>${bar}</div>`;
+          }
+          // หลายราคา → หัวเบอร์ + แยกรายวัน
+          const dayLines = gr.lines.filter(l => l.kg > 0).map(l => {
+            const lkgPer = Math.round(l.kgPer) || kgPer;
+            const lamt = l.kg * l.sold;
+            return `<div class="mline"><span class="d">${fmtDay(l.date) || '—'}</span><span class="nR">${fmt(l.baskets)}</span><span class="op">×</span><span class="n">${fmt(lkgPer)}</span><span class="op">=</span><span class="sub2">${fmt(l.kg)}</span><span class="op">×</span><span class="n">${l.sold ? fmt(l.sold) : '—'}</span><span class="op">=</span><span class="res">${fmt(lamt)}</span></div>`;
+          }).join('');
+          return `<div class="gsum-scrow gsum-scmulti">
+            <div class="mhead"><span class="gn">${gbEscapeHtml(gr.grade)}</span><span class="mtot">${fmt(gr.amt)}</span></div>
+            ${dayLines}${bar}</div>`;
+        }).join('');
+        html += `
+        <div class="gsum-sec">ยอดขาย</div>
+        <div class="gsum-gradebox">
+          <div class="gsum-gradeh">ยอดขายต่อเบอร์</div>
+          <div class="gsum-scgrid gsum-schead"><span>เบอร์</span><span>ตก.</span><span></span><span>นน</span><span></span><span>รวมกก.</span><span></span><span>ราคา</span><span></span><span>ยอด</span></div>
+          ${rowsHtml}${incHtml}
+          <div class="gsum-gtotal"><span class="gsum-gtlbl">ยอดขายรวม</span><span class="gsum-gnum" style="font-size:15px;color:#2f7d1f">${fmt(totAmt)}</span></div>
+        </div>`;
+      } else {
+        // ยังไม่ขาย → แสดงแค่น้ำหนัก (แบบเดิม)
+        let rowsHtml = grades.map(gr => {
+          const p = totKgG ? Math.round((gr.kg / totKgG) * 100) : 0;
+          const barPct = Math.round((gr.kg / maxKg) * 100);
+          return `<div class="gsum-grow">
+            <div class="gsum-gtop"><span class="gsum-gname">${gbEscapeHtml(gr.grade)}</span><span></span><span class="gsum-gnum">${fmt(gr.baskets)}</span><span class="gsum-gunit">ตก.</span><span class="gsum-gnum">${fmt(gr.kg)}</span><span class="gsum-gunit">กก.</span></div>
+            <div class="gsum-gbarwrap"><div class="gsum-gtrack"><div class="gsum-gfill" style="width:${barPct}%"></div></div><span class="gsum-gpct">${p}%</span></div>
+          </div>`;
+        }).join('');
+        html += `
+        <div class="gsum-sec">น้ำหนัก</div>
+        <div class="gsum-gradebox">
+          <div class="gsum-gradeh">น้ำหนักต่อเบอร์</div>
+          ${rowsHtml}
+          <div class="gsum-gtotal"><span class="gsum-gtlbl">รวม</span><span><span class="gsum-gnum" style="font-size:15px">${fmt(totBk)}</span><span class="gsum-gunit">ตก.</span></span><span><span class="gsum-gnum" style="font-size:15px">${fmt(totKgG)}</span><span class="gsum-gunit">กก.</span></span></div>
+        </div>`;
+      }
+    }
+
+    // ── ⑤ ค่าใช้จ่าย (เฉพาะบิลเหมาที่มี expenses แยก) ──
+    const ex = q.expenses || {};
+    const gc = Number(ex.gardenCost) || 0;
+    const roast = Number(ex.roasting) || 0;
+    const trans = Number(ex.transport) || 0;
+    const proc = Number(ex.processing) || 0;
+    const ded = Number(ex.deduct) || 0;
+    const expSum = gc + roast + trans + proc + ded;
+    if (expSum > 0) {
+      let er = '';
+      if (gc) er += `<div class="gsum-trow"><span class="k">ค่าเปิดสวน</span><span class="v">${fmt(gc)}</span></div>`;
+      if (roast) er += `<div class="gsum-trow"><span class="k">ค่าอบ</span><span class="v">${fmt(roast)}</span></div>`;
+      if (trans) er += `<div class="gsum-trow"><span class="k">ค่ารถ</span><span class="v">${fmt(trans)}</span></div>`;
+      // ค่าจัดทำ: ถ้าแยกเบอร์ + มีเรทต่อเบอร์ → แสดงสูตร เบอร์ × รวมกก. × เรท = ค่าจัดทำ (กรอบสี่เหลี่ยม ไม่มีเส้นคั่น)
+      const pg = (ex.processMode === 'grade' && ex.processGrades && typeof ex.processGrades === 'object') ? ex.processGrades : null;
+      const gradesForProc = (typeof gsumGradeList === 'function') ? gsumGradeList(q) : [];
+      if (proc && pg && gradesForProc.length) {
+        // resolve เรทต่อเบอร์ (own → เรทตัวเอง · ไม่ใช่ → เรทเบอร์แรกที่มีค่า) แบบเดียวกับตอนกรอก
+        const firstWithVal = gradesForProc.find(gr => { const st = pg[gr.grade]; return st && st.v !== '' && st.v != null; });
+        const fallback = firstWithVal ? Number(pg[firstWithVal.grade].v) || 0 : 0;
+        const effRate = (grade) => { const st = pg[grade]; if (st && st.own && st.v !== '' && st.v != null) return Number(st.v) || 0; if (st && st.v !== '' && st.v != null) return Number(st.v) || 0; return fallback; };
+        let prows = gradesForProc.map(gr => {
+          const rate = effRate(gr.grade);
+          const kgPer = Math.round(gr.kgPerAvg) || 20;
+          const res = rate * gr.kg;
+          return `<div class="gsum-pgrid"><span class="gname">${gbEscapeHtml(gr.grade)}</span><span class="nR">${fmt(gr.baskets)}</span><span class="op">×</span><span class="n">${fmt(kgPer)}</span><span class="op">=</span><span class="sub2">${fmt(gr.kg)}</span><span class="op">×</span><span class="n">${rate ? fmt(rate) : '—'}</span><span class="op">=</span><span class="res">${res ? fmt(Math.round(res)) : '—'}</span></div>`;
+        }).join('');
+        er += `<div class="gsum-procbox">
+          <div class="gsum-proch">ค่าจัดทำ (แยกเบอร์)</div>
+          <div class="gsum-pgrid gsum-phead"><span>เบอร์</span><span>ตก.</span><span></span><span>นน</span><span></span><span>รวมกก.</span><span></span><span>เรท</span><span></span><span>ค่าจัดทำ</span></div>
+          ${prows}
+          <div class="gsum-procfoot"><span class="l">รวมค่าจัดทำ</span><span class="v">${fmt(proc)}</span></div>
+        </div>`;
+      } else if (proc) {
+        const procMode = ex.processMode === 'mul' ? ' (คูณรวม)' : '';
+        er += `<div class="gsum-trow"><span class="k">ค่าจัดทำ<small>${procMode}</small></span><span class="v">${fmt(proc)}</span></div>`;
+      }
+      if (ded) er += `<div class="gsum-trow"><span class="k">หักไว้</span><span class="v">${fmt(ded)}</span></div>`;
+      html += `
+      <div class="gsum-sec">ค่าใช้จ่าย</div>
+      <div class="gsum-exptbl">${er}<div class="gsum-gtotal gsum-expfoot"><span class="gsum-gtlbl">รวมค่าใช้จ่าย</span><span class="gsum-gnum" style="font-size:15px;color:#c0392b">${fmt(expSum)}</span></div></div>`;
+    }
+
+    // (การชำระ — เอาออกตามที่ผู้ใช้แจ้ง ไม่ใช้)
+
+    // ── ⑦ ข้อมูลสวน ──
+    const owner = (g && (g.owner || g.nickname || g.firstname)) || '';
+    const phone = (g && g.phone) || '';
+    const dealLabel = (g && typeof dealTypeLabel === 'function') ? dealTypeLabel(g.dealType) : '';
+    const openDate = (g && g.collectStartDate) ? (typeof fmtDate === 'function' ? fmtDate(g.collectStartDate) : g.collectStartDate) : '';
+    let ir = '';
+    if (owner || phone) ir += `<div class="gsum-trow"><span class="k">เจ้าของ</span><span class="v txt">${gbEscapeHtml(owner)}${phone ? ' · ' + gbEscapeHtml(phone) : ''}</span></div>`;
+    if (fruit) ir += `<div class="gsum-trow"><span class="k">ผลไม้</span><span class="v txt">${dot}${gbEscapeHtml(fruit)}</span></div>`;
+    if (dealLabel) ir += `<div class="gsum-trow"><span class="k">แบบซื้อ</span><span class="v txt">${gbEscapeHtml(dealLabel)}</span></div>`;
+    if (openDate || nColl) ir += `<div class="gsum-trow"><span class="k">วันเปิด · เที่ยวเก็บ</span><span class="v txt">${openDate || '—'}${nColl ? ' · ' + nColl + ' เที่ยว' : ''}</span></div>`;
+    if (ir) html += `<div class="gsum-sec">ข้อมูลสวน</div><div class="gsum-tbl">${ir}</div>`;
+
+    document.getElementById('gsum-content').innerHTML = html;
+    const ov = document.getElementById('gsum-ov');
+    ov.classList.add('open');
+    ov.querySelector('.gsum-body').scrollTop = 0;
+    if (typeof haptic === 'function') haptic(10);
+  } catch (e) {
+    if (typeof toast === 'function') toast('เปิดสรุปไม่ได้');
+    try { console.error('openGardenSummary', e); } catch (e2) {}
+  }
+};
+
+window.closeGardenSummary = function () {
+  const ov = document.getElementById('gsum-ov');
+  if (ov) ov.classList.remove('open');
+};
+
+// ── สีหลอดตาม % (เดิม gradient ขวางหลอด → ใหม่สีเดียวทั้งหลอด) ──
+// interpolate สีจากสเกลเดิม (#ef9f27→#479a1c) ที่ตำแหน่ง % · เกินเป้า = เขียวสว่าง
+function pctFillColor(pct) {
+  if (pct >= 100) return '#28e06a';
+  const p = Math.max(0, Math.min(100, pct));
+  const S = [[0,239,159,39],[20,240,176,58],[38,236,200,78],[55,181,210,80],[75,102,201,63],[100,34,197,94]];
+  for (let i = 0; i < S.length - 1; i++) {
+    const a = S[i], b = S[i+1];
+    if (p >= a[0] && p <= b[0]) {
+      const t = (p - a[0]) / (b[0] - a[0]);
+      const r = Math.round(a[1] + (b[1]-a[1])*t), g = Math.round(a[2] + (b[2]-a[2])*t), bl = Math.round(a[3] + (b[3]-a[3])*t);
+      return `rgb(${r},${g},${bl})`;
+    }
+  }
+  return 'rgb(71,154,28)';
+}
+window.pctFillColor = pctFillColor;
 
 function renderListView() {
   document.getElementById('page-sub').textContent = `No. II · ${gardens.length} สวน`;
@@ -22168,6 +22850,11 @@ function renderListView() {
     // Row 2 — context-dependent
     let row2Html = '';
     const isOpened = (g.status === 'collecting' || g.status === 'done' || g.openedAt || g.closedAt);
+    // ปุ่ม "+" เข้าเก็บเที่ยวใหม่ — แสดงเฉพาะสวนยังไม่ปิด
+    const notClosed = !(g.status === 'done' || g.closedAt);
+    const addCardHtml = notClosed
+      ? `<span class="lc-addcard" onclick="openHarvestEntry('${g.id}',event)" title="เข้าเก็บเที่ยวใหม่"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 5.5v13M5.5 12h13" stroke="#22c55e" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg></span>`
+      : '';
     if (isOpened) {
       // วันที่เปิด = เที่ยวแรก (วันที่หัวบิลเข้าเก็บวันแรก) + การ์ดวันแต่ละเที่ยว
       const colls = (g.collections||[]).filter(c => c && c.date).slice()
@@ -22200,13 +22887,16 @@ function renderListView() {
         }).join('');
         row2Html = `<span class="lc-line2 lc-line2-dates">
           <span class="lc-drow"><span class="lc-dlabel">วันที่เปิด</span><span class="lc-dcolon">:</span><span class="num">${openTxt}</span></span>
-          <span class="lc-drow"><span class="lc-dlabel">เก็บ ${trips} เที่ยว</span><span class="lc-dcolon">:</span><span class="lc-daywrap">${dayCards}</span></span>
+          <span class="lc-drow"><span class="lc-dlabel">เก็บ ${trips} เที่ยว</span><span class="lc-dcolon">:</span><span class="lc-daywrap">${dayCards}${addCardHtml}</span></span>
         </span>`;
       } else {
         // เปิดแล้วแต่ยังไม่มีเที่ยวเก็บ
         const days = prog ? prog.days : 0;
+        const addInline = notClosed
+          ? `<span class="lc-addcard inline" onclick="openHarvestEntry('${g.id}',event)" title="เข้าเก็บเที่ยวแรก"><svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 5.5v13M5.5 12h13" stroke="#22c55e" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg></span>`
+          : '';
         row2Html = `<span class="lc-line2">
-          <span class="lbl">เปิดสวน</span> <span class="num">${days}</span> วัน · <span class="lbl">ยังไม่เก็บ</span>
+          <span class="lbl">เปิดสวน</span> <span class="num">${days}</span> วัน · <span class="lbl">ยังไม่เก็บ</span>${addInline}
         </span>`;
       }
     } else {
@@ -22241,8 +22931,8 @@ function renderListView() {
       //         ใหม่: เขียวเริ่มที่ 55% · ช่วงเหลืองแคบลง
       // เลยเป้า B3 — เดิม #34c759→#0a7a30 ท้ายเข้มจนดูทึบ · ใหม่สว่างทั้งหลอด (แสงฟุ้งอยู่ใน CSS .over)
       const fillStyle = isExceeded
-        ? `width:100%;background:linear-gradient(90deg,#8dff9b,#28e06a 55%,#12c956);`
-        : `width:${fillPct}%;background:linear-gradient(90deg,#ef9f27 0%,#f0b03a 20%,#ecc84e 38%,#b9cd57 55%,#7ab63c 75%,#479a1c 100%);background-size:${gradScale}% 100%;background-repeat:no-repeat;`;
+        ? `width:100%;background:#28e06a;`
+        : `width:${fillPct}%;background:${pctFillColor(rawPct)};`;
       let pctColor = '#b85a00';
       if (isExceeded) pctColor = '#166534';
       else if (rawPct >= 90) pctColor = '#2c4a08';
@@ -22251,10 +22941,10 @@ function renderListView() {
       const upSvg = '<svg class="lc-up" viewBox="0 0 24 24"><path d="M12 4l8 9H4z" fill="#ff2d2d"/></svg>';
       const curLbl = isExceeded ? `<span>${fmtNum(totKg)}</span>${upSvg}` : fmtNum(totKg);
       const tgtLbl = '🎯 ' + fmtNum(tgtKg);
-      // เป้า: ปกติอยู่ปลายหลอด (ไม่มีกรอบ + ขีดทอง) ; เลยเป้าอยู่ที่เส้นขีดแดง
+      // เป้า: ป้ายอยู่ใต้หลอด กึ่งกลางที่ขีดตำแหน่ง (ปกติ=วงเล็บปลาย 100% · เลยเป้า=เส้นแดง tgtPct%)
       const tgtEls = isExceeded
-        ? `<span class="lc-tgt-tick" style="left:${tgtPct}%"></span><span class="lc-tgt-ticklbl" style="left:${tgtPct}%">${tgtLbl}</span>`
-        : `<span class="lc-tgt-cap"></span><span class="lc-tgt-end">${tgtLbl}</span>`;
+        ? `<span class="lc-tgt-tick" style="left:${tgtPct}%"></span><span class="lc-tgt-blabel" style="left:${tgtPct}%">${tgtLbl}</span>`
+        : `<span class="lc-tgt-cap"></span><span class="lc-tgt-blabel" style="left:100%">${tgtLbl}</span>`;
       progBarHtml = `
         <div class="lc-bar-row">
           <div class="lc-bar-track">
@@ -22540,6 +23230,8 @@ function openDetail(id) {
 
 // ── ดูการ์ดสวนฉบับเต็ม (read-only) เปิดจากบิลตีราคา ──
 let _roFromBook = false;
+// flag: เปิดบิลจากหน้าสวน (การ์ดสวน) → กดกลับต้องกลับหน้าสวน ไม่ใช่หน้าหลัก
+window._billFromGarden = false;
 function openGardenFull(gid) {
   if (!gid) return;
   if (!gardens.find(x => x.id === gid)) { toast('ไม่พบสวนนี้'); return; }
@@ -22670,6 +23362,7 @@ function renderDetail() {
   document.getElementById('detail-view').innerHTML = `
     <div class="${phClass}">
       <button class="gv-back-btn" onclick="smartBack()" title="กลับ"><span class="gvb-arr">←</span><span>กลับ</span></button>
+      ${mailBtnHtml('walnut', 'right:64px;')}
       <button class="cam-btn" onclick="openCamPicker()" title="ถ่ายบิล"><span class="cam-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8 H7 L9 5 H15 L17 8 H20 V19 H4 Z" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span>บิล</span></button>
       <div class="title-th">${hdStamp}${gbEscapeHtml(g.name||'')}</div>
       <div class="sub">${_subHtml}</div>
@@ -22805,25 +23498,36 @@ function renderDetail() {
               const pct = Math.round(pctRaw);
               const fill = Math.min(100, pctRaw);
               const isExceeded = totKgAll > denom;
-              // gradient scale so fill shows true gradient stop
-              const gradScale = isExceeded ? 100 : (fill > 0 ? Math.round(10000 / Math.max(fill, 1)) : 100);
               const fillStyle = isExceeded
-                ? `width:100%;background:#4ade80;`
-                : `width:${fill}%;background:linear-gradient(90deg,#ef9f27 0%,#f0c060 30%,#fcd34d 50%,#97c459 75%,#639922 100%);background-size:${gradScale}% 100%;background-repeat:no-repeat;`;
+                ? `width:100%;background:#28e06a;`
+                : `width:${fill}%;background:${pctFillColor(pct)};`;
               // text color
               let nowColor = '#b85a00';
               if (isExceeded) nowColor = '#166534';
               else if (pct >= 90) nowColor = '#2c4a08';
               else if (pct >= 60) nowColor = '#4a6928';
               else if (pct >= 30) nowColor = '#854f0b';
-              // marker positions on the track
-              // when userOverTarget is set, the track's 100% is overTarget; expectedKg sits at expectedKg/userOverTarget
-              const targetLeft = userOverTarget ? `${Math.min(100, (expectedKg / userOverTarget) * 100)}%` : '100%';
+              // ── ตรรกะ A (เหมือนหน้าสรุป) ──
+              const nearP = !isExceeded && pct >= 90;
+              // ตำแหน่งเส้นเป้า (numeric %) — ใช้ทั้งเส้น marker + ป้าย 🎯 กึ่งกลาง
+              const tgtMarkPct = userOverTarget
+                ? Math.min(100, (expectedKg / userOverTarget) * 100)
+                : (isExceeded && totKgAll > 0 ? (expectedKg / totKgAll) * 100 : 100);
+              const targetLeft = `${tgtMarkPct}%`;
               const overTargetMarker = userOverTarget ? `<div class="ns-progress-over-marker" style="left:100%;"></div>` : '';
-              // right label
+              // pill "now" (A): เกาะขวาเมื่อ over · หลบ 76 เมื่อ near · ตามน้ำหนักปกติ
+              const pillLeft = isExceeded ? 100 : (nearP ? 76 : Math.min(100, pct));
+              const pillTx = isExceeded ? 'translateX(-100%)' : 'translateX(-50%)';
+              const pillCls = isExceeded ? 'over' : (nearP ? 'clampR' : '');
+              const pillInner = isExceeded
+                ? `<span>${fmtNum(totKgAll)}</span><svg class="up" viewBox="0 0 24 24"><path d="M12 4l8 9H4z" fill="#ff2d2d"/></svg>`
+                : `${fmtNum(totKgAll)}`;
+              // ป้ายเป้า 🎯 ใต้หลอด กึ่งกลางที่เส้น marker (แบบหน้าการ์ด/สรุป)
+              const tgtBLabel = `<span class="ns-progress-tgtblabel" style="left:${tgtMarkPct}%;">🎯 ${fmtNum(expectedKg)}</span>`;
+              // ป้ายขวา (labels row): ปกติเว้นว่าง (เป้าโชว์ใต้ marker แล้ว) · เก็บเฉพาะ over/เกินเป้า
               const rightLbl = userOverTarget
                 ? `<span style="color:#166534;font-weight:700;">เกินเป้า ${fmtNum(userOverTarget)}</span>`
-                : (isExceeded ? `<span class="target">เกิน ${fmtNum(totKgAll-expectedKg)} กก.</span>` : `<span class="target">เป้า ${fmtNum(expectedKg)} กก.</span>`);
+                : (isExceeded ? `<span class="target">เกิน ${fmtNum(totKgAll-expectedKg)} กก.</span>` : `<span class="target"></span>`);
               return `
                 <div class="ns-section-h" style="margin-top:14px;border-bottom:0;padding-bottom:0;">น้ำหนักที่คาดไว้</div>
                 <div class="ns-progress-wrap">
@@ -22833,13 +23537,15 @@ function renderDetail() {
                         <div class="ns-progress-fill ${isExceeded?'over':''}" style="${fillStyle}"></div>
                         <div class="ns-progress-target" style="left:${targetLeft};"></div>
                         ${overTargetMarker}
+                        ${tgtBLabel}
+                        <span class="ns-progress-cur ${pillCls}" style="left:${pillLeft}%;transform:${pillTx};">${pillInner}</span>
                       </div>
                     </div>
                     <button class="ns-btn-add-pill" onclick="setOverTarget('${g.id}')" title="${userOverTarget?'แก้เกินเป้า':'ตั้งเกินเป้า'}">${userOverTarget?'✎ '+fmtNum(userOverTarget):'+ ตั้งเกินเป้า'}</button>
                   </div>
                   <div class="ns-progress-labels">
                     <span>0</span>
-                    <span class="now" style="color:${nowColor};">${fmtNum(totKgAll)} กก. · ${pct}%</span>
+                    <span class="now" style="color:${nowColor};">${pct}%</span>
                     ${rightLbl}
                   </div>
                 </div>
@@ -23110,6 +23816,7 @@ function renderDetail() {
       dv.insertBefore(b, dv.firstChild);
     }
   }
+  if (typeof updateMailNotif === 'function') updateMailNotif();
 }
 
 function switchDetailTab(t) {
@@ -23600,10 +24307,15 @@ function saveGarden() {
     return;
   }
   const fruit = document.getElementById('gf-fruit').value.trim();
-  if (!fruit) {
-    toast('ใส่ชื่อผลไม้');
+  // อุดรู: ผลไม้ต้อง "อยู่ในคลัง" ไม่ใช่แค่ "ไม่ว่าง"
+  // เดิมเช็คแค่ !fruit → สวนเก่าที่มีชื่อนอกคลัง (เช่น "ลำไย" ที่ควรเป็น "ลำไย อิดอ") กดบันทึกก็ผ่าน
+  if (!fruit || (typeof window.fruitInLib === 'function' && !window.fruitInLib(fruit))) {
+    toast(fruit ? 'ผลไม้นี้ไม่มีในคลัง — เลือกจากรายการ' : 'ใส่ชื่อผลไม้');
     const el = document.getElementById('gf-fruit');
-    if (el) { el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); }
+    const wrap = el && el.closest('.fp-wrap');
+    if (wrap) { wrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    else if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (typeof fpOpen === 'function') setTimeout(() => fpOpen('gf-fruit'), 280);
     return;
   }
   const phone = document.getElementById('gf-phone') ? document.getElementById('gf-phone').value.trim() : '';
@@ -23718,6 +24430,16 @@ function canViewProfit() {
   return !!(currentUser.perms && currentUser.perms.profitView);
 }
 window.canViewProfit = canViewProfit;
+// แก้บิลได้ไหม — admin เสมอ · คนไม่มีสิทธิ์กำไรแก้ได้ปกติ · มีสิทธิ์กำไรต้องเปิด billEdit ด้วย
+// (sub-option "แก้ไขบิล" อยู่ใต้ "เห็นกำไร/ขาดทุน" → ควบคุมเฉพาะคนเห็นกำไร)
+function canEditBill() {
+  if (typeof currentUser === 'undefined' || !currentUser) return false;
+  if (currentUser.role === 'admin') return true;
+  const p = currentUser.perms || {};
+  if (!p.profitView) return true;      // ไม่เห็นกำไร = แก้บิลได้ปกติ (คนทำบิล)
+  return !!p.billEdit;                  // เห็นกำไร → ต้องเปิด "แก้ไขบิล" ถึงแก้ได้
+}
+window.canEditBill = canEditBill;
 // ── ซ่อน/แสดงกำไรแบบไว (ปุ่มดวงตา · ต่อยอดบนสิทธิ์ ไม่กระทบสิทธิ์จริง · จำในเครื่อง) ──
 let _profitHidden = false;
 try { _profitHidden = (localStorage.getItem('thodsapon_profit_hidden') === '1'); } catch (e) {}
@@ -26275,6 +26997,25 @@ window.initGardenBook = _initGardenBookInternal;
 
 // expose to inline onclick
 window.addCollection = addCollection;
+
+// ── ปุ่ม "+" quick-harvest: เปิดสวน → แท็บเข้าเก็บ → ฟอร์มบันทึกใหม่ → เคอร์เซอร์ที่ช่องตะกร้าแรก ──
+window.openHarvestEntry = function (gid, ev) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  const g = gardens.find(x => x.id === gid);
+  if (!g) { toast('ไม่พบสวนนี้'); return; }
+  if (g.status === 'done' || g.closedAt) { toast('สวนนี้ปิดแล้ว'); return; }
+  // เคลียร์ฟอร์มค้างจากสวน/ใบก่อน กัน addCollection early-return (มันจะ return ถ้า _addingCollection/_editingCollectionId ยังค้าง)
+  _addingCollection = false;
+  _editingCollectionId = null;
+  openDetail(gid);              // ตั้ง currentDetailId + เรนเดอร์ (แท็บสรุป)
+  currentDetailTab = 'collect'; // สลับไปแท็บเข้าเก็บ
+  addCollection();              // เปิดฟอร์มบันทึกใหม่ (auto-fill เบอร์ ตะกร้าว่าง) + เรนเดอร์แท็บเก็บ
+  // โฟกัสช่องตะกร้าแรก (เคอร์เซอร์พร้อมพิมพ์) — cfRenderRows เติม tbody แบบ sync ท้าย renderDetail แล้ว
+  setTimeout(() => {
+    const inp = document.querySelector('#sub-collect #cf-tbody tr td:nth-child(2) input');
+    if (inp) { try { inp.focus({ preventScroll: false }); } catch (e) { inp.focus(); } }
+  }, 130);
+};
 window.addGradeRow = addGradeRow;
 window.clearAlertFilter = clearAlertFilter;
 window.clearAllFilters = clearAllFilters;
@@ -30531,6 +31272,7 @@ window.gvBsetIdbPurgeApply = gvBsetIdbPurgeApply;
     <button class="gv-back-btn" onclick="smartBack()" title="กลับ"><span class="gvb-arr">←</span><span>กลับ</span></button>
     <div class="title-th">สวน</div>
     <div class="sub" id="page-sub">No. II · 0 สวน</div>
+    <button class="mail-hdr walnut" style="right:94px;display:none;" onclick="mailNotifClick()" title="กล่องจดหมาย" aria-label="กล่องจดหมาย"><svg viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="mail-hdr-count hide">0</span></button>
     <button class="gv-eye-btn" id="gv-eye-btn" onclick="toggleProfitHidden()" style="display:none" title="ซ่อน/แสดง กำไร-ขาดทุน"></button>
     <button class="gv-bset-btn" id="gv-bset-btn-toggle" onclick="gvBsetOpen()" title="ตั้งค่าเล่มสวน" aria-label="ตั้งค่าเล่มสวน">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -30620,6 +31362,14 @@ window.gvBsetIdbPurgeApply = gvBsetIdbPurgeApply;
 
 
 
+<!-- หน้าสรุปสวนเต็มจอ -->
+<div class="gsum-ov" id="gsum-ov">
+  <div class="gsum-hd">
+    <button class="bk" onclick="window.closeGardenSummary()">← กลับ</button>
+    <div class="ti"><div class="t1" id="gsum-t1">—</div><div class="t2" id="gsum-t2">—</div></div>
+    <span class="badge" id="gsum-badge" style="display:none"></span>
+  </div>
+  <div class="gsum-body"><div class="wrap" id="gsum-content"></div></div>
 </div>
 </body>
 </html>
