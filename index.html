@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1125;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (125)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1127;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (127)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11484,7 +11484,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .gsum-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column;
   overflow:hidden; font-family:'IBM Plex Sans Thai',sans-serif; }
 .gsum-ov.open { display:flex; }
-.gsum-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:11px 14px;
+.gsum-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:max(44px, calc(env(safe-area-inset-top, 0px) + 11px)) 14px 11px;
   display:flex; align-items:center; gap:10px; flex:0 0 auto; }
 .gsum-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8;
   border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
@@ -11493,7 +11493,7 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .gsum-hd .ti .t2 { font-size:10.5px; color:#c9b88a; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .gsum-hd .badge { background:#f3ecd4; border:1px solid #c9a24a; color:#6b5320; border-radius:999px;
   padding:2px 9px; font-size:10.5px; font-weight:800; white-space:nowrap; }
-.gsum-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 12px 30px; }
+.gsum-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 12px 30px; }
 .gsum-body .wrap { max-width:460px; margin:0 auto; }
 
 /* กล่องกำไร B1 */
@@ -13749,7 +13749,7 @@ function togglePerm(idx, perm, val) {
 }
 function changePw(idx) {
   openAuthModal(`เปลี่ยนรหัส: ${users[idx].name}`,
-    `<label class="login-label" style="margin-top:0;">รหัสใหม่</label><input class="login-input" type="text" id="new-pw" autocomplete="off" value="${escapeHtml(users[idx].pw || '')}" data-old="1" onfocus="if(this.dataset.old){this.value='';this.dataset.old='';}">`,
+    `<label class="login-label" style="margin-top:0;">รหัสใหม่</label><input class="login-input" type="text" id="new-pw" autocomplete="off" placeholder="${escapeHtml(users[idx].pw || '')}">`,
     () => {
       const v = document.getElementById('new-pw').value.trim();
       if (!v) { toast('ใส่รหัสใหม่'); return false; }
@@ -23201,6 +23201,8 @@ function switchTab(t) {
 //  DETAIL VIEW
 // ════════════════════════════════════════════
 function openDetail(id) {
+  // เซฟตำแหน่งสกรอลล์ของ list ก่อนซ่อน (ต้องอ่านก่อน display:none ไม่งั้น scrollY ถูก clamp เป็น ~0)
+  _lastScrollY = window.scrollY || window.pageYOffset || 0;
   // เปิดสวนปกติ = ไม่ใช่โหมดดูอย่างเดียว → ล้างสถานะ read-only กันค้าง
   _roFromBook = false;
   const _gvRo = document.getElementById('garden-view');
@@ -23225,7 +23227,6 @@ function openDetail(id) {
     syncBottomNavActive();
   }
   // Reset scroll position tracking
-  _lastScrollY = window.scrollY || 0;
   renderDetail();
 }
 
@@ -23295,6 +23296,13 @@ function goBack() {
       fab.classList.remove('lifted');
     }
     renderListView();
+    // คืนตำแหน่งสกรอลล์เดิม (ที่เซฟไว้ตอน openDetail) — ไม่เด้งขึ้นบนสุด
+    const _restoreY = _lastScrollY || 0;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, _restoreY);
+      // เผื่อ layout ยังไม่เสร็จเฟรมแรก
+      requestAnimationFrame(() => { if (Math.abs((window.scrollY || 0) - _restoreY) > 2) window.scrollTo(0, _restoreY); });
+    });
   }
 }
 
