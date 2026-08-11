@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1133;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (133)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1135;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (135)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -18990,9 +18990,12 @@ function readForm() {
 }
 
 // ── เตือน "บิลเกินที่เก็บจริง": คำนวณน้ำหนักรายเบอร์ บิล(q) เทียบ เก็บจริง(collections) ──
+// รองรับ: multiday(เก็บหลายวัน) · wholesale(ตีบิล) · perkg(ซื้อรายโล) · orchard(ซื้อสวน A=รายเบอร์ / B=%เทียบยอดรวม)
+// ไม่ตรวจ: plan(วางแผนซื้อสวน) — เป็นการคาดการณ์ ไม่ใช่ของที่ขายจริง
 function _billVsCollected(q) {
   try {
-    if (!q || q.type !== 'multiday') return null;   // เช็คเฉพาะบิลสวน (multiday)
+    if (!q) return null;
+    if (['multiday', 'wholesale', 'perkg', 'orchard'].indexOf(q.type) < 0) return null;
     let _gs = [];
     try { _gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]'); } catch (e) { _gs = []; }
     if (!Array.isArray(_gs)) return null;
@@ -19000,31 +19003,77 @@ function _billVsCollected(q) {
     let g = q.gardenId ? _gs.find(x => x && x.id === q.gardenId) : null;
     if (!g) g = _gs.find(x => x && x.stamp && x.stamp.quoteId === q.id);
     if (!g || !Array.isArray(g.collections) || !g.collections.length) return null;
-    // เก็บจริง รายเบอร์ (กก.)
+    // ── เก็บจริง รายเบอร์ (กก.) ── ใช้สูตรเดียวกับที่สวนคิด c.kg (kgPer ตามที่เก็บจริง ไม่ยัด default)
     const collByGrade = {}; let collTotal = 0;
     g.collections.forEach(c => {
-      (c && Array.isArray(c.rows) ? c.rows : []).forEach(r => {
+      if (!c) return;
+      const rws = Array.isArray(c.rows) ? c.rows : [];
+      if (rws.length) {
+        rws.forEach(r => {
+          if (!r) return;
+          const grade = (r.grade || '').trim() || '—';
+          const kg = (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
+          collByGrade[grade] = (collByGrade[grade] || 0) + kg; collTotal += kg;
+        });
+      } else {
+        // ลงเก็บแบบไม่แยกเบอร์ (ข้อมูลเก่า) → เข้าเบอร์ "—" เหมือนตอนสร้างบิลจากสวน
+        const kg = Number(c.kg) || 0;
+        if (kg) { collByGrade['—'] = (collByGrade['—'] || 0) + kg; collTotal += kg; }
+      }
+    });
+    if (collTotal <= 0) return null;   // สวนไม่มีข้อมูลน้ำหนัก → เทียบไม่ได้
+    // ── บิล รายเบอร์ (กก.) ──
+    const billByGrade = {}; let billTotal = 0; let perGrade = true;
+    const _add = (gr, kg) => { const k = String(gr == null ? '' : gr).trim() || '—'; billByGrade[k] = (billByGrade[k] || 0) + kg; };
+    if (q.type === 'multiday') {
+      const grades = q.multiDayGrades || [];
+      (Array.isArray(q.multiDayRows) ? q.multiDayRows : []).forEach(r => {
         if (!r) return;
-        const grade = r.grade || '';
-        const kg = (Number(r.baskets) || 0) * (Number(r.kgPer) || 20) + (Number(r.extra) || 0);
-        collByGrade[grade] = (collByGrade[grade] || 0) + kg; collTotal += kg;
+        const kgPer = Number(r.kgPer) || 20;
+        grades.forEach(gr => { const kg = (Number(r.baskets && r.baskets[gr]) || 0) * kgPer; _add(gr, kg); billTotal += kg; });
+        billTotal += Number(r.extra) || 0;
       });
-    });
-    // บิล รายเบอร์ (กก.)
-    const billByGrade = {}; let billTotal = 0;
-    const grades = q.multiDayGrades || [];
-    (Array.isArray(q.multiDayRows) ? q.multiDayRows : []).forEach(r => {
-      if (!r) return;
-      const kgPer = Number(r.kgPer) || 20;
-      grades.forEach(gr => { const bk = Number(r.baskets && r.baskets[gr]) || 0; const kg = bk * kgPer; billByGrade[gr] = (billByGrade[gr] || 0) + kg; billTotal += kg; });
-      billTotal += Number(r.extra) || 0;
-    });
-    // เบอร์ที่เกิน
+    } else if (q.type === 'wholesale') {
+      // บิลรวมหลายวันตั้งชื่อเบอร์เป็น "ยัก · 10 มิ.ย." → ต้องใช้ _grade (ชื่อเบอร์จริง) ไม่งั้นไม่ตรงกับสวน
+      (Array.isArray(q.rows) ? q.rows : []).forEach(r => {
+        if (!r) return;
+        const gr = (r._grade != null && String(r._grade).trim()) ? r._grade : r.grade;
+        const kg = (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
+        _add(gr, kg); billTotal += kg;
+      });
+    } else if (q.type === 'perkg') {
+      (Array.isArray(q.perkgRows) ? q.perkgRows : []).forEach(r => {
+        if (!r) return;
+        const kg = Number(r.kg) || 0; _add(r.grade, kg); billTotal += kg;
+      });
+    } else if (q.type === 'orchard') {
+      if (q.orchMode === 'B') {
+        perGrade = false;                               // แบบ % ไม่มีเข่งให้เทียบรายเบอร์ → ยอดรวมอย่างเดียว
+        billTotal = Number(q.orchTotalKg) || 0;
+      } else {
+        (Array.isArray(q.orchRows) ? q.orchRows : []).forEach(r => {
+          if (!r) return;
+          const kg = (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0);
+          _add(r.grade, kg); billTotal += kg;
+        });
+      }
+    }
+    if (billTotal <= 0) return null;   // บิลยังไม่มีน้ำหนัก
+    // ── กันเตือนผิด: เทียบรายเบอร์ได้ต่อเมื่อ "ชื่อเบอร์คุยกันรู้เรื่อง" ──
+    if (perGrade) {
+      const _collGrades = Object.keys(collByGrade).filter(k => k !== '—');
+      const _billGrades = Object.keys(billByGrade);
+      // สวนลงเก็บแบบไม่แยกเบอร์ · หรือไม่มีเบอร์ไหนตรงกันเลย (คนละระบบชื่อ) → เทียบยอดรวมอย่างเดียว
+      if (!_collGrades.length || !_billGrades.some(k => collByGrade[k] !== undefined)) perGrade = false;
+    }
+    // ── เบอร์ที่เกิน ──
     const overGrades = [];
-    Object.keys(billByGrade).forEach(gr => {
-      const bill = Math.round(billByGrade[gr]); const coll = Math.round(collByGrade[gr] || 0);
-      if (bill > coll) overGrades.push({ grade: gr, bill, coll, over: bill - coll });
-    });
+    if (perGrade) {
+      Object.keys(billByGrade).forEach(gr => {
+        const bill = Math.round(billByGrade[gr]); const coll = Math.round(collByGrade[gr] || 0);
+        if (bill > coll) overGrades.push({ grade: gr, bill, coll, over: bill - coll });
+      });
+    }
     const over = (Math.round(billTotal) > Math.round(collTotal)) || overGrades.length > 0;
     return { over, billTotal: Math.round(billTotal), collTotal: Math.round(collTotal), overTotal: Math.round(billTotal - collTotal), overGrades };
   } catch (e) { return null; }
@@ -19081,6 +19130,10 @@ function saveQuote(_skipOverCheck) {
   if (!hasRows) { toast('เพิ่มเบอร์อย่างน้อย 1 แถว'); return; }
   // ── เตือน: บิลเกินที่เก็บจริง (รายเบอร์) — ขายเกินที่เก็บเป็นไปไม่ได้ ──
   if (!_skipOverCheck) {
+    // readForm() ไม่คืน gardenId (ฟอร์มไม่มีช่องนี้) → ต้องดึงจากบิลเดิมก่อนเช็ค
+    // ไม่งั้นบิลที่ผูกสวนแต่ "ยังไม่มี stamp" จะหา garden ไม่เจอ = ไม่เตือน
+    // (บรรทัดคืน gardenId ของเดิมอยู่ใต้จุดนี้ ~13 บรรทัด — สายเกินไปสำหรับการเช็ค)
+    if (!q.gardenId) { const _pv = state.quotes.find(x => x && x.id === q.id); if (_pv && _pv.gardenId) q.gardenId = _pv.gardenId; }
     const _ov = _billVsCollected(q);
     if (_ov && _ov.over) { _showBillOverDialog(_ov, () => saveQuote(true)); return; }
   }
