@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1130;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (130)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1133;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (133)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -5137,6 +5137,10 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-pbox:active { transform: scale(.98); }
     #garden-view .lc-pbox.gain { background: linear-gradient(180deg,#eefbe9,#dff3d2); border-color: #4a9e3a; }
     #garden-view .lc-pbox.loss { background: linear-gradient(180deg,#fdecec,#f7d8d8); border-color: #c0392b; }
+    #garden-view .lc-pbox.over { background: linear-gradient(180deg,#fdeedd,#fbe0c4) !important; border-color: #e08a2a !important; }
+    #garden-view .lc-pb-warn { text-align: center; color: #c0392b; font-weight: 800; font-size: 9px; line-height: 1.25; padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px dashed rgba(192,57,43,.4); }
+    #garden-view .lc-pbox.over .lc-pb-viewbtn { color: #b5601a; border-color: #e08a2a; }
+    #garden-view .lc-pbox.over .lc-pb-sumbtn { color: #8a6f2f; border-color: #c9a24a; }
     #garden-view .lc-pb-row { display: flex; justify-content: space-between; font-size: 10px; color: #6b6048; font-weight: 700; line-height: 1.5; }
     #garden-view .lc-pb-row .v { font-family: 'JetBrains Mono', monospace; }
     #garden-view .lc-pb-sep { height: 1px; background: rgba(107,68,35,.18); margin: 5px 0; }
@@ -18988,10 +18992,13 @@ function readForm() {
 // ── เตือน "บิลเกินที่เก็บจริง": คำนวณน้ำหนักรายเบอร์ บิล(q) เทียบ เก็บจริง(collections) ──
 function _billVsCollected(q) {
   try {
-    if (!q || !q.gardenId || q.type !== 'multiday') return null;   // เช็คเฉพาะบิลสวน (multiday)
+    if (!q || q.type !== 'multiday') return null;   // เช็คเฉพาะบิลสวน (multiday)
     let _gs = [];
     try { _gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]'); } catch (e) { _gs = []; }
-    const g = Array.isArray(_gs) ? _gs.find(x => x && x.id === q.gardenId) : null;
+    if (!Array.isArray(_gs)) return null;
+    // หา garden: จาก q.gardenId ก่อน · ถ้าไม่มี ลองจาก stamp.quoteId (บิลบางใบ link ทางนั้น)
+    let g = q.gardenId ? _gs.find(x => x && x.id === q.gardenId) : null;
+    if (!g) g = _gs.find(x => x && x.stamp && x.stamp.quoteId === q.id);
     if (!g || !Array.isArray(g.collections) || !g.collections.length) return null;
     // เก็บจริง รายเบอร์ (กก.)
     const collByGrade = {}; let collTotal = 0;
@@ -19018,7 +19025,7 @@ function _billVsCollected(q) {
       const bill = Math.round(billByGrade[gr]); const coll = Math.round(collByGrade[gr] || 0);
       if (bill > coll) overGrades.push({ grade: gr, bill, coll, over: bill - coll });
     });
-    const over = Math.round(billTotal) > Math.round(collTotal);
+    const over = (Math.round(billTotal) > Math.round(collTotal)) || overGrades.length > 0;
     return { over, billTotal: Math.round(billTotal), collTotal: Math.round(collTotal), overTotal: Math.round(billTotal - collTotal), overGrades };
   } catch (e) { return null; }
 }
@@ -22487,12 +22494,23 @@ function buildStampBox(s, gid) {
   if (!s) return '';
   const gain = (Number(s.amount) || 0) >= 0;
   const cls = gain ? 'gain' : 'loss';
+  // เตือน: ขาย(บิล) เกินที่เก็บจริง → กรอบส้ม + ข้อความในกรอบ
+  let _isOver = false;
+  try {
+    const _g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gid) : null;
+    const _collKg = (_g && Array.isArray(_g.collections)) ? Math.round(_g.collections.reduce((a, c) => a + ((c && Number(c.kg)) || 0), 0)) : 0;
+    const _billKg = Math.round(Number(s.totalKg) || 0);
+    _isOver = _collKg > 0 && _billKg > _collKg;
+  } catch (e) {}
+  const _boxCls = cls + (_isOver ? ' over' : '');
+  const _warnHtml = _isOver ? '<div class="lc-pb-warn">＊ ยอดเก็บ กับ ขาย ไม่ตรงกัน</div>' : '';
   const arrow = gain ? '▲' : '▼';
   const pctTxt = (s.pct === null || s.pct === undefined) ? '—'
     : Math.abs(Number(s.pct)).toFixed(1) + '%';
   const amtTxt = (gain ? '+' : '−') + fmtNum(Math.abs(Number(s.amount) || 0));
   const qid = gbEscapeHtml(s.quoteId || '');
-  return `<div class="lc-pbox ${cls}" onclick="lcStampClick(event,this)">
+  return `<div class="lc-pbox ${_boxCls}" onclick="lcStampClick(event,this)">
+      ${_warnHtml}
       <div class="lc-pb-row"><span>ทุน</span><span class="v">${fmtNum(Number(s.cost) || 0)}</span></div>
       <div class="lc-pb-row"><span>ขาย</span><span class="v">${fmtNum(Number(s.sold) || 0)}</span></div>
       <div class="lc-pb-sep"></div>
@@ -22621,7 +22639,7 @@ window.openGardenSummary = function (gardenId, quoteId) {
         : fmt(totalKg);
       // ── ตรรกะ A: pill (over→ปลายขวา · near→76% ลูกศรเฉียง · ปกติ→ตามค่า) ──
       const pillLeft = over ? 100 : (near ? 76 : Math.min(100, rawPct));
-      const pillTx = over ? 'translateX(-100%)' : 'translateX(-50%)';
+      const pillTx = 'translateX(-50%)';  // center เหมือนหลอดการ์ด (เลขไม่กองซ้ายตอน over)
       const pillCls = over ? 'over' : (near ? 'clampR' : '');
       // เป้า: ป้ายใต้หลอด กึ่งกลางที่ขีดตำแหน่ง (ปกติ=วงเล็บปลาย 100% · เลยเป้า=เส้นแดง tgtPct%)
       const tgtEls = over
@@ -23629,7 +23647,7 @@ function renderDetail() {
               const overTargetMarker = userOverTarget ? `<div class="ns-progress-over-marker" style="left:100%;"></div>` : '';
               // pill "now" (A): เกาะขวาเมื่อ over · หลบ 76 เมื่อ near · ตามน้ำหนักปกติ
               const pillLeft = isExceeded ? 100 : (nearP ? 76 : Math.min(100, pct));
-              const pillTx = isExceeded ? 'translateX(-100%)' : 'translateX(-50%)';
+              const pillTx = 'translateX(-50%)';  // center เหมือนหลอดการ์ด (เลขไม่กองซ้ายตอน over)
               const pillCls = isExceeded ? 'over' : (nearP ? 'clampR' : '');
               const pillInner = isExceeded
                 ? `<span>${fmtNum(totKgAll)}</span><svg class="up" viewBox="0 0 24 24"><path d="M12 4l8 9H4z" fill="#ff2d2d"/></svg>`
