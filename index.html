@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1127;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (127)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1130;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (130)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -1804,6 +1804,7 @@ window.supaReady = false;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.3), 0 0 0 2px rgba(212,175,55,0.15);
 }
 .login-input::placeholder { color: rgba(212,175,55,0.3); }
+#new-pw::placeholder { color: rgba(240,224,170,0.62); font-family: 'JetBrains Mono', monospace; }
 .login-btn {
   width: 100%;
   background: linear-gradient(135deg, #8b1a1a 0%, #6d1414 100%);
@@ -11496,6 +11497,40 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .gsum-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 12px 30px; }
 .gsum-body .wrap { max-width:460px; margin:0 auto; }
 
+/* ── เตือน: บิลเกินที่เก็บจริง (การ์ดในสรุป — สไตล์ C) ── */
+.gsum-billwarn { background:linear-gradient(180deg,#fef1e0,#fde0c0); border:1.5px solid #e08a2a; border-radius:10px; padding:10px 12px; margin-bottom:12px; box-shadow:0 1px 4px rgba(200,120,30,.2); }
+.gsum-billwarn .bw-h { display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:800; color:#b5471a; margin-bottom:7px; }
+.gsum-billwarn .reddot { width:17px; height:17px; border-radius:50%; background:#e08a2a; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; }
+.gsum-billwarn .bw-n { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+.gsum-billwarn .bw-chip { background:#fff; border:1px solid #e0b080; border-radius:6px; padding:3px 8px; font-size:10px; font-weight:800; color:#5a3818; font-family:'JetBrains Mono',monospace; }
+.gsum-billwarn .bw-chip .lb { font-family:'IBM Plex Sans Thai',sans-serif; color:#8a6f3f; font-weight:600; }
+.gsum-billwarn .bw-chip.over { background:#fde8e2; border-color:#e06a4a; color:#c0392b; }
+.gsum-billwarn .bw-tip { font-size:10px; color:#8a5a2a; line-height:1.4; margin-bottom:8px; }
+.gsum-billwarn .bw-btn { display:inline-flex; align-items:center; gap:4px; background:linear-gradient(135deg,#e89838,#d47820); border:1px solid #b5601a; border-radius:7px; padding:7px 13px; font-size:11px; color:#fff; font-weight:800; box-shadow:0 2px 5px rgba(180,96,26,.3); cursor:pointer; font-family:inherit; }
+
+/* ── กล่องเตือนกลางจอ ตอนบันทึกบิลเกินที่เก็บ (สไตล์ A1) ── */
+.billover-ov { position:fixed; inset:0; z-index:10000; background:rgba(20,12,4,.55); display:none; align-items:center; justify-content:center; padding:20px; font-family:'IBM Plex Sans Thai',sans-serif; }
+.billover-ov.open { display:flex; }
+.billover-dlg { width:100%; max-width:300px; background:linear-gradient(180deg,#4a3820,#3a2c18); border:1.5px solid #d4af37; border-radius:14px; padding:15px 15px 13px; box-shadow:0 10px 30px rgba(0,0,0,.5); }
+.billover-dlg .bo-ic { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#e8a020,#c07818); display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 7px; box-shadow:0 0 14px rgba(232,160,32,.5); }
+.billover-dlg .bo-t { text-align:center; font-weight:800; font-size:15px; color:#f0d89a; margin-bottom:3px; }
+.billover-dlg .bo-msg { text-align:center; font-size:10px; color:#d8c39a; margin-bottom:9px; line-height:1.35; }
+.billover-dlg .bo-tot { display:flex; justify-content:center; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+.billover-dlg .bo-chip { background:rgba(255,255,255,.08); border:1px solid rgba(212,175,55,.4); border-radius:6px; padding:3px 7px; font-size:9px; color:#f0e0b0; font-weight:700; text-align:center; font-family:'JetBrains Mono',monospace; }
+.billover-dlg .bo-chip .lb { font-family:'IBM Plex Sans Thai',sans-serif; color:#c9b078; font-weight:600; display:block; font-size:7.5px; }
+.billover-dlg .bo-chip.over { border-color:#e06a4a; color:#ff9a7a; }
+.billover-dlg .bo-sechd { font-size:9.5px; color:#e0a860; font-weight:800; margin:2px 2px 5px; }
+.billover-dlg .bo-tbl { background:rgba(0,0,0,.18); border:1px solid rgba(212,175,55,.25); border-radius:8px; overflow:hidden; max-height:150px; overflow-y:auto; }
+.billover-dlg .bo-tr { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 8px; font-size:9.5px; font-family:'JetBrains Mono',monospace; align-items:center; }
+.billover-dlg .bo-tr.h { background:rgba(212,175,55,.12); color:#c9b078; font-weight:700; font-family:'IBM Plex Sans Thai',sans-serif; font-size:8.5px; position:sticky; top:0; }
+.billover-dlg .bo-tr:not(.h) { border-top:1px solid rgba(212,175,55,.12); color:#e8dab0; }
+.billover-dlg .bo-tr .g { font-weight:800; color:#f0d89a; }
+.billover-dlg .bo-tr .ov { color:#ff9a7a; font-weight:800; text-align:right; }
+.billover-dlg .bo-tr .c { text-align:right; }
+.billover-dlg .bo-btns { display:flex; gap:8px; margin-top:11px; }
+.billover-dlg .bo-b1 { flex:1; background:transparent; border:1.5px solid #d4af37; color:#f0d89a; border-radius:8px; padding:9px; font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; }
+.billover-dlg .bo-b2 { flex:1; background:linear-gradient(135deg,#e89838,#c07818); border:1px solid #a5600f; color:#fff; border-radius:8px; padding:9px; font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; }
+
 /* กล่องกำไร B1 */
 .gsum-hero { background:linear-gradient(180deg,#faf5e8,#f3ecd8); border-radius:14px; border:1px solid #c9a24a;
   padding:14px 16px 15px; box-shadow:0 2px 8px rgba(201,162,74,.13), inset 0 1px 0 rgba(255,255,255,.5); }
@@ -18950,7 +18985,67 @@ function readForm() {
   };
 }
 
-function saveQuote() {
+// ── เตือน "บิลเกินที่เก็บจริง": คำนวณน้ำหนักรายเบอร์ บิล(q) เทียบ เก็บจริง(collections) ──
+function _billVsCollected(q) {
+  try {
+    if (!q || !q.gardenId || q.type !== 'multiday') return null;   // เช็คเฉพาะบิลสวน (multiday)
+    let _gs = [];
+    try { _gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]'); } catch (e) { _gs = []; }
+    const g = Array.isArray(_gs) ? _gs.find(x => x && x.id === q.gardenId) : null;
+    if (!g || !Array.isArray(g.collections) || !g.collections.length) return null;
+    // เก็บจริง รายเบอร์ (กก.)
+    const collByGrade = {}; let collTotal = 0;
+    g.collections.forEach(c => {
+      (c && Array.isArray(c.rows) ? c.rows : []).forEach(r => {
+        if (!r) return;
+        const grade = r.grade || '';
+        const kg = (Number(r.baskets) || 0) * (Number(r.kgPer) || 20) + (Number(r.extra) || 0);
+        collByGrade[grade] = (collByGrade[grade] || 0) + kg; collTotal += kg;
+      });
+    });
+    // บิล รายเบอร์ (กก.)
+    const billByGrade = {}; let billTotal = 0;
+    const grades = q.multiDayGrades || [];
+    (Array.isArray(q.multiDayRows) ? q.multiDayRows : []).forEach(r => {
+      if (!r) return;
+      const kgPer = Number(r.kgPer) || 20;
+      grades.forEach(gr => { const bk = Number(r.baskets && r.baskets[gr]) || 0; const kg = bk * kgPer; billByGrade[gr] = (billByGrade[gr] || 0) + kg; billTotal += kg; });
+      billTotal += Number(r.extra) || 0;
+    });
+    // เบอร์ที่เกิน
+    const overGrades = [];
+    Object.keys(billByGrade).forEach(gr => {
+      const bill = Math.round(billByGrade[gr]); const coll = Math.round(collByGrade[gr] || 0);
+      if (bill > coll) overGrades.push({ grade: gr, bill, coll, over: bill - coll });
+    });
+    const over = Math.round(billTotal) > Math.round(collTotal);
+    return { over, billTotal: Math.round(billTotal), collTotal: Math.round(collTotal), overTotal: Math.round(billTotal - collTotal), overGrades };
+  } catch (e) { return null; }
+}
+
+let _billOverConfirm = null;
+function _showBillOverDialog(info, onConfirm) {
+  _billOverConfirm = onConfirm;
+  let ov = document.getElementById('billover-ov');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'billover-ov'; ov.className = 'billover-ov'; document.body.appendChild(ov); }
+  const f = (n) => (Math.round(Number(n) || 0)).toLocaleString('en-US');
+  const esc = (typeof gbEscapeHtml === 'function') ? gbEscapeHtml : (typeof escapeHtml === 'function' ? escapeHtml : (x => x));
+  const rows = (info.overGrades || []).map(o => `<div class="bo-tr"><span class="g">${esc(o.grade)}</span><span class="c">${f(o.bill)}</span><span class="c">${f(o.coll)}</span><span class="ov">+${f(o.over)}</span></div>`).join('');
+  ov.innerHTML = `<div class="billover-dlg">
+    <div class="bo-ic">⚠️</div>
+    <div class="bo-t">บิลเกินที่เก็บจริง</div>
+    <div class="bo-msg">ขายเกินที่เก็บเป็นไปไม่ได้ — ตรวจก่อนบันทึก</div>
+    <div class="bo-tot"><span class="bo-chip"><span class="lb">ขาย(บิล)</span>${f(info.billTotal)}</span><span class="bo-chip"><span class="lb">เก็บจริง</span>${f(info.collTotal)}</span><span class="bo-chip over"><span class="lb">เกินรวม</span>${f(info.overTotal)}</span></div>
+    ${rows ? `<div class="bo-sechd">เบอร์ที่เกิน (กก.)</div><div class="bo-tbl"><div class="bo-tr h"><span>เบอร์</span><span class="c">บิล</span><span class="c">เก็บ</span><span class="c">เกิน</span></div>${rows}</div>` : ''}
+    <div class="bo-btns"><button class="bo-b1" onclick="_closeBillOverDialog()">← กลับไปแก้</button><button class="bo-b2" onclick="_confirmBillOver()">ยืนยันบันทึก</button></div>
+  </div>`;
+  ov.classList.add('open');
+}
+function _closeBillOverDialog() { const ov = document.getElementById('billover-ov'); if (ov) ov.classList.remove('open'); _billOverConfirm = null; }
+function _confirmBillOver() { const cb = _billOverConfirm; _closeBillOverDialog(); if (typeof cb === 'function') cb(); }
+window._closeBillOverDialog = _closeBillOverDialog; window._confirmBillOver = _confirmBillOver;
+
+function saveQuote(_skipOverCheck) {
   // ── กันบันทึกถ้าไม่มีสิทธิ์แก้ไขบิล (ดูอย่างเดียว) ──
   if (typeof canEditBill === 'function' && !canEditBill()) { toast('คุณมีสิทธิ์ดูบิลอย่างเดียว แก้ไขไม่ได้'); return; }
   const q = readForm();
@@ -18977,6 +19072,11 @@ function saveQuote() {
     hasRows = q.rows.length > 0;
   }
   if (!hasRows) { toast('เพิ่มเบอร์อย่างน้อย 1 แถว'); return; }
+  // ── เตือน: บิลเกินที่เก็บจริง (รายเบอร์) — ขายเกินที่เก็บเป็นไปไม่ได้ ──
+  if (!_skipOverCheck) {
+    const _ov = _billVsCollected(q);
+    if (_ov && _ov.over) { _showBillOverDialog(_ov, () => saveQuote(true)); return; }
+  }
   // ── ถ่ายสำเนารายการบิลไว้ก่อนแตะอะไร (ไว้ย้อนถ้าเซฟไม่ติด) ──
   // สำเนาตื้นพอ: saveQuote "แทนที่ทั้ง object" (state.quotes[idx] = q) ไม่เคยแก้ field ของบิลเดิม
   const _snapQuotes = state.quotes.slice();
@@ -22460,7 +22560,10 @@ window.openGardenSummary = function (gardenId, quoteId) {
     const cost = st ? Math.round(Number(st.cost) || 0) : Math.round(isWholesale ? ((Number(s.quoted) || 0) + (Number(s.exp) || 0)) : (Number(s.exp) || 0));
     const pct = (st && st.pct != null) ? Number(st.pct) : ((cost > 0) ? (profit / cost * 100) : null);
     const pctTxt = (pct === null) ? '—' : (Math.abs(pct).toFixed(1) + '%');
-    const totalKg = Math.round(Number(s.totalKg) || 0);
+    // น้ำหนักที่สรุป/ขาย ต้องไม่เกินที่เก็บจริง — ขายเกินที่เก็บเป็นไปไม่ได้ → cap ที่ยอด collections
+    const _billKg = Math.round(Number(s.totalKg) || 0);
+    const _collectedKg = (g && Array.isArray(g.collections)) ? Math.round(g.collections.reduce((a, c) => a + ((c && Number(c.kg)) || 0), 0)) : 0;
+    const totalKg = _collectedKg > 0 ? Math.min(_billKg, _collectedKg) : _billKg;
     const maxCS = Math.max(cost, sold, 1);
 
     // ต่อโล
@@ -22480,7 +22583,7 @@ window.openGardenSummary = function (gardenId, quoteId) {
     else badgeEl.style.display = 'none';
 
     // ── ① กล่องกำไร B1 ──
-    let html = `
+    let html = `${(_collectedKg > 0 && _billKg > _collectedKg) ? `<div class="gsum-billwarn"><div class="bw-h"><span class="reddot">!</span> บิลเกินที่เก็บจริง</div><div class="bw-n"><span class="bw-chip"><span class="lb">ขาย(บิล) </span>${fmt(_billKg)}</span><span class="bw-chip"><span class="lb">เก็บจริง </span>${fmt(_collectedKg)}</span><span class="bw-chip over">เกิน ${fmt(_billKg - _collectedKg)}</span></div><div class="bw-tip">น้ำหนักในสรุปถูกจำกัดที่ ${fmt(_collectedKg)} แล้ว แต่ยอดเงินยังคิดตามบิล</div><button class="bw-btn" onclick="window.closeGardenSummary&&window.closeGardenSummary();window.openQuoteBill&&window.openQuoteBill('${q.id}')">📄 เปิดบิลตรวจสอบ</button></div>` : ''}
       <div class="gsum-hero ${gain ? '' : 'loss'}">
         <div class="hd2"><span class="ic">💰</span><span class="lbl">กำไรสุทธิ</span><span class="pct">${gain ? '▲' : '▼'} ${pctTxt} ต่อทุน</span></div>
         <div class="amt">${gain ? '+' : '−'}${fmt(Math.abs(profit))}<span class="cur">บ.</span></div>
