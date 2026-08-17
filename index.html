@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1135;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (135)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1137;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (137)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -13634,8 +13634,103 @@ function quoteBackOrHome() {
   goHome();
 }
 
-// Smart back button: garden detail → garden list → home
+// ── ปุ่มย้อนกลับ: หา "ชั้นบนสุดที่เปิดอยู่" แล้วปิดทีละชั้น ──
+// เดิม: ไล่รายชื่อ overlay แบบ hardcode → ชื่อเพี้ยน/ตกหล่น = จับไม่ได้สักตัว
+// ใหม่: หา element ที่ position:fixed + z สูงสุด + "เห็นบนจอจริง"
+//       (+ รายชื่อเสริมสำหรับ 2 ตัวที่ไม่ใช่ fixed: filter-panel=static, user-menu=absolute)
+// สำคัญ: ต้องปิดให้ class .open หลุดจริง ไม่งั้นสถานะค้างข้ามรอบ
+//        (เคยเจอ: กด back ออกหน้าแรก แล้วกลับเข้าสวน → สรุปสวนเก่าเด้งเอง)
+function _backTopLayer() {
+  // ของประดับที่ fixed ตลอดเวลา — ไม่ใช่ชั้นที่ปุ่มกลับต้องปิด
+  const SKIP = ['cloud-indicator', 'fab', 'gv-bottom-nav', 'vintage-backdrop', 'toast',
+    'confetti', 'tap-sparkle', 'anim-stage', 'tab-ribbons', 'page-corner-curl',
+    'bookmark-tail', 'vintage-settings-btn', 'home-sync-fab', 'q-bnav',
+    'eagle-flight', 'slam', 'sparkle', 'login-page', 'pf-screen'];
+  const seen = (e) => {
+    try {
+      const cs = getComputedStyle(e);
+      if (cs.visibility === 'hidden' || parseFloat(cs.opacity || '1') < 0.05) return false;
+      const r = e.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth
+        && r.bottom > 0 && r.top < innerHeight;
+    } catch (err) { return false; }
+  };
+  let best = null, bz = -1;
+  try {
+    document.querySelectorAll('*').forEach(e => {
+      const cs = getComputedStyle(e);
+      if (cs.position !== 'fixed') return;
+      const key = (e.id || '') + ' ' + (typeof e.className === 'string' ? e.className : '');
+      if (SKIP.some(s => key.indexOf(s) >= 0)) return;
+      if (!seen(e)) return;
+      const z = parseInt(cs.zIndex) || 0;
+      if (z >= bz) { bz = z; best = e; }
+    });
+  } catch (err) {}
+  if (best) return best;
+  // เสริม: 2 ตัวที่ไม่ใช่ fixed (กฎ z มองไม่เห็น)
+  const extra = ['filter-panel', 'user-menu'];
+  for (let i = 0; i < extra.length; i++) {
+    const e = document.getElementById(extra[i]);
+    if (e && e.classList.contains('open') && seen(e)) return e;
+  }
+  return null;
+}
+
+// ปิดชั้นที่ส่งมา — ใช้ตัวปิดเฉพาะทางถ้ามี (บางตัวมีงานตามหลัง) · ไม่มี → ปิดตรงๆ
+// คืน true ถ้าปิดได้
+function _backCloseLayer(el) {
+  if (!el) return false;
+  const id = el.id || '';
+  const cls = (typeof el.className === 'string' ? el.className : '') || '';
+  const call = (fn, arg) => {
+    if (typeof window[fn] === 'function') { try { window[fn](arg); return true; } catch (e) {} }
+    return false;
+  };
+  // ── ชั้นที่ "ต้อง" ใช้ตัวปิดของมัน (ปิดตรงๆ แล้วสถานะจะค้าง) ──
+  if (id === 'stmp-bg') return call('stampChoose', false);          // = ตอบ "ไม่ประทับ"
+  if (id === 'billover-ov') return call('_closeBillOverDialog');     // เคลียร์ callback ค้าง
+  // ── ชั้นที่มีตัวปิดพร้อมใช้ ──
+  const MAP = {
+    'gsum-ov': 'closeGardenSummary',
+    'bill-picker-ov': 'closeBillPicker',
+    'gv-bset-cm-bg': 'gvBsetCmClose',
+    'gv-bset-progress-bg': 'gvBsetProgressClose',
+    'gv-bset-bg': 'gvBsetClose',
+    'fp-ov': 'fpClose',
+    'fp-sheet': 'fpClose',
+    'lb': 'closeLb',
+    'modal': 'closeModal',
+    'calc-modal': 'closeCalcModal',
+    'lsrc-bg': 'closeLaborSourcePopup',
+    'lw-bg': 'closeLaborWeightPopup',
+    'rv-backdrop': 'closeReviewPopup',
+    'orig-bill-drawer': 'closeOrigBillDrawer',
+    'garden-form-screen': 'closeGardenForm',
+    'filter-panel': 'toggleFilter'
+  };
+  if (MAP[id] && call(MAP[id])) return true;
+  if (cls.indexOf('orig-drawer') >= 0 && call('closeOrigBillDrawer')) return true;
+  if (cls.indexOf('og-modal-backdrop') >= 0 && call('closeOpenGardenModal')) return true;
+  // ── ทางปิดสำรอง: ชั้นที่ไม่มีตัวปิด (อัลบั้มเต็มจอ/กล้อง/เมนูลอย ฯลฯ) ──
+  try {
+    el.classList.remove('open', 'show');
+    // ที่สร้างสดตอนเปิด → ลบทิ้ง · ที่อยู่ใน HTML → ซ่อน
+    const BORN = ['album-fullscreen', 'cam-fullscreen', 'quote-cam-bg', 'cam-lightbox-bg',
+      'ctx-menu-bg', 'cf-act-bg', 'pmt-act-bg', 'alb-name-bg', 'inc-pop-host'];
+    if (BORN.indexOf(id) >= 0 || (!id && cls)) el.remove();
+    else if (el.getBoundingClientRect().width > 0) el.style.display = 'none';
+    return true;
+  } catch (e) { return false; }
+}
+window._backTopLayer = _backTopLayer;
+window._backCloseLayer = _backCloseLayer;
+
+// Smart back button: ปิดชั้นลอยบนสุดก่อน → แล้วค่อยถอยหน้าทีละขั้น
 function smartBack() {
+  // (0) มีชั้นลอยเปิดอยู่ → ปิดชั้นบนสุดก่อนเสมอ (ห้ามถอยหน้าข้างหลังทิ้งชั้นค้าง)
+  const _top = _backTopLayer();
+  if (_top && _backCloseLayer(_top)) return;
   // เปิดบิลจากหน้าสวนแล้วอยู่ในหน้าตีราคา → กลับหน้าสวน (ใช้ตรรกะเดียวกับปุ่มกลับในบิล)
   const _bv = document.getElementById('book-view');
   if (window._billFromGarden && _bv && _bv.style.display !== 'none') { quoteBackOrHome(); return; }
@@ -13660,6 +13755,9 @@ function smartBack() {
       }
     }
   }
+  // ฝั่งตีราคา: มีบันไดอยู่แล้วใน quoteBackOrHome (ฟอร์ม/สรุป/ตั้งค่า → รายการบิล → หน้าแรก)
+  // เดิมไม่เคยถูกเรียกทางนี้ → ตกมา goHome() = กด back ครั้งเดียวหลุดถึงหน้าแรก
+  if (_bv && _bv.style.display !== 'none') { quoteBackOrHome(); return; }
   // default: กลับหน้าหลัก
   goHome();
 }
@@ -13955,21 +14053,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const isOnHome = homeView && homeView.style.display !== 'none';
 
       // เช็ค modal/overlay เปิดอยู่ไหม (ถ้าเปิด → ปิดก่อน)
-      const openModal = document.querySelector('.modal-confirm.show, .modal-confirm.open, .gfs.show, #cam-overlay.show, #alb-fullscreen.show, .orig-drawer.open');
+      // เดิม: hardcode รายชื่อ ('.modal-confirm','.gfs','#cam-overlay','#alb-fullscreen')
+      //       → 4 ใน 5 ชื่อไม่มีอยู่จริงในแอปแล้ว = จับ overlay ไม่ได้สักตัว
+      //       ผลคือ back ทะลุไปปิดหน้าที่อยู่ข้างหลัง ทิ้ง overlay ค้างบนจอ
+      // ใหม่: ใช้ _backTopLayer() หาชั้นบนสุดที่เปิดอยู่จริง (ดูที่หน้าจอ ไม่ใช่ที่ชื่อ)
+      const openModal = (typeof _backTopLayer === 'function') ? _backTopLayer() : null;
       if (openModal) {
-        // ปิด modal/overlay แทน
-        if (openModal.id === 'cam-overlay' && typeof window.closeCam === 'function') {
-          window.closeCam();
-        } else if (openModal.id === 'alb-fullscreen' && typeof window.closeAlbFullscreen === 'function') {
-          window.closeAlbFullscreen();
-        } else if (openModal.classList.contains('orig-drawer') && typeof window.closeOrigBillDrawer === 'function') {
-          window.closeOrigBillDrawer();
-        } else if (openModal.classList.contains('gfs') && typeof window.closeGardenForm === 'function') {
-          window.closeGardenForm();
-        } else {
-          // generic close — remove .show/.open class
-          openModal.classList.remove('show', 'open');
-        }
+        if (typeof _backCloseLayer === 'function') _backCloseLayer(openModal);
+        else openModal.classList.remove('show', 'open');
         // push state กลับเพื่อให้ back ครั้งหน้ายังจับได้
         window.history.pushState({thodsapon: true}, '');
         return;
@@ -19091,7 +19182,7 @@ function _showBillOverDialog(info, onConfirm) {
     <div class="bo-ic">⚠️</div>
     <div class="bo-t">บิลเกินที่เก็บจริง</div>
     <div class="bo-msg">ขายเกินที่เก็บเป็นไปไม่ได้ — ตรวจก่อนบันทึก</div>
-    <div class="bo-tot"><span class="bo-chip"><span class="lb">ขาย(บิล)</span>${f(info.billTotal)}</span><span class="bo-chip"><span class="lb">เก็บจริง</span>${f(info.collTotal)}</span><span class="bo-chip over"><span class="lb">เกินรวม</span>${f(info.overTotal)}</span></div>
+    <div class="bo-tot"><span class="bo-chip"><span class="lb">ขาย(บิล)</span>${f(info.billTotal)}</span><span class="bo-chip"><span class="lb">เก็บจริง</span>${f(info.collTotal)}</span>${info.overTotal > 0 ? `<span class="bo-chip over"><span class="lb">เกินรวม</span>${f(info.overTotal)}</span>` : ''}</div>
     ${rows ? `<div class="bo-sechd">เบอร์ที่เกิน (กก.)</div><div class="bo-tbl"><div class="bo-tr h"><span>เบอร์</span><span class="c">บิล</span><span class="c">เก็บ</span><span class="c">เกิน</span></div>${rows}</div>` : ''}
     <div class="bo-btns"><button class="bo-b1" onclick="_closeBillOverDialog()">← กลับไปแก้</button><button class="bo-b2" onclick="_confirmBillOver()">ยืนยันบันทึก</button></div>
   </div>`;
@@ -30069,6 +30160,7 @@ function gvBsetCmOpen(html) {
   box.innerHTML = html;
   bg.classList.add('open');
 }
+window.gvBsetCmOpen = gvBsetCmOpen;
 function gvBsetCmClose() {
   const bg = document.getElementById('gv-bset-cm-bg');
   if (bg) bg.classList.remove('open');
@@ -30846,6 +30938,7 @@ function gvBsetProgressClose() {
   const bg = document.getElementById('gv-bset-progress-bg');
   if (bg) bg.classList.remove('open');
 }
+window.gvBsetProgressClose = gvBsetProgressClose;
 
 // ── Format Picker Modal ──
 function gvBsetExportPick() {
