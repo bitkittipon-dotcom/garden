@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1137;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (137)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1139;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (139)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -4904,6 +4904,13 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     flex-direction: column;
     gap: 10px;
   }
+    /* แถบ "กำลังโหลด..." (แบบ A) — โผล่ตอนเลื่อนถึงท้ายแล้วเติมการ์ดชุดถัดไป */
+    #garden-view .gl-more { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 15px 0 17px; font-size: 12.5px; font-weight: 700; color: #8b6f3f; letter-spacing: .02em; }
+    #garden-view .gl-more .sp { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(107,68,35,.22); border-top-color: #8b6f3f; animation: glspin .7s linear infinite; }
+    @keyframes glspin { to { transform: rotate(360deg); } }
+    /* จุดสังเกต — วางก่อนถึงท้ายจริง เพื่อเริ่มเติมล่วงหน้า (ดู rootMargin ใน _glObserve) */
+    #garden-view .gl-sentinel { height: 1px; margin-top: -1px; }
+    @media (prefers-reduced-motion: reduce) { #garden-view .gl-more .sp { animation: none; } }
     #garden-view .garden-card {
       background:
         radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.55), transparent 65%),
@@ -21813,6 +21820,7 @@ async function manualUnarchiveGarden(id) {
 // ── Toggle archive view (chip 📦) ──
 let _viewArchived = false;
 function toggleArchiveView() {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   _viewArchived = !_viewArchived;
   if (typeof renderListView === 'function') renderListView();
 }
@@ -22276,6 +22284,7 @@ let filters = {
 let filterPanelOpen = false;
 
 function filterByAlert(type) {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   // ใส่ keyword พิเศษ — ไม่ต้องใช้ search
   clearAllFilters();
   // hack: ใช้ tab "ทั้งหมด" + custom filter
@@ -22294,6 +22303,7 @@ function filterByAlert(type) {
 }
 
 function clearAlertFilter() {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   window._alertFilter = null;
   renderListView();
 }
@@ -22317,6 +22327,7 @@ function activeFilterCount() {
 
 let _searchDebounce = null;
 function onSearchInput() {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   const v = document.getElementById('search-input').value.trim().toLowerCase();
   // debounce render — ลดกระตุกเมื่อ list ใหญ่
   if (_searchDebounce) clearTimeout(_searchDebounce);
@@ -22464,6 +22475,7 @@ function renderFilterPanel() {
 }
 
 function toggleFilterSet(key, value) {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   const set = filters[key];
   if (set.has(value)) set.delete(value);
   else set.add(value);
@@ -22481,6 +22493,7 @@ function toggleFilterSet(key, value) {
 }
 
 function clearAllFilters() {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   searchQuery = '';
   filters.profit.clear();
   filters.care.clear();
@@ -22628,9 +22641,57 @@ if (!window._refineBarsBound) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { try { refineBars(); } catch(e){} });
 }
 
+// ── สร้าง "ส่วนขยาย" ของกล่องวันตอนกดกาง (แทนที่จะสร้างไว้ล่วงหน้าทุกใบ) ──
+// อ่านข้อมูลเที่ยวเก็บจาก data-g / data-cid ที่ฝังไว้ตอนวาดการ์ด
+// HTML ที่สร้างต้องเหมือนของเดิมเป๊ะ ไม่งั้น CSS/อนิเมชันเพี้ยน
+function _lcBuildDayBodies(wrap) {
+  if (!wrap || wrap.dataset.bodiesBuilt === '1') return;
+  try {
+    wrap.querySelectorAll('.lc-daycard').forEach(card => {
+      if (card.querySelector('.lc-body')) return;
+      const gid = card.getAttribute('data-g');
+      const cid = card.getAttribute('data-cid');
+      const ci = parseInt(card.getAttribute('data-ci'), 10);
+      const g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gid) : null;
+      if (!g) return;
+      // เรียงแบบเดียวกับตอนวาดการ์ด — หาโดย id ก่อน ถ้าไม่มี id ค่อยใช้ลำดับ
+      const colls = (g.collections || []).filter(c => c && c.date).slice()
+        .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      let c = (cid ? colls.find(x => String(x.id) === cid) : null);
+      if (!c && !isNaN(ci)) c = colls[ci];
+      if (!c) return;
+      const crows = (Array.isArray(c.rows) ? c.rows : []).filter(r => r && (Number(r.baskets) || Number(r.extra)));
+      let totBk, totKg, grHtml;
+      if (crows.length) {
+        totBk = crows.reduce((s, r) => s + (Number(r.baskets) || 0), 0);
+        totKg = crows.reduce((s, r) => s + (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0), 0);
+        grHtml = crows.map(r => {
+          const bk = Number(r.baskets) || 0;
+          return `<span class="lc-gr"><span class="g">${gbEscapeHtml(r.grade || '—')}</span><span class="n">${fmtNum(bk)} ตก.</span></span>`;
+        }).join('');
+      } else {
+        totBk = Number(c.baskets) || 0;
+        totKg = Number(c.kg) || 0;
+        grHtml = `<span class="lc-gr"><span class="g">—</span><span class="n">${fmtNum(totBk)} ตก.</span></span>`;
+      }
+      card.insertAdjacentHTML('beforeend',
+        `<span class="lc-body"><span class="lc-sep"></span>${grHtml}<span class="lc-tot"><span class="v">${fmtNum(totBk)}</span> ตก·<span class="v">${fmtNum(totKg)}</span> กก</span></span>`);
+    });
+    wrap.dataset.bodiesBuilt = '1';
+  } catch (e) {}
+}
+window._lcBuildDayBodies = _lcBuildDayBodies;
+
 window.lcToggleDays = function (el, ev) {
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
-  try { var w = el.closest('.lc-daywrap'); if (w) w.classList.toggle('open'); } catch (e) {}
+  try {
+    var w = el.closest('.lc-daywrap'); if (!w) return;
+    if (!w.classList.contains('open')) {
+      _lcBuildDayBodies(w);
+      void w.offsetWidth;   // บังคับ layout ก่อน เพื่อให้อนิเมชันกางยังทำงานเหมือนเดิม
+    }
+    w.classList.toggle('open');
+  } catch (e) {}
 };
 
 // ── กล่องกำไร/ขาดทุนบนการ์ด (จากบิลที่ประทับ) ──
@@ -22960,6 +23021,51 @@ function pctFillColor(pct) {
 }
 window.pctFillColor = pctFillColor;
 
+// ══════════ วาดรายการสวนทีละชุด (โหลดเพิ่มตอนเลื่อน) ══════════
+// GL_PAGE = จำนวนใบต่อชุด · _glShown = กางไว้กี่ใบตอนนี้
+const GL_PAGE = 24;
+let _glShown = GL_PAGE;
+let _glIO = null;          // IntersectionObserver ตัวจับ "เลื่อนใกล้ถึงท้าย"
+let _glBusy = false;       // กันเติมซ้อนกันตอนเลื่อนเร็ว
+
+// รีเซ็ตกลับชุดแรก — เรียกเมื่อ "ชุดข้อมูลเปลี่ยน" (เปลี่ยนแท็บ/ค้นหา/กรอง/ล้างตัวกรอง)
+function glReset() { _glShown = GL_PAGE; }
+window.glReset = glReset;
+
+// เติมชุดถัดไป — โชว์แถบ "กำลังโหลด..." หนึ่งเฟรมก่อน แล้วค่อยวาด
+function _glLoadMore() {
+  if (_glBusy) return;
+  _glBusy = true;
+  const bar = document.getElementById('gl-more');
+  if (bar) bar.hidden = false;
+  // ให้เบราว์เซอร์วาดแถบก่อน แล้วค่อยทำงานหนัก (ไม่งั้นแถบไม่ทันโผล่)
+  requestAnimationFrame(() => { setTimeout(() => {
+    const y = window.scrollY || window.pageYOffset || 0;
+    _glShown += GL_PAGE;
+    try { renderListView(); } catch (e) {}
+    // renderListView วาดใหม่ทั้งก้อน → คืนตำแหน่งเดิม ไม่ให้กระตุก
+    window.scrollTo(0, y);
+    _glBusy = false;
+  }, 0); });
+}
+
+// ผูกตัวจับกับจุดสังเกตท้ายรายการ — เริ่มเติมก่อนถึงจริง 600px (เลื่อนเร็วก็ทัน)
+function _glObserve() {
+  try {
+    if (_glIO) { _glIO.disconnect(); _glIO = null; }
+    const s = document.getElementById('gl-sentinel');
+    if (!s) return;
+    if (typeof IntersectionObserver !== 'function') {   // เบราว์เซอร์เก่า → เติมทั้งหมดไปเลย
+      _glShown = Infinity; try { renderListView(); } catch (e) {}
+      return;
+    }
+    _glIO = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) _glLoadMore();
+    }, { rootMargin: '600px 0px' });
+    _glIO.observe(s);
+  } catch (e) {}
+}
+
 function renderListView() {
   document.getElementById('page-sub').textContent = `No. II · ${gardens.length} สวน`;
   if (typeof updateProfitEyeBtn === 'function') updateProfitEyeBtn();
@@ -23076,6 +23182,16 @@ function renderListView() {
     return;
   }
 
+  // ── วาดทีละชุด (24 ใบ) แล้วเติมตอนเลื่อนถึงท้าย ──
+  // เหตุผล: 80 สวน = ~5,900 node วาดรวดเดียว → หน้าค้าง ~3 วิ บนมือถือ
+  // _glShown = จำนวนใบที่กางไว้ตอนนี้ · รีเซ็ตเป็น 24 ทุกครั้งที่ "ชุดข้อมูลเปลี่ยน"
+  // (เปลี่ยนแท็บ/ค้นหา/กรอง) แต่คงค่าไว้ตอนกลับจากหน้ารายละเอียด (กัน scroll เด้ง)
+  const _glTotal = list.length;
+  if (_glShown < GL_PAGE) _glShown = GL_PAGE;
+  if (_glShown > _glTotal) _glShown = _glTotal;
+  const _glHasMore = _glTotal > _glShown;
+  list = list.slice(0, _glShown);
+
   body.innerHTML = '<div class="garden-list">' + list.map(g => {
     const today = todayCollect(g);
     const prog = calcDayProgress(g);
@@ -23128,28 +23244,18 @@ function renderListView() {
       const trips = colls.length;
       if (trips > 0) {
         const openTxt = fmtDateShort(colls[0].date);  // เช่น 01/05/68
+        // ── ส่วนขยายของกล่องวัน (รายเบอร์ + รวม ตก./กก.) สร้างตอน "กดกาง" เท่านั้น ──
+        // เดิม: สร้างครบทุกเที่ยวตั้งแต่วาดการ์ด ทั้งที่ CSS ซ่อนไว้ (width:0 max-height:0 opacity:0)
+        //       → สวนเก็บ 15 เที่ยว = 165 node ที่ไม่มีใครเห็น (69% ของการ์ด) × ทุกสวนในหน้ารายการ
+        // ใหม่: ใส่แค่ data-g/data-cid ไว้ แล้วให้ lcToggleDays สร้างตอนกด (ดู _lcBuildDayBodies)
+        //       หน้าตาตอนพับเหมือนเดิมทุกพิกเซล
         const dayCards = colls.map((c, i) => {
           const d = new Date(c.date);
           const dd = isNaN(d.getTime()) ? '?' : d.getDate();
           const mm = isNaN(d.getTime()) ? '' : d.toLocaleDateString('th-TH', { month: 'short' });
           const last = (i === colls.length - 1) ? ' last' : '';
-          // ── ส่วนขยาย: รายเบอร์ + รวม ตก./กก. ของเที่ยวนั้น ──
-          const crows = (Array.isArray(c.rows) ? c.rows : []).filter(r => r && (Number(r.baskets) || Number(r.extra)));
-          let totBk, totKg, grHtml;
-          if (crows.length) {
-            totBk = crows.reduce((s, r) => s + (Number(r.baskets) || 0), 0);
-            totKg = crows.reduce((s, r) => s + (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0), 0);
-            grHtml = crows.map(r => {
-              const bk = Number(r.baskets) || 0;
-              return `<span class="lc-gr"><span class="g">${gbEscapeHtml(r.grade || '—')}</span><span class="n">${fmtNum(bk)} ตก.</span></span>`;
-            }).join('');
-          } else {
-            totBk = Number(c.baskets) || 0;
-            totKg = Number(c.kg) || 0;
-            grHtml = `<span class="lc-gr"><span class="g">—</span><span class="n">${fmtNum(totBk)} ตก.</span></span>`;
-          }
-          const body = `<span class="lc-body"><span class="lc-sep"></span>${grHtml}<span class="lc-tot"><span class="v">${fmtNum(totBk)}</span> ตก·<span class="v">${fmtNum(totKg)}</span> กก</span></span>`;
-          return `<span class="lc-daycard${last}" onclick="lcToggleDays(this,event)"><span class="d">${dd}</span><span class="m">${gbEscapeHtml(mm)}</span>${body}</span>`;
+          const cid = gbEscapeHtml(String(c.id == null ? '' : c.id));
+          return `<span class="lc-daycard${last}" data-g="${gbEscapeHtml(g.id)}" data-cid="${cid}" data-ci="${i}" onclick="lcToggleDays(this,event)"><span class="d">${dd}</span><span class="m">${gbEscapeHtml(mm)}</span></span>`;
         }).join('');
         row2Html = `<span class="lc-line2 lc-line2-dates">
           <span class="lc-drow"><span class="lc-dlabel">วันที่เปิด</span><span class="lc-dcolon">:</span><span class="num">${openTxt}</span></span>
@@ -23253,7 +23359,10 @@ function renderListView() {
         ${(g.status === 'done' || g.closedAt) ? stamp : ''}
       </div>
     `;
-  }).join('') + '</div>' + renderNotesPreviewHtml();
+  }).join('') + '</div>'
+    + (_glHasMore ? '<div class="gl-sentinel" id="gl-sentinel"></div><div class="gl-more" id="gl-more" hidden><span class="sp"></span>กำลังโหลด...</div>' : '')
+    + renderNotesPreviewHtml();
+  _glObserve();
   setupNotesPreviewScrollHide();
   // attach long-press context menu บนการ์ดสวน
   setTimeout(() => {
@@ -23449,6 +23558,7 @@ function gbEscapeHtml(s) {
 }
 
 function switchTab(t) {
+  glReset();   // ชุดข้อมูลเปลี่ยน → กลับไปเริ่มที่ 24 ใบ
   // ออกจากโหมด alert filter อัตโนมัติเมื่อกด chip ปกติ
   if (window._alertFilter) {
     window._alertFilter = null;
@@ -23562,6 +23672,7 @@ function goBack() {
     }
     renderListView();
     // คืนตำแหน่งสกรอลล์เดิม (ที่เซฟไว้ตอน openDetail) — ไม่เด้งขึ้นบนสุด
+    // ⚠ _glShown ต้องไม่ถูกรีเซ็ตในเส้นทางนี้ ไม่งั้นหน้าสั้นกว่าตำแหน่งที่เซฟ → เลื่อนกลับไม่ถึง เด้งขึ้นบนสุด
     const _restoreY = _lastScrollY || 0;
     requestAnimationFrame(() => {
       window.scrollTo(0, _restoreY);
