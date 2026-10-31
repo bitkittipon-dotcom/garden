@@ -20172,6 +20172,9 @@ function computeQuoteStamp(q) {
       cost: Math.round(cost),
       sold: Math.round(s.sold),
       pct: (pct === null ? null : Math.round(pct * 10) / 10),
+      // น้ำหนักรวมของบิล — เดิมลืมใส่ ทั้งที่ calcQuoteSummary คืนมาให้แล้ว
+      // ผลคือ buildStampBox ได้ 0 เสมอ → กรอบเตือน "ขายเกินที่เก็บ" ไม่เคยขึ้น และบล็อกต่อโลไม่แสดง
+      totalKg: Math.round(Number(s.totalKg) || 0),
       quoteId: q.id,
       date: new Date().toISOString(),
     };
@@ -22818,6 +22821,21 @@ window.lcCloseDays = function (el, ev) {
   } catch (e) {}
 };
 
+// ── น้ำหนักบิลสำรอง สำหรับตราเก่าที่ไม่มี totalKg ──
+// อ่านบิลจาก localStorage ตรงๆ เพราะ state ของ block ตีราคาเข้าถึงจากตรงนี้ไม่ได้ (คนละ scope)
+// calcQuoteSummary เป็น function declaration ระดับบนสุด = เรียกข้าม block ได้
+function _stampBillKg(qid) {
+  if (!qid) return 0;
+  try {
+    const arr = JSON.parse(localStorage.getItem('tospon_quotes_v1') || '[]');
+    if (!Array.isArray(arr)) return 0;
+    const q = arr.find(x => x && x.id === qid);
+    if (!q || typeof calcQuoteSummary !== 'function') return 0;
+    const sum = calcQuoteSummary(q);
+    return Math.round(Number(sum && sum.totalKg) || 0);
+  } catch (e) { return 0; }
+}
+
 // ── กล่องกำไร/ขาดทุนบนการ์ด (จากบิลที่ประทับ) ──
 function buildStampBox(s, gid) {
   if (!s) return '';
@@ -22828,7 +22846,8 @@ function buildStampBox(s, gid) {
   try {
     const _g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gid) : null;
     const _collKg = (_g && Array.isArray(_g.collections)) ? Math.round(_g.collections.reduce((a, c) => a + ((c && Number(c.kg)) || 0), 0)) : 0;
-    const _billKg = Math.round(Number(s.totalKg) || 0);
+    // ตราที่ประทับไว้ก่อนหน้านี้ไม่มี totalKg (ดู computeQuoteStamp) → คิดจากบิลให้ใหม่ ไม่ต้องรอประทับซ้ำ
+    const _billKg = Math.round(Number(s.totalKg) || 0) || _stampBillKg(s.quoteId);
     _collKgCache = _collKg; _billKgCache = _billKg;
     _isOver = _collKg > 0 && _billKg > _collKg;
   } catch (e) {}
