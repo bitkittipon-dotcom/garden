@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1139;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (139)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1143;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (143)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -5131,12 +5131,30 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-daycard .lc-gr .n { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
     #garden-view .lc-daycard .lc-tot { display: flex; justify-content: center; gap: 5px; margin-top: 4px; font-size: 10px; font-weight: 800; color: #2f5d1f; background: rgba(74,105,40,.1); border-radius: 5px; padding: 3px 5px; white-space: nowrap; }
     #garden-view .lc-daycard .lc-tot .v { font-family: 'JetBrains Mono', monospace; }
-    #garden-view .lc-daywrap.open { flex-wrap: nowrap; align-items: flex-start; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; }
-    #garden-view .lc-daywrap.open::-webkit-scrollbar { height: 5px; }
-    #garden-view .lc-daywrap.open::-webkit-scrollbar-thumb { background: rgba(74,105,40,.4); border-radius: 3px; }
-    #garden-view .lc-daywrap.open .lc-daycard { min-width: 96px; border-color: #4a6928; background: #f4faec; box-shadow: 0 2px 6px rgba(74,105,40,.22); }
-    /* เงาจางขอบขวา บอกว่าเลื่อนซ้าย-ขวาดูต่อได้ */
-    #garden-view .lc-drow:has(.lc-daywrap.open)::after { content: ''; position: absolute; top: 0; right: 0; bottom: 6px; width: 24px; pointer-events: none; background: linear-gradient(90deg, rgba(240,228,192,0), rgba(240,228,192,0.92)); }
+    /* ── กางวัน: เรียง 3 คอลัมน์ลงมา เห็นครบ ไม่ต้องเลื่อนข้าง ──
+       เดิมเรียงแนวนอนแถวเดียว (nowrap + overflow-x) → กล่องถูกบีบให้แคบกว่าเนื้อข้างใน
+       (min-width:96px กันแค่ความกว้างต่ำสุด ไม่ได้กันการหด) บรรทัดยอดรวมที่ห้ามตัดคำเลยถูกครอบตัด
+       ทั้งหัวและท้าย — "391" เหลือ "?1" · กริดแบ่งความกว้างเท่ากันทุกใบ ปัญหาหายเอง */
+    #garden-view .lc-daywrap.open { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; align-items: start; flex: 1 1 100%; }
+    #garden-view .lc-daywrap.open .lc-daycard { min-width: 0; width: 100%; border-color: #4a6928; background: #f4faec; box-shadow: 0 2px 6px rgba(74,105,40,.22); padding: 4px 4px 5px; }
+    #garden-view .lc-daywrap.open .lc-daycard .lc-gr { font-size: 9px; gap: 3px; line-height: 1.5; }
+    /* 3 ช่องแคบเกินกว่าจะวางยอดรวมบรรทัดเดียว → แยกเป็นสองบรรทัด */
+    #garden-view .lc-daywrap.open .lc-daycard .lc-tot { flex-direction: column; align-items: center; gap: 0; font-size: 9px; padding: 3px 3px; line-height: 1.4; }
+    #garden-view .lc-daycard .lc-tot .p { white-space: nowrap; }
+    #garden-view .lc-daywrap.open .lc-addcard { align-self: center; justify-self: center; min-height: 34px; }
+    /* ── กางวันแล้ว: ซ่อนป้ายซ้ายกับกล่องกำไรขวา ให้แถบวันกินเต็มการ์ด ──
+       เดิมแถบวันถูกบีบอยู่ระหว่างป้าย "เก็บ N เที่ยว" (~90px) กับกล่องกำไร (ตายตัว 140px)
+       เหลือกว้างจริงไม่ถึงครึ่งการ์ด */
+    #garden-view .lc-dayhead { display: none; align-items: center; gap: 8px; margin-bottom: 2px; }
+    #garden-view .garden-card.dayopen .lc-dayhead { display: flex; }
+    #garden-view .lc-dayhead .t { font-size: 12px; font-weight: 800; color: #5c6330; }
+    #garden-view .lc-dayhead .o { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 700; color: #3f5c22; }
+    #garden-view .lc-dayhead .x { margin-left: auto; font-size: 11px; font-weight: 800; color: #3f5c22; background: rgba(255,255,255,.6); border: 1px solid rgba(74,105,40,.45); border-radius: 7px; padding: 3px 11px; font-family: inherit; cursor: pointer; }
+    #garden-view .lc-dayhead .x:active { background: rgba(255,255,255,.9); }
+    #garden-view .garden-card.dayopen .lc-dlabel,
+    #garden-view .garden-card.dayopen .lc-dcolon { display: none; }
+    #garden-view .garden-card.dayopen .lc-drow:first-child { display: none; }   /* วันที่เปิด ย้ายไปอยู่บนหัวแล้ว */
+    #garden-view .garden-card.dayopen .lc-pbox { display: none; }
     /* ── กล่องกำไร/ขาดทุนบนการ์ด ── */
     #garden-view .lc-mid { display: flex; gap: 9px; align-items: stretch; }
     #garden-view .lc-mid-left { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 7px; }
@@ -5157,6 +5175,14 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-pb-arr { font-size: 8px; vertical-align: 1px; margin-right: 1px; }
     #garden-view .lc-pbox.gain .lc-pb-amt, #garden-view .lc-pbox.gain .lc-pb-pct { color: #2f7d1f; }
     #garden-view .lc-pbox.loss .lc-pb-amt, #garden-view .lc-pbox.loss .lc-pb-pct { color: #b5281b; }
+    /* ต่อโล — โผล่พร้อมปุ่มตอนกดกล่อง */
+    #garden-view .lc-pb-kg { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s, opacity .2s, margin .25s; }
+    #garden-view .lc-pbox.open .lc-pb-kg { max-height: 80px; opacity: 1; margin-top: 6px; }
+    #garden-view .lc-pb-kg .hd { font-size: 9px; font-weight: 800; color: #6b6048; letter-spacing: .03em; border-top: 1px dashed rgba(107,68,35,.25); padding-top: 5px; margin-bottom: 2px; }
+    #garden-view .lc-pb-kg .r { display: flex; justify-content: space-between; gap: 6px; font-size: 10px; font-weight: 700; color: #6b6048; line-height: 1.55; }
+    #garden-view .lc-pb-kg .r .v { font-family: 'JetBrains Mono', monospace; }
+    #garden-view .lc-pbox.gain .lc-pb-kg .r.p .v { color: #2f7d1f; font-weight: 800; }
+    #garden-view .lc-pbox.loss .lc-pb-kg .r.p .v { color: #b5281b; font-weight: 800; }
     #garden-view .lc-pb-view { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s, opacity .2s, margin .25s; display:flex; gap:6px; }
     #garden-view .lc-pbox.open .lc-pb-view { max-height: 40px; opacity: 1; margin-top: 7px; }
     #garden-view .lc-pb-viewbtn { display: block; width: 100%; flex:1; text-align: center; font-size: 11.5px; font-weight: 800; border-radius: 7px; padding: 5px; border: 1px solid; background: #fff; cursor: pointer; font-family: inherit; }
@@ -11697,11 +11723,17 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .gsum-pay .r.big .v { color:#b5281b; font-weight:800; }
 
 /* ── บิลรวม: แถวหัวข้อวัน ── */
-tr.mg-dayhdr td { background:#e6dcc0; border-top:2.5px solid #b8942f; border-bottom:1px solid #d4c69e;
-  padding:5px 9px; text-align:left; font-family:'IBM Plex Sans Thai',sans-serif; }
-tr.mg-dayhdr .d { font-size:11.5px; font-weight:700; color:#5a4a2a; }
-tr.mg-dayhdr .n { font-size:10px; font-weight:400; color:#8a7350; margin-left:5px; }
-tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีหัวข้อแล้ว ไม่ต้องมีเส้นซ้ำ */
+/* เดิมแถบวันเป็นพื้นครีมอ่อน (#e6dcc0 บนกระดาษ #faf6ee) ต่างกันนิดเดียว + ตัวหนังสือ 11.5px สีจาง
+   → แถบคั่นดู "เบา" กว่าแถวที่มันคั่น เลยกลืนกันหมด
+   ใหม่: td เป็นช่องว่างใส (เห็นกระดาษ = ช่องไฟระหว่างวัน) แล้ววางแถบไม้เข้มไว้ข้างใน */
+tr.mg-dayhdr td { background:transparent; border:0; padding:9px 0 0; text-align:left; }
+tr.mg-dayhdr:first-child td { padding-top:0; }   /* วันแรกชิดหัวตารางเลย ไม่ต้องเว้น */
+tr.mg-dayhdr .mg-bar { display:flex; align-items:baseline; gap:7px; flex-wrap:wrap;
+  background:linear-gradient(180deg,#5d3818,#4a2e15); padding:7px 10px; border-radius:6px 6px 0 0;
+  font-family:'IBM Plex Sans Thai',sans-serif; }
+tr.mg-dayhdr .d { font-size:13px; font-weight:700; color:#f4d97a; }
+tr.mg-dayhdr .n { font-size:10.5px; font-weight:400; color:#c9b183; }
+tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; box-shadow:none !important; }   /* มีแถบวันแล้ว ไม่ต้องมีเส้นซ้ำ */
 
 /* ── ดึงราคา: ปุ่ม "เลือก" + ช่องแก้ราคา + แผ่นเลือกวันที่ ── */
 .pf-pl-pick { font-size:9.5px; font-weight:800; color:#3f7a3f; background:#fff;
@@ -11855,9 +11887,20 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 .pf-entry-btn:active { transform: scale(.99); }
 .pf-screen { position: fixed; inset: 0; z-index: 400; background: linear-gradient(135deg,#faf5e6,#efe3c8); display: flex; flex-direction: column; overflow: hidden; -webkit-transform: translateZ(0); transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .pf-edit-screen { z-index: 410; }
-.pf-hd { display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px; padding-top: max(14px, calc(env(safe-area-inset-top,0) + 10px)); border-bottom: 1.5px solid rgba(90,58,28,.3); background: linear-gradient(180deg,#5d3818,#4a2e15); }
-.pf-hd .pf-back { background: rgba(255,255,255,.12); color: #f0d99a; border: 1px solid rgba(212,175,55,.4); border-radius: 9px; padding: 6px 12px; font-size: 13px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; }
-.pf-hd .pf-ttl { font-family: 'Cinzel',serif; font-size: 17px; font-weight: 700; color: #f4d97a; }
+/* หัวจอ 3 ช่อง: ซ้าย | หัวข้อกึ่งกลาง | ขวา — 1fr auto 1fr ทำให้หัวข้ออยู่กลางจอจริง
+   แม้ปุ่มสองข้างกว้างไม่เท่ากัน (ของเดิมเป็น flex หัวข้อเลยชิดซ้ายติดปุ่มกลับ) */
+.pf-hd { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 14px 14px 10px; padding-top: max(14px, calc(env(safe-area-inset-top,0) + 10px)); border-bottom: 1.5px solid rgba(90,58,28,.3); background: linear-gradient(180deg,#5d3818,#4a2e15); }
+.pf-hd .pf-hd-l { justify-self: start; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.pf-hd .pf-hd-r { justify-self: end; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.pf-hd .pf-back { background: rgba(255,255,255,.12); color: #f0d99a; border: 1px solid rgba(212,175,55,.4); border-radius: 9px; padding: 6px 12px; font-size: 13px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; white-space: nowrap; }
+.pf-hd .pf-ttl { font-family: 'Cinzel',serif; font-size: 17px; font-weight: 700; color: #f4d97a; text-align: center; white-space: nowrap; }
+/* ปุ่มมุมขวาบน: + เพิ่มราคา (จอดึงราคา) และ ชื่อสวน → (จอฟอร์มราคา) — สีทองให้ต่างจากปุ่มกลับ */
+.pf-hd .pf-hd-add, .pf-hd .pf-hd-home { background: rgba(224,169,58,.22); color: #ffe7a8; border: 1px solid rgba(244,217,122,.55); border-radius: 9px; padding: 6px 11px; font-size: 12.5px; font-weight: 700; font-family: 'Sarabun',sans-serif; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+.pf-hd .pf-hd-home { max-width: 152px; overflow: hidden; }
+.pf-hd .pf-hd-home .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-hd .pf-hd-add:active, .pf-hd .pf-hd-home:active { background: rgba(224,169,58,.36); }
+/* เครื่องแคบ: ปุ่มกลับเหลือลูกศร หัวข้อยังอยู่กลางเหมือนเดิม */
+@media (max-width: 360px) { .pf-hd .pf-back .pf-bk-t { display: none; } .pf-hd .pf-back { padding: 6px 10px; } }
 .pf-body { flex: 1; overflow-y: auto; padding: 14px; padding-bottom: 40px; }
 .pf-sub { font-size: 11.5px; color: #8a7a55; margin-bottom: 12px; }
 .pf-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; }
@@ -11877,7 +11920,9 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 .pf-chip .o { background: #5a3a1c; color: #f0c860; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; font-family: 'JetBrains Mono',monospace; margin-right: 2px; }
 .pf-chip b { color: #3c6018; font-family: 'JetBrains Mono',monospace; font-weight: 800; }
 .pf-card-act { position: absolute; top: 8px; right: 10px; display: flex; gap: 6px; }
-.pf-card-act button { position: relative; background: #f0e8d2; border: 1px solid #d9c9a0; border-radius: 8px; width: 34px; height: 34px; font-size: 14px; cursor: pointer; touch-action: manipulation; }
+/* ปุ่มแก้/ลบในการ์ด: ไม่มีกรอบ พื้นหลังโปร่ง — คงขนาด 34px ไว้ให้นิ้วกดง่ายเหมือนเดิม */
+.pf-card-act button { position: relative; background: transparent; border: 0; border-radius: 8px; width: 34px; height: 34px; font-size: 14px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.pf-card-act button:active { background: rgba(90,58,28,.1); }
 .pf-card-act button::after { content: ''; position: absolute; inset: -5px; }
 .pf-card-act button.del { color: #b5281b; }
 .pf-add-btn { width: 100%; margin-top: 14px; background: linear-gradient(180deg,#7a5318,#4a2f12); color: #f0d99a; border: 1.5px solid #d4af37; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 800; font-family: 'Sarabun',sans-serif; cursor: pointer; }
@@ -11914,9 +11959,12 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; }   /* มีห
 .pf-pl-warn { font-size: 10.5px; color: #b5651a; background: #fdf0d6; border: 1px solid #e0c088; border-radius: 8px; padding: 6px 9px; margin-top: 4px; }
 .pf-day-sep-css{}
 /* zebra สลับเฉดต่อวัน/รอบ + เส้นคั่นหัวกลุ่ม (ตารางบิล) */
-#rows-body tr.pf-grp-1 > td, #sold-body tr.pf-grp-1 > td { background: rgba(110,74,30,.09); }
-#rows-body tr.pf-grp-0 > td, #sold-body tr.pf-grp-0 > td { background: rgba(255,250,235,.35); }
-#rows-body tr.pf-grp-start > td, #sold-body tr.pf-grp-start > td { border-top: 2.5px solid #a9741f !important; box-shadow: inset 0 4px 6px -4px rgba(90,58,28,.45); }
+/* เลิกสลับสีแถวรายวัน — เดิมสองสีต่างกันไม่ถึง 10% (ขาวจาง 35% กับน้ำตาลจาง 9%) มองไม่ออกอยู่ดี
+   ตอนนี้แถบวันสีเข้มทำหน้าที่คั่นแทนแล้ว ทุกวันใช้พื้นเดียวกัน สะอาดกว่า */
+#rows-body tr.pf-grp-0 > td, #sold-body tr.pf-grp-0 > td,
+#rows-body tr.pf-grp-1 > td, #sold-body tr.pf-grp-1 > td { background: rgba(255,255,255,.42); }
+/* เส้นคั่นวันสำรอง — ใช้เฉพาะแถวที่มีวันแต่ไม่มีแถบวัน (บิลที่ไม่ใช่บิลรวม) */
+#rows-body tr.pf-grp-start > td, #sold-body tr.pf-grp-start > td { border-top: 1.5px solid #c9a24a !important; }
 </style>
 </head>
 <body>
@@ -15677,7 +15725,8 @@ function pfRowChips(f, prevForm) {
       else if (d < 0) badge = ' <span class="pf-dn">▼' + pfFmt(d) + '</span>';   // d ติดลบอยู่แล้ว
       else badge = ' <span class="pf-same">=</span>';
     }
-    return '<span class="pf-chip"><span class="o">' + (i + 1) + '</span>' + pfHi(r.name || '—') + ' <b>' + pfFmt(r.price) + '</b>' + badge + '</span>';
+    // เลขลำดับหน้าเบอร์ตัดออก — ชื่อเบอร์บอกตัวเองอยู่แล้ว
+    return '<span class="pf-chip">' + pfHi(r.name || '—') + ' <b>' + pfFmt(r.price) + '</b>' + badge + '</span>';
   }).join('');
 }
 // ── แสดงทีละ 60 ใบ · เลื่อนถึงล่างสุดโหลดต่อเอง ──
@@ -15776,7 +15825,7 @@ function renderPriceLib() {
     if (shown < list.length) listHtml += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
   }
   scr.innerHTML =
-    '<div class="pf-hd"><button class="pf-back" onclick="pfClose()">← กลับ</button><div class="pf-ttl">📋 คลังราคา</div>' + mailBtnHtml('walnut', 'margin-left:auto;') + '</div>'
+    '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfClose()">← <span class="pf-bk-t">กลับ</span></button></div><div class="pf-ttl">📋 คลังราคา</div><div class="pf-hd-r">' + mailBtnHtml('walnut', '') + '</div></div>' + '</div>'
     + '<div class="pf-body">'
     + (admin ? '<button class="pf-add-btn pf-add-top" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
     + searchBar + filterBar
@@ -15905,12 +15954,18 @@ window.pfOpenEdit = function (id) {
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะแอดมินแก้ได้'); return; }
   _pfEditId = id || null;
+  // เปิดจากคลังราคาตามปกติ → ไม่มีปุ่ม "กลับที่เดิม" (pfPullAddForm ตั้งธงไว้ก่อนเรียกเองแล้ว)
   const scr = document.getElementById('pf-edit');
   if (!scr) return;
   scr.style.display = '';
   pfRenderEdit();
 };
-window.pfCloseEdit = function () { const s = document.getElementById('pf-edit'); if (s) s.style.display = 'none'; };
+window.pfCloseEdit = function () {
+  const s = document.getElementById('pf-edit');
+  if (s) { s.style.display = 'none'; s.style.zIndex = ''; }   // คืน z-index ที่ยกไว้ตอนเปิดจากจอดึงราคา
+  window._pfFromPull = false;
+  window._pfPrefillFruit = '';
+};
 
 function pfRowInputsHtml() {
   return window._pfDraftRows.map((r, i) => {
@@ -15947,7 +16002,7 @@ function pfRenderEdit() {
   const scr = document.getElementById('pf-edit');
   if (!scr) return;
   const editing = _pfEditId ? priceForms.find(f => f.id === _pfEditId) : null;
-  let fruit = editing ? (editing.fruit || '') : (_pfFruitFilter || '');
+  let fruit = editing ? (editing.fruit || '') : (window._pfPrefillFruit || _pfFruitFilter || '');
   const date = editing ? (editing.date || '') : new Date().toISOString().slice(0, 10);
   let rows, copiedFrom = null;
   if (editing) {
@@ -15970,7 +16025,12 @@ function pfRenderEdit() {
   }
   window.__pfCopiedFrom = copiedFrom ? { date: copiedFrom.date, fruit: copiedFrom.fruit } : null;
   scr.innerHTML =
-    '<div class="pf-hd"><button class="pf-back" onclick="pfCloseEdit()">← กลับ</button><div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div></div>'
+    '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfCloseEdit()">← <span class="pf-bk-t">กลับ</span></button></div>'
+    + '<div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div>'
+    // เปิดมาจากหน้าดึงราคา → ปุ่มขวาบนพากลับไปที่เดิม ป้ายเป็นชื่อสวนที่ผูกกับบิล
+    + '<div class="pf-hd-r">' + (window._pfFromPull
+        ? '<button class="pf-hd-home" onclick="pfBackToPull()"><span class="nm">' + pfEsc(pfPullOriginLabel()) + '</span> →</button>'
+        : '') + '</div></div>'
     + '<div class="pf-body">'
     + '<div class="pf-sub">เรียงจากเบอร์ใหญ่/แพงสุด → เล็กสุด · ชื่อเป็นแค่ตัวช่วยจำ</div>'
     + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '" onchange="pfDateChanged(this.value)"></div>'
@@ -16298,6 +16358,52 @@ window.pfPullSetForm = function (gi, id) {
 };
 window.pfPullClose = function () { const s = document.getElementById('pf-pull'); if (s) s.style.display = 'none'; };
 
+// ── ชื่อสวนที่ผูกกับบิลที่กำลังตีอยู่ (ใช้เป็นป้ายปุ่ม "กลับที่เดิม") ──
+// บิลที่กำลังแก้ = editingId · หา gardenId จากบิลเดิมใน state.quotes ก่อน
+// ถ้าไม่มี ลองหาสวนที่ stamp ชี้กลับมาที่บิลใบนี้ (บางใบผูกทางนั้น — เหมือน _billVsCollected)
+// gardens ของ block นี้เป็น array ว่าง → ต้องอ่านจาก localStorage ตรงๆ
+function pfBillGardenName() {
+  try {
+    const qid = editingId || null;
+    if (!qid) return '';
+    let gid = null;
+    const q = (state && Array.isArray(state.quotes)) ? state.quotes.find(x => x && x.id === qid) : null;
+    if (q && q.gardenId) gid = q.gardenId;
+    let gs = [];
+    try { gs = JSON.parse(localStorage.getItem('thodsapon_gardens_v1') || '[]'); } catch (e) { gs = []; }
+    if (!Array.isArray(gs)) return '';
+    let g = gid ? gs.find(x => x && x.id === gid) : null;
+    if (!g) g = gs.find(x => x && x.stamp && x.stamp.quoteId === qid);
+    return (g && g.name) ? String(g.name).trim() : '';
+  } catch (e) { return ''; }
+}
+// ป้ายบนปุ่ม: "สวน ป้าแมว" · ชื่อที่ขึ้นต้นด้วย "สวน" อยู่แล้วไม่เติมซ้ำ · ไม่ผูกสวน → ข้อความกลาง
+function pfPullOriginLabel() {
+  const n = pfBillGardenName();
+  if (!n) return 'กลับไปดึงราคา';
+  return /^สวน/.test(n) ? n : ('สวน ' + n);
+}
+
+// ── + เพิ่มราคา (มุมขวาบนจอดึงราคา) → เปิดจอฟอร์มราคาใหม่ทับไว้ ──
+// ไม่ปิดจอดึงราคา: แผนจับคู่ (_pfPullPlan) และราคาที่พิมพ์เองค้างอยู่ จะได้ไม่หายตอนกดกลับ
+// แต่ #pf-pull อยู่ท้าย #pf-edit ในหน้า และ z-index เท่ากัน (410) → ต้องยก #pf-edit ขึ้นเอง ไม่งั้นถูกทับมองไม่เห็น
+window.pfPullAddForm = function () {
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
+  window._pfFromPull = true;
+  window._pfPrefillFruit = window._pfPullFruit || '';   // เติมผลไม้จากบิลให้ ไม่ต้องพิมพ์ซ้ำ
+  const e = document.getElementById('pf-edit');
+  if (e) e.style.zIndex = '420';
+  pfOpenEdit();
+  if (typeof haptic === 'function') haptic(8);
+};
+
+// ── ปุ่ม "สวน ... →" บนจอฟอร์มราคา: ปิดจอฟอร์ม เผยจอดึงราคาที่ค้างอยู่ข้างหลัง ──
+// ไม่สลับฟอร์มให้อัตโนมัติ — ฟอร์มใหม่จะโผล่ในรายการของปุ่ม "เลือก" (pfPullPick อ่านคลังราคาสดทุกครั้ง)
+window.pfBackToPull = function () {
+  pfCloseEdit();
+  if (typeof haptic === 'function') haptic(8);
+};
+
 function pfPullRender(plan, fruit) {
   const scr = document.getElementById('pf-pull');
   if (!scr) return;
@@ -16342,7 +16448,9 @@ function pfPullRender(plan, fruit) {
   }).join('');
   const anyForm = plan.some(p => p.form);
   scr.innerHTML =
-    '<div class="pf-hd"><button class="pf-back" onclick="pfPullClose()">← ยกเลิก</button><div class="pf-ttl">⬇ ดึงราคา</div></div>'
+    '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfPullClose()">← <span class="pf-bk-t">ยกเลิก</span></button></div>'
+    + '<div class="pf-ttl">⬇ ดึงราคา</div>'
+    + '<div class="pf-hd-r">' + (pfIsAdmin() ? '<button class="pf-hd-add" onclick="pfPullAddForm()">+ เพิ่มราคา</button>' : '') + '</div></div>'
     + '<div class="pf-body"><div class="pf-sub">จับคู่ <b>ตามลำดับ</b> (ไม่สนชื่อ) — แก้ราคาได้ทุกช่อง · <b>ไม่กระทบคลังราคา</b> · ช่องว่าง = ไม่ดึงแถวนั้น</div>'
     + body
     + (anyForm ? '<button class="pf-save" onclick="pfPullConfirm()">✓ ยืนยัน ดึงราคาลงบิล</button>' : '<div class="pf-empty">ไม่มีฟอร์มที่ใช้ได้</div>')
@@ -16422,10 +16530,11 @@ function _mgDayHdr(dateISO, dayRows, cols) {
   const n = dayRows.length;
   const kg = dayRows.reduce((s, r) => s + (typeof totalKgOf === 'function' ? totalKgOf(r) : 0), 0);
   const lbl = (typeof fmtDate === 'function') ? fmtDate(dateISO) : dateISO;
-  return '<tr class="mg-dayhdr"><td colspan="' + cols + '">'
-    + '<span class="d">📅 ' + escapeHtml(lbl) + '</span>'
-    + '<span class="n">· ' + n + ' เบอร์ · ' + (typeof fmt === 'function' ? fmt(kg) : kg) + ' กก.</span>'
-    + '</td></tr>';
+  // แถบวันเป็นพื้นไม้เข้มตัวหนังสือทอง (สีเดียวกับหัวจอ) — td เป็นแค่ช่องว่างใส ให้เห็นกระดาษคั่นระหว่างวัน
+  return '<tr class="mg-dayhdr"><td colspan="' + cols + '"><div class="mg-bar">'
+    + '<span class="d">' + escapeHtml(lbl) + '</span>'
+    + '<span class="n">' + n + ' เบอร์ · ' + (typeof fmt === 'function' ? fmt(kg) : kg) + ' กก.</span>'
+    + '</div></td></tr>';
 }
 
 function renderRows() {
@@ -22674,8 +22783,9 @@ function _lcBuildDayBodies(wrap) {
         totKg = Number(c.kg) || 0;
         grHtml = `<span class="lc-gr"><span class="g">—</span><span class="n">${fmtNum(totBk)} ตก.</span></span>`;
       }
+      // ยอดรวมห่อเป็น 2 ชิ้น (.p) — ตอนเรียง 3 คอลัมน์จะได้ตัดเป็น 2 บรรทัดพอดี ไม่ใช่ 4
       card.insertAdjacentHTML('beforeend',
-        `<span class="lc-body"><span class="lc-sep"></span>${grHtml}<span class="lc-tot"><span class="v">${fmtNum(totBk)}</span> ตก·<span class="v">${fmtNum(totKg)}</span> กก</span></span>`);
+        `<span class="lc-body"><span class="lc-sep"></span>${grHtml}<span class="lc-tot"><span class="p"><span class="v">${fmtNum(totBk)}</span> ตก.</span><span class="p"><span class="v">${fmtNum(totKg)}</span> กก.</span></span></span>`);
     });
     wrap.dataset.bodiesBuilt = '1';
   } catch (e) {}
@@ -22690,7 +22800,21 @@ window.lcToggleDays = function (el, ev) {
       _lcBuildDayBodies(w);
       void w.offsetWidth;   // บังคับ layout ก่อน เพื่อให้อนิเมชันกางยังทำงานเหมือนเดิม
     }
-    w.classList.toggle('open');
+    var on = w.classList.toggle('open');
+    // ธงบนการ์ด = ตัวสั่งซ่อนป้ายซ้าย/กล่องกำไรขวา แล้วโชว์หัวเล็ก (ดู .garden-card.dayopen)
+    var card = w.closest('.garden-card');
+    if (card) card.classList.toggle('dayopen', on);
+  } catch (e) {}
+};
+
+// ปุ่ม "ปิด ✕" บนหัวตอนกางวัน
+window.lcCloseDays = function (el, ev) {
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  try {
+    var card = el.closest('.garden-card'); if (!card) return;
+    var w = card.querySelector('.lc-daywrap');
+    if (w) w.classList.remove('open');
+    card.classList.remove('dayopen');
   } catch (e) {}
 };
 
@@ -22700,11 +22824,12 @@ function buildStampBox(s, gid) {
   const gain = (Number(s.amount) || 0) >= 0;
   const cls = gain ? 'gain' : 'loss';
   // เตือน: ขาย(บิล) เกินที่เก็บจริง → กรอบส้ม + ข้อความในกรอบ
-  let _isOver = false;
+  let _isOver = false, _collKgCache = 0, _billKgCache = 0;
   try {
     const _g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gid) : null;
     const _collKg = (_g && Array.isArray(_g.collections)) ? Math.round(_g.collections.reduce((a, c) => a + ((c && Number(c.kg)) || 0), 0)) : 0;
     const _billKg = Math.round(Number(s.totalKg) || 0);
+    _collKgCache = _collKg; _billKgCache = _billKg;
     _isOver = _collKg > 0 && _billKg > _collKg;
   } catch (e) {}
   const _boxCls = cls + (_isOver ? ' over' : '');
@@ -22714,12 +22839,32 @@ function buildStampBox(s, gid) {
     : Math.abs(Number(s.pct)).toFixed(1) + '%';
   const amtTxt = (gain ? '+' : '−') + fmtNum(Math.abs(Number(s.amount) || 0));
   const qid = gbEscapeHtml(s.quoteId || '');
+  // ── ต่อโล (โผล่ตอนกดกล่อง) ──
+  // ใช้น้ำหนักชุดเดียวกับหน้าสรุปสวน: cap ที่ยอดเก็บจริง (ขายเกินที่เก็บเป็นไปไม่ได้ — กติกาเดียวกับ build 1129)
+  // ถ้าหารด้วยน้ำหนักบิลดิบ สวนที่บิลเกินจะได้เลขคนละตัวกับหน้าสรุป
+  let _kgHtml = '';
+  try {
+    const _capKg = _isOver ? _collKgCache : _billKgCache;
+    if (_capKg > 0) {
+      const _per = (v) => (Math.round(v * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const _c = (Number(s.cost) || 0) / _capKg;
+      const _s2 = (Number(s.sold) || 0) / _capKg;
+      const _p = (Number(s.amount) || 0) / _capKg;
+      _kgHtml = '<div class="lc-pb-kg">'
+        + '<div class="hd">ต่อโล · ' + fmtNum(_capKg) + ' กก.</div>'
+        + '<div class="r"><span>ทุน/โล</span><span class="v">' + _per(_c) + '</span></div>'
+        + '<div class="r"><span>ขาย/โล</span><span class="v">' + _per(_s2) + '</span></div>'
+        + '<div class="r p"><span>กำไร/โล</span><span class="v">' + (_p >= 0 ? '+' : '−') + _per(Math.abs(_p)) + '</span></div>'
+        + '</div>';
+    }
+  } catch (e) { _kgHtml = ''; }
   return `<div class="lc-pbox ${_boxCls}" onclick="lcStampClick(event,this)">
       ${_warnHtml}
       <div class="lc-pb-row"><span>ทุน</span><span class="v">${fmtNum(Number(s.cost) || 0)}</span></div>
       <div class="lc-pb-row"><span>ขาย</span><span class="v">${fmtNum(Number(s.sold) || 0)}</span></div>
       <div class="lc-pb-sep"></div>
       <div class="lc-pb-net"><span class="lc-pb-pct"><span class="lc-pb-arr">${arrow}</span>${pctTxt}</span><span class="lc-pb-amt">${amtTxt}</span></div>
+      ${_kgHtml}
       <div class="lc-pb-view"><button class="lc-pb-viewbtn lc-pb-sumbtn" onclick="event.stopPropagation();window.openGardenSummary('${gid}','${qid}')">ดูสรุป</button><button class="lc-pb-viewbtn" onclick="event.stopPropagation();window.openQuoteBill('${qid}')">📄 ดูบิล</button></div>
     </div>`;
 }
@@ -23257,7 +23402,9 @@ function renderListView() {
           const cid = gbEscapeHtml(String(c.id == null ? '' : c.id));
           return `<span class="lc-daycard${last}" data-g="${gbEscapeHtml(g.id)}" data-cid="${cid}" data-ci="${i}" onclick="lcToggleDays(this,event)"><span class="d">${dd}</span><span class="m">${gbEscapeHtml(mm)}</span></span>`;
         }).join('');
-        row2Html = `<span class="lc-line2 lc-line2-dates">
+        // หัวเล็กตอนกางวัน — โผล่แทนป้ายซ้ายที่ถูกซ่อน (รวมวันที่เปิดไว้ด้วย จะได้ไม่เสียข้อมูล)
+        const dayHeadHtml = `<div class="lc-dayhead"><span class="t">เก็บ ${trips} เที่ยว</span><span class="o">${openTxt}</span><button class="x" onclick="lcCloseDays(this,event)">ปิด ✕</button></div>`;
+        row2Html = `${dayHeadHtml}<span class="lc-line2 lc-line2-dates">
           <span class="lc-drow"><span class="lc-dlabel">วันที่เปิด</span><span class="lc-dcolon">:</span><span class="num">${openTxt}</span></span>
           <span class="lc-drow"><span class="lc-dlabel">เก็บ ${trips} เที่ยว</span><span class="lc-dcolon">:</span><span class="lc-daywrap">${dayCards}${addCardHtml}</span></span>
         </span>`;
