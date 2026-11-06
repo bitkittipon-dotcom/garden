@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1143;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (143)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1148;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (148)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -3459,13 +3459,17 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .gvh-color-custom{display:flex;align-items:center;gap:10px;margin-top:9px}
   #garden-view .gvh-color-custom input[type=color]{width:44px;height:34px;border:none;border-radius:8px;background:none;cursor:pointer;padding:0}
   #garden-view .gvh-cc-lbl{font-size:12px;color:#736446}
-  #garden-view .gvh-merge-btn{width:100%;background:#f4e6c6;border:1.5px solid #e3c98a;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:800;color:#8a5a12;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  /* ② เจอของน่าสงสัย — เบากว่าชื่อนอกคลัง แต่ยังมีสีทองบอกว่ามีอะไรให้ดู */
+  #garden-view .gvh-merge-btn{width:100%;background:#f7efdb;border:1.3px solid #ddcba0;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:800;color:#7d5e22;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  #garden-view .gvh-merge-btn:active{background:#efe3c6}
   #garden-view .gvh-fsearch{width:100%;box-sizing:border-box;background:#fffdf8;border:1.5px solid #d8c9a6;border-radius:11px;padding:10px 13px;font-size:14px;font-weight:600;color:#2a1810;font-family:inherit;outline:none;margin-bottom:11px}
   #garden-view .gvh-fsearch:focus{border-color:#6b8e3d;box-shadow:0 0 0 2px rgba(107,142,61,.18)}
   #garden-view .gvh-fsearch::placeholder{color:rgba(107,68,35,.5);font-weight:400}
   #garden-view .gvh-showall-btn{width:100%;background:transparent;border:1.3px dashed rgba(107,68,35,.35);border-radius:11px;padding:10px;text-align:center;font-size:13px;font-weight:700;color:#6b4423;cursor:pointer;font-family:inherit;margin-top:2px}
   /* ── รวมผลไม้แบบเลือกเอง ── */
-  #garden-view .gvh-manual-merge{width:100%;background:#f4e6c6;border:1.5px solid #e3c98a;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:800;color:#8a5a12;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  /* ③ เครื่องมือเฉยๆ ไม่มีอะไรค้าง — สีกระดาษเหมือนการ์ดอื่นในหน้า */
+  #garden-view .gvh-manual-merge{width:100%;background:#f2ece0;border:1.3px solid #d8c9a6;border-radius:12px;padding:11px;text-align:center;font-size:13.5px;font-weight:700;color:#6b5a3f;cursor:pointer;margin-bottom:11px;font-family:inherit}
+  #garden-view .gvh-manual-merge:active{background:#e8e0cf}
   #garden-view .fm-box{background:#fffdf8;border:1px solid #d8c9a6;border-radius:12px;padding:11px;margin-bottom:9px}
   #garden-view .fm-h{font-size:12.5px;font-weight:800;color:#6b4423;margin-bottom:9px}
   #garden-view .fm-row{display:flex;align-items:center;gap:10px;background:#f6efdd;border:1px solid #d8c9a6;border-radius:11px;padding:10px 11px;margin-bottom:7px;cursor:pointer;touch-action:manipulation}
@@ -3493,6 +3497,39 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
   #garden-view .gvh-mg-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#736446}
   #garden-view .gvh-mg-foot b{color:#5c862f}
   #garden-view .gvh-mg-btn{background:#5c862f;color:#fff;border:none;border-radius:9px;padding:6px 16px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;flex:0 0 auto}
+  /* ── หน้า "ชื่อผลไม้นอกคลัง" (build 1146) ── */
+  /* ปุ่มใต้ "＋ เพิ่มชื่อผลไม้" ไล่ระดับให้รู้ว่าอันไหนต้องแก้ อันไหนแค่เครื่องมือ (build 1147)
+     ① ชื่อนอกคลัง = มีเรื่องค้างต้องแก้ (ดังสุด) ② รวมชื่อซ้ำ = เจอของน่าสงสัย ③ รวมผลไม้ = เครื่องมือเฉยๆ (เงียบสุด) */
+  #garden-view .gvh-orphan-btn{width:100%;background:linear-gradient(180deg,#f8e3ad,#f0d894);
+    border:1.5px solid #d8a23d;border-left:5px solid #c9902a;border-radius:12px;padding:11px 11px 11px 10px;
+    font-size:13.5px;font-weight:800;color:#7a4a0c;cursor:pointer;margin-bottom:11px;font-family:inherit;
+    display:flex;align-items:center;gap:8px;text-align:left;box-shadow:0 1px 4px rgba(160,110,20,.2)}
+  #garden-view .gvh-orphan-btn:active{background:linear-gradient(180deg,#f0d894,#e8ca7e)}
+  #garden-view .gvh-orphan-btn .cnt{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;
+    font-weight:700;background:#fff5de;border:1px solid #d8a23d;color:#7a4a0c;border-radius:20px;padding:1px 9px;flex:0 0 auto}
+  #garden-view .fo-row{background:#f6efdd;border:1px solid #d8c9a6;border-left:4px solid #d8a23d;border-radius:13px;padding:11px 13px;box-shadow:0 1px 4px rgba(90,70,40,.1);margin-bottom:8px}
+  #garden-view .fo-head{display:flex;align-items:center;gap:11px;cursor:pointer;touch-action:manipulation}
+  #garden-view .fo-dot{width:30px;height:30px;border-radius:50%;flex:0 0 auto;background:#d8a23d;box-shadow:0 1px 3px rgba(0,0,0,.2),inset 0 -2px 4px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#4a3208}
+  #garden-view .fo-meta{min-width:0;flex:1}
+  #garden-view .fo-name{font-size:15.5px;font-weight:700;color:#5f4a2a;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  #garden-view .fo-same{font-size:10px;font-weight:700;color:#8a5a12;background:rgba(201,144,42,.17);border:1px solid rgba(201,144,42,.42);border-radius:6px;padding:1px 5px}
+  #garden-view .fo-use{font-size:11px;color:#736446;margin-top:1px;font-variant-numeric:tabular-nums}
+  #garden-view .fo-use .z{color:#a94f30}
+  #garden-view .fo-chev{width:33px;height:33px;border-radius:9px;border:1px solid #d8c9a6;background:#f0e7d1;color:#736446;font-size:13px;flex:0 0 auto;font-family:inherit;cursor:pointer}
+  #garden-view .fo-pick{margin-top:11px;padding-top:10px;border-top:1px dashed rgba(107,68,35,.28)}
+  #garden-view .fo-ph{font-size:12px;font-weight:800;color:#6b4423;margin-bottom:8px}
+  #garden-view .fo-opt{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1.5px solid rgba(107,68,35,.2);border-radius:9px;margin-bottom:6px;background:#fffdf8;cursor:pointer;touch-action:manipulation}
+  #garden-view .fo-opt.sel{border-color:#2f7d1f;background:rgba(107,142,61,.14);box-shadow:0 0 0 2px rgba(107,142,61,.18)}
+  #garden-view .fo-radio{width:19px;height:19px;border-radius:50%;border:2px solid #b6a582;flex:0 0 auto}
+  #garden-view .fo-opt.sel .fo-radio{border-color:#2f7d1f;background:radial-gradient(circle,#2f7d1f 42%,transparent 46%)}
+  #garden-view .fo-onm{flex:1 1 auto;min-width:0;font-size:14px;font-weight:700;color:#2a1810;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #garden-view .fo-ouse{font-size:11px;color:rgba(107,68,35,.6);flex:0 0 auto;font-variant-numeric:tabular-nums}
+  #garden-view .fo-opt.fo-add{border-style:dashed;justify-content:center;font-size:13px;font-weight:800;color:#5f4a2a}
+  #garden-view .fo-go{width:100%;background:linear-gradient(180deg,#6b8e3d,#557030);color:#fff;border:1.5px solid #4e6b28;border-radius:11px;padding:11px;font-size:13.5px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:3px}
+  #garden-view .fo-go:disabled{background:#ded3b8;border-color:#cdbf9f;color:#9c8d6f;cursor:default}
+  #garden-view .fo-danger{font-size:11.5px;color:#8a3a22;background:rgba(169,79,48,.1);border:1px solid rgba(169,79,48,.3);border-radius:9px;padding:8px 10px;margin-top:10px;line-height:1.4}
+  #garden-view .fo-done{text-align:center;padding:16px 8px;color:#736446;font-size:13px;line-height:1.5}
+  #garden-view .fo-done .big{font-size:15px;font-weight:800;color:#5c862f;display:block;margin-bottom:3px}
   #garden-view .gv-prof-mdiv { display: flex; align-items: center; gap: 8px; margin: 12px 2px 7px; }
   #garden-view .gv-prof-mdiv span:first-child { font-size: 11.5px; font-weight: 800; color: #7a4a16; white-space: nowrap; }
   #garden-view .gv-prof-mdiv::before, #garden-view .gv-prof-mdiv::after { content: ''; flex: 1; height: 1px; background: rgba(122,74,22,.25); }
@@ -5189,6 +5226,19 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
     #garden-view .lc-pbox.gain .lc-pb-viewbtn { color: #2f7d1f; border-color: #4a9e3a; }
     #garden-view .lc-pbox.loss .lc-pb-viewbtn { color: #b5281b; border-color: #c0392b; }
     #garden-view .lc-pb-sumbtn { color: #8a6f2f; border-color: #c9a24a; background:linear-gradient(180deg,#fbf6ea,#f5eeda); }
+    /* ── กล่องคาดการณ์ สวนที่ยังเปิด (build 1148) — พื้นขาว เส้นประ · ต่างจากกล่องจริงที่พื้นสี เส้นทึบ ── */
+    #garden-view .lc-pbox.lc-fbox { background: #fff; border-style: dashed; box-shadow: 0 1px 4px rgba(70,45,15,.1); }
+    #garden-view .lc-pbox.lc-fbox.gain { background: #fff; border-color: #4a9e3a; }
+    #garden-view .lc-pbox.lc-fbox.loss { background: #fff; border-color: #c0392b; }
+    #garden-view .lc-pbox.lc-fbox.wait { background: #fff; border-color: #b9ab8c; }
+    #garden-view .lc-fb-tag { align-self: center; font-size: 8.5px; font-weight: 800; letter-spacing: .04em; border-radius: 5px; padding: 1px 6px; margin: -2px 0 4px; }
+    #garden-view .lc-fbox.gain .lc-fb-tag { background: rgba(74,158,58,.14); color: #2f7d1f; }
+    #garden-view .lc-fbox.loss .lc-fb-tag { background: rgba(192,57,43,.12); color: #b5281b; }
+    #garden-view .lc-fbox.wait .lc-fb-tag { background: #efe8d8; color: #6f5f45; }
+    #garden-view .lc-fb-go { margin-top: 6px; font-size: 9.5px; font-weight: 800; text-align: center; border-top: 1px dashed rgba(107,68,35,.25); padding-top: 5px; color: #6b5320; }
+    #garden-view .lc-fbox.wait .lc-fb-go { color: #8a4b08; }
+    #garden-view .lc-fb-w { font-size: 11px; font-weight: 800; color: #6f5f45; text-align: center; line-height: 1.35; }
+    #garden-view .lc-fb-ws { font-size: 9.5px; color: #7a6a50; text-align: center; line-height: 1.35; margin-top: 2px; }
     #garden-view .lc-daywrap.open .lc-daycard .lc-body { width: 100%; max-height: 170px; opacity: 1; margin-top: 4px; }
 
     #garden-view .lc-bar-row {
@@ -11518,6 +11568,191 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
              inset 0 1px 1px rgba(255,255,255,.55),
              inset 0 -1px 1px rgba(0,0,0,.18); }
 
+/* ═══════════ build 1148: หน้าวางแผนราคา (คาดการณ์) — ภาษาเดียวกับหน้าสรุปสวน ═══════════ */
+.fc-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column; overflow:hidden;
+  font-family:'IBM Plex Sans Thai',sans-serif; color:#2a1c0c; }
+.fc-ov.open { display:flex; }
+.fc-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:max(44px, calc(env(safe-area-inset-top, 0px) + 11px)) 14px 11px;
+  display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+.fc-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8; border-radius:8px; padding:6px 12px;
+  font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+.fc-hd .ti { flex:1; min-width:0; }
+.fc-hd .t1 { font-weight:800; font-size:16px; line-height:1.15; }
+.fc-hd .t2 { font-size:10.5px; color:#c9b88a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fc-hd .badge { background:#f3ecd4; border:1px dashed #c9a24a; color:#6b5320; border-radius:999px; padding:2px 9px; font-size:10.5px; font-weight:800; white-space:nowrap; }
+.fc-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 12px 24px; }
+.fc-body .wrap { max-width:460px; margin:0 auto; }
+.fc-foot { display:flex; gap:8px; padding:10px 12px max(12px, env(safe-area-inset-bottom, 0px)); background:#efe6cf; border-top:1px solid #d9caa3; flex:0 0 auto; }
+.fc-foot .save { flex:1; border-radius:11px; border:1.5px solid #4e6b28; background:linear-gradient(180deg,#6b8e3d,#557030); color:#fff; font-weight:800; font-size:14px; padding:11px; font-family:inherit; cursor:pointer; }
+.fc-foot .clr { border-radius:11px; border:1.3px solid rgba(107,68,35,.35); background:#fff; color:#6b5320; font-weight:700; font-size:13px; padding:11px 13px; font-family:inherit; cursor:pointer; white-space:nowrap; }
+.fc-foot .clr.arm { border-color:#c0392b; color:#b5281b; background:#fdecec; }
+
+.fc-hero { background:linear-gradient(180deg,#faf5e8,#f3ecd8); border-radius:14px; border:1.5px dashed #c9a24a; padding:13px 15px; }
+.fc-hero .h2 { display:flex; align-items:center; gap:6px; }
+.fc-hero .h2 .l { font-size:11.5px; color:#8a6f2f; font-weight:700; }
+.fc-hero .h2 .pct { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px; border-radius:999px; padding:2px 9px; white-space:nowrap; }
+.fc-hero.gain .pct { color:#2f7d1f; background:rgba(74,158,58,.12); }
+.fc-hero.loss .pct { color:#b5281b; background:rgba(181,40,27,.1); }
+.fc-hero.wait { border-color:#b9ab8c; }
+.fc-hero.wait .pct { color:#6f5f45; background:rgba(122,106,80,.12); }
+.fc-hero .amt { overflow-wrap:anywhere; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:31px; line-height:1.1; margin-top:2px; font-variant-numeric:tabular-nums; }
+.fc-hero.gain .amt { color:#1f6b12; } .fc-hero.loss .amt { color:#a01e12; } .fc-hero.wait .amt { color:#b9ab8c; }
+.fc-hero .amt .cur { font-size:14px; font-weight:700; margin-left:3px; opacity:.6; }
+.fc-hero .cmp { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(201,162,74,.3); }
+.fc-hero .cmp .k { font-size:10px; color:#8a7350; font-weight:600; }
+.fc-hero .cmp .v { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; }
+.fc-hero .miss { margin-top:8px; font-size:11.5px; font-weight:700; color:#8a4b08; background:#fdf3e1; border-radius:8px; padding:6px 9px; line-height:1.45; }
+
+.fc-sec { font-size:11px; font-weight:800; color:#7a6533; margin:16px 2px 7px; letter-spacing:.3px; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+.fc-sec .n { font-family:'JetBrains Mono',monospace; color:#8a6f2f; }
+.fc-sec small { font-weight:600; color:#8a7350; letter-spacing:0; font-size:10.5px; }
+.fc-box { background:rgba(255,250,235,.55); border:1px solid rgba(107,68,35,.32); border-radius:9px; overflow:hidden; }
+.fc-note { font-size:10.5px; color:#8a7350; padding:6px 4px 0; line-height:1.45; margin:0; }
+.fc-note b { color:#4a3c1c; }
+.fc-ov .lk { text-decoration:underline; cursor:pointer; color:#6b5320; font-weight:700; }
+
+.fc-pin { display:flex; align-items:center; border:1.5px solid #c9a24a; border-radius:8px; overflow:hidden; background:#fffdf6; height:32px; }
+.fc-pin button { width:26px; height:100%; border:0; background:#f7efd8; font-weight:800; color:#6b5320; cursor:pointer; font-size:14px; flex:0 0 auto; font-family:inherit; padding:0; }
+.fc-pin button:active { background:#ecdfbd; }
+.fc-pin button:disabled { opacity:.4; }
+.fc-pin input { width:100%; min-width:0; border:0; background:transparent; text-align:center; font-family:'JetBrains Mono',monospace; font-weight:800;
+  font-size:13.5px; color:#2a1c0c; padding:0; -moz-appearance:textfield; appearance:textfield; }
+.fc-pin input::-webkit-outer-spin-button, .fc-pin input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.fc-pin input:focus { outline:none; }
+.fc-pin input::placeholder { color:#c2b08a; font-weight:500; }
+.fc-pin:focus-within { box-shadow:0 0 0 2px rgba(201,162,74,.35); }
+.fc-pin.chg { border-color:#d07a1e; background:#fff6e6; }
+.fc-pin.miss { border-style:dashed; border-color:#d39a3e; background:#fffaf0; }
+.fc-pin.bad { border-color:#c0392b; border-style:solid; background:#fdecec; }
+.fc-pin .u { font-size:10.5px; font-weight:700; color:#8a7350; padding-right:5px; }
+
+.fc-pr { display:grid; grid-template-columns:40px minmax(0,1fr) 108px 74px; gap:6px; align-items:center; padding:7px 11px; border-bottom:1px solid #e0d6bd; }
+.fc-pr .g { font-weight:800; font-size:13px; color:#4a3c1c; overflow-wrap:anywhere; line-height:1.15; }
+.fc-pr .k { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8a7350; line-height:1.2; }
+.fc-pr .k small { display:block; font-size:9.5px; }
+.fc-pr .rv { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; text-align:right; font-variant-numeric:tabular-nums; line-height:1.2; }
+.fc-pr .was { display:block; font-size:9.5px; color:#8a7350; font-weight:500; white-space:nowrap; }
+.fc-pr .was.on { color:#d07a1e; font-weight:700; }
+
+.fc-day { border-bottom:1px solid #e0d6bd; }
+.fc-day .dh { display:grid; grid-template-columns:58px 1fr auto 16px; gap:8px; align-items:center; padding:9px 11px; cursor:pointer; background:rgba(244,236,214,.55); }
+.fc-day .dt { font-weight:700; font-size:13px; color:#4a3c1c; }
+.fc-day .mid { min-width:0; }
+.fc-day .kg { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8a7350; }
+.fc-day .dh .rv { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; }
+.fc-day .dh .rv small { display:block; font-size:10px; color:#8a7350; font-weight:500; }
+.fc-day .ch { font-size:10px; color:#8a7350; text-align:center; transition:transform .2s; }
+.fc-day.open .ch { transform:rotate(180deg); }
+.fc-day .dg { display:none; }
+.fc-day.open .dg { display:block; }
+.fc-src { display:inline-block; font-size:9.5px; font-weight:700; border-radius:5px; padding:0 5px; margin-left:4px; vertical-align:1px; }
+.fc-src.form { background:#efe6cc; color:#6b5320; }
+.fc-src.bill { background:#e3eedb; color:#2f6a1f; }
+.fc-src.edit { background:#fde9cf; color:#9a560e; }
+.fc-src.none { background:#fdf0dc; color:#8a4b08; }
+.fc-sub { display:flex; justify-content:space-between; padding:8px 11px; background:#f4ecd6; font-size:12px; font-weight:800; color:#4a3c1c; border-top:1px solid #e0d6bd; }
+.fc-sub .v { font-family:'JetBrains Mono',monospace; }
+
+.fc-ptop { display:flex; align-items:center; gap:7px; padding:9px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
+.fc-ptop .t { font-size:11.5px; color:#8a7350; flex:1 1 140px; min-width:0; }
+.fc-stp { display:inline-flex; align-items:center; border:1.3px solid rgba(107,68,35,.35); border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
+.fc-stp button { width:30px; height:30px; border:0; background:#f5eedd; font-size:15px; font-weight:800; color:#5f4a2a; cursor:pointer; font-family:'JetBrains Mono',monospace; padding:0; }
+.fc-stp .lb { font-size:10.5px; font-weight:800; color:#5f4a2a; padding:0 7px; white-space:nowrap; }
+.fc-zsrc { display:flex; align-items:center; gap:8px; padding:9px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
+.fc-zsrc .t { font-size:11.5px; color:#8a7350; font-weight:700; }
+.fc-zsrc .t b { color:#4a3c1c; font-family:'JetBrains Mono',monospace; }
+.fc-seg { display:inline-flex; border:1.5px solid #c9a24a; border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
+.fc-seg button { border:0; background:#fff; color:#6b5320; font-family:inherit; font-size:12px; font-weight:800; padding:7px 11px; cursor:pointer; }
+.fc-seg button + button { border-left:1.5px solid #c9a24a; }
+.fc-seg button.on { background:linear-gradient(180deg,#f2d78c,#e2bd5c); color:#3e2a04; }
+.fc-seg button:disabled { color:#b9ab8c; cursor:default; }
+.fc-seg.sm button { font-size:11px; padding:6px 8px; }
+
+.fc-cr { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 11px; border-bottom:1px solid #e0d6bd; font-size:12.5px; }
+.fc-cr .k { color:#4a3c1c; min-width:0; }
+.fc-cr .k small { display:block; color:#8a7350; font-size:10.5px; }
+.fc-cr .k small.warn { color:#8a4b08; font-weight:700; }
+.fc-cr .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.fc-cr.tot { background:#f4ecd6; font-weight:800; border-bottom:0; }
+.fc-cr.tot .v { color:#b5281b; }
+.fc-chd, .fc-mxh { display:grid; gap:6px; padding:6px 11px 4px; font-size:9.5px; font-weight:700; color:#8a7350; border-bottom:1px solid #e0d6bd; background:rgba(244,236,214,.55); }
+.fc-chd { grid-template-columns:40px minmax(0,1fr) 108px 74px; }
+.fc-chd span:nth-child(3) { text-align:center; } .fc-chd span:last-child { text-align:right; }
+.fc-mxh, .fc-mx { grid-template-columns:64px 108px minmax(0,1fr) 30px; }
+.fc-mxh span:nth-child(2) { text-align:center; } .fc-mxh span:nth-child(3) { text-align:right; }
+.fc-mx { display:grid; gap:6px; align-items:center; padding:7px 11px; border-bottom:1px solid #e0d6bd; }
+.fc-mx .g { font-weight:800; font-size:13px; color:#4a3c1c; overflow-wrap:anywhere; }
+.fc-mx .gn { width:100%; min-width:0; height:32px; border:1.5px solid #c9a24a; border-radius:8px; background:#fffdf6; text-align:center; font-family:inherit;
+  font-weight:800; font-size:13px; color:#2a1c0c; padding:0 4px; }
+.fc-mx .gn:focus { outline:none; box-shadow:0 0 0 2px rgba(201,162,74,.35); }
+.fc-mx .gn::placeholder { color:#c2b08a; font-weight:500; }
+.fc-mx .gn.miss { border-style:dashed; border-color:#d39a3e; background:#fffaf0; }
+.fc-mx .k { font-family:'JetBrains Mono',monospace; font-size:12px; color:#4a3c1c; text-align:right; line-height:1.2; }
+.fc-mx .k small { display:block; font-size:9.5px; color:#8a7350; }
+.fc-mx .k small.on { color:#d07a1e; font-weight:700; }
+.fc-ov .x { width:30px; height:30px; border-radius:7px; border:1px solid #e0c3b7; background:#f7e8e2; color:#a94f30; font-weight:800; cursor:pointer; font-size:13px; flex:0 0 auto; padding:0; font-family:inherit; }
+.fc-mxadd { display:flex; gap:10px; align-items:center; padding:8px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; font-size:11px; }
+.fc-mxadd button { border-radius:8px; border:1.3px dashed rgba(107,68,35,.4); background:#fff; color:#5f4a2a; font-weight:800; font-size:12px; padding:6px 10px; font-family:inherit; cursor:pointer; }
+.fc-msum { display:flex; justify-content:space-between; gap:8px; padding:8px 11px; font-size:12px; font-weight:800; background:#eef6e6; color:#2c5a1e; }
+.fc-msum.bad { background:#fdf0dc; color:#8a4b08; }
+.fc-msum .v { font-family:'JetBrains Mono',monospace; }
+.fc-emp { padding:8px 11px; font-size:11.5px; color:#8a4b08; background:#fdf3e1; border-bottom:1px solid #e0d6bd; line-height:1.4; }
+.fc-emp.ok { color:#2c5a1e; background:#eef6e6; }
+.fc-empty { padding:9px 11px 2px; font-size:11.5px; color:#8a7350; font-style:italic; }
+
+.fc-rlist { padding:8px 11px 9px; border-bottom:1px solid #e0d6bd; display:flex; flex-direction:column; gap:7px; }
+.fc-rrow { display:grid; grid-template-columns:20px minmax(0,1fr); gap:4px 9px; align-items:center; background:#fffdf8; border:1.5px solid rgba(107,68,35,.2);
+  border-radius:10px; padding:9px 10px; cursor:pointer; text-align:left; font-family:inherit; width:100%; color:#2a1c0c; }
+.fc-rrow.sel { border-color:#6b8e3d; background:#f1f6e8; box-shadow:0 0 0 2px rgba(107,142,61,.18); }
+.fc-rrow.static { cursor:default; }
+.fc-rrow .rd { width:18px; height:18px; border-radius:50%; border:2px solid #b6a582; align-self:start; margin-top:1px; }
+.fc-rrow.sel .rd { border-color:#2f7d1f; background:radial-gradient(circle,#2f7d1f 42%,transparent 46%); }
+.fc-rrow .rt { display:flex; align-items:baseline; gap:7px; min-width:0; flex-wrap:wrap; }
+.fc-rrow .rn { font-size:14px; font-weight:800; }
+.fc-rrow .rm { font-size:10.5px; color:#8a7350; }
+.fc-rbar { grid-column:2; display:flex; height:12px; border-radius:6px; overflow:hidden; border:1px solid rgba(107,68,35,.18); }
+.fc-rbar span { height:100%; }
+.fc-rleg { grid-column:2; display:flex; flex-wrap:wrap; gap:2px 10px; font-size:11px; color:#4a3c1c; }
+.fc-rleg b { font-family:'JetBrains Mono',monospace; font-weight:800; }
+.fc-dotg { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:3px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+.fc-rchg { align-self:flex-end; border:0; background:none; color:#6b5320; font-family:inherit; font-size:12px; font-weight:800; text-decoration:underline; cursor:pointer; padding:2px 2px 0; }
+
+.fc-hx { padding:8px 11px; border-bottom:1px solid #e0d6bd; }
+.fc-hx .top { display:flex; gap:6px; align-items:center; }
+.fc-hx .nm { flex:1; min-width:0; height:32px; border:1.3px solid rgba(107,68,35,.3); border-radius:8px; background:#fffdf8; padding:0 9px; font-family:inherit; font-size:13px; font-weight:600; color:#2a1c0c; }
+.fc-hx .nm:focus { outline:none; border-color:#c9a24a; box-shadow:0 0 0 2px rgba(201,162,74,.3); }
+.fc-hx .nm::placeholder { color:#b0a07a; font-weight:400; }
+.fc-hx .bot { display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
+.fc-hx .bot .fc-pin { width:118px; }
+.fc-hx .tt { margin-left:auto; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12.5px; line-height:1.2; }
+.fc-hx .tt small { display:block; font-size:9.5px; color:#8a7350; font-weight:500; }
+.fc-hx.inc .tt { color:#2f7d1f; } .fc-hx.exp .tt { color:#b5281b; }
+.fc-hxh { display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:7px 11px 5px; font-size:11.5px; font-weight:800; color:#4a3c1c; background:rgba(244,236,214,.55); border-bottom:1px solid #e0d6bd; }
+.fc-hxh small { font-weight:500; color:#8a7350; font-size:10px; }
+.fc-hxsum { display:flex; justify-content:space-between; padding:8px 11px; font-size:12px; font-weight:800; }
+.fc-hxsum .v { font-family:'JetBrains Mono',monospace; }
+.fc-hxsum.inc { background:#eef6e6; color:#2c5a1e; }
+.fc-hxsum.exp { background:#fbeeee; color:#8a2a1e; border-bottom:1px solid #e0d6bd; }
+
+.fc-pday { border-bottom:1px solid #e0d6bd; background:#fffdf8; }
+.fc-pday .pdh { display:flex; align-items:center; gap:6px; padding:8px 11px 6px; background:rgba(244,236,214,.7); border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
+.fc-pday .pdn { font-size:12.5px; font-weight:800; color:#4a3c1c; flex:0 0 auto; }
+.fc-pday input[type=date] { height:32px; border:1.5px solid #c9a24a; border-radius:8px; background:#fffdf6; font-family:inherit; font-size:12.5px; font-weight:700; color:#2a1c0c; padding:0 6px; min-width:0; flex:1 1 112px; }
+.fc-pday .pdh .x { margin-left:auto; }
+.fc-pday .pdq { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 11px; border-bottom:1px solid #e0d6bd; font-size:11px; color:#8a7350; flex-wrap:wrap; }
+.fc-pday .kgw { display:flex; align-items:center; gap:5px; font-weight:700; color:#4a3c1c; }
+.fc-pday .kgw .fc-pin { width:112px; }
+.fc-pday .pdsum { display:flex; justify-content:space-between; padding:6px 11px; font-size:11.5px; font-weight:800; color:#4a3c1c; background:#f8f1df; }
+.fc-pday .pdsum .v { font-family:'JetBrains Mono',monospace; }
+.fc-pun { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 11px; font-size:11.5px; color:#8a4b08; background:#fdf3e1; border-bottom:1px solid #e0d6bd; line-height:1.4; }
+.fc-pun b { font-family:'JetBrains Mono',monospace; }
+.fc-pun .v { font-family:'JetBrains Mono',monospace; font-weight:800; color:#4a3c1c; flex:0 0 auto; }
+.fc-pun.ok { color:#2c5a1e; background:#eef6e6; }
+@media (max-width:370px) {
+  .fc-pr, .fc-chd { grid-template-columns:36px minmax(0,1fr) 100px 68px; gap:5px; padding-left:9px; padding-right:9px; }
+  .fc-mxh, .fc-mx { grid-template-columns:58px 100px minmax(0,1fr) 30px; gap:5px; }
+}
+
 /* ═══════════ หน้าสรุปสวนเต็มจอ (garden summary overlay) ═══════════ */
 .gsum-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column;
   overflow:hidden; font-family:'IBM Plex Sans Thai',sans-serif; }
@@ -12928,15 +13163,16 @@ const NOTEBOOK_LABELS = {
   gardenDelete: '🗑️ ลบสวนได้',
   profitView: '📊 เห็นกำไร/ขาดทุน',
   billEdit: '✏️ แก้ไขบิล',
+  forecastView: 'เห็นคาดการณ์/วางแผน',
 };
 const USERS_KEY = 'thodsapon_users';
 const SESSION_KEY = 'thodsapon_session';
 const DEFAULT_USERS = [
-  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true, profitView: true, billEdit: true } },
+  { id: 'hnuloveyou', pw: '101237', name: 'เลก', role: 'admin', perms: { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: true, profitView: true, billEdit: true, forecastView: true } },
 ];
 
 function loadUsers() {
-  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false, profitView: false, billEdit: false };
+  const defaultPerms = { quote: true, pos: true, garden: true, debt: true, stock: true, report: true, gardenDelete: false, profitView: false, billEdit: false, forecastView: false };
   try {
     const raw = localStorage.getItem(USERS_KEY);
     if (!raw) { saveUsers(DEFAULT_USERS); return DEFAULT_USERS.map(u => ({...u, perms: {...u.perms}})); }
@@ -13745,9 +13981,19 @@ function _backCloseLayer(el) {
   // ── ชั้นที่ "ต้อง" ใช้ตัวปิดของมัน (ปิดตรงๆ แล้วสถานะจะค้าง) ──
   if (id === 'stmp-bg') return call('stampChoose', false);          // = ตอบ "ไม่ประทับ"
   if (id === 'billover-ov') return call('_closeBillOverDialog');     // เคลียร์ callback ค้าง
+  // ชีตตั้งค่ามีหน้าย่อย (สรุปกำไร · สำรอง · ชื่อผลไม้ · รวมผลไม้ · ชื่อนอกคลัง)
+  // อยู่ในหน้าย่อย → ถอยทีละหน้าเหมือนปุ่ม ‹ ไม่ใช่ปิดชีตทิ้งทั้งอัน (ตามกติกาเดิมของ build 1137)
+  if (id === 'gv-bset-bg') {
+    // อยู่หน้าย่อยหรือเปล่า อ่านจากปุ่ม ‹ บนหัวชีต (gvBsetRender โชว์/ซ่อนมันให้ตรงหน้าอยู่แล้ว)
+    // ไม่อ่านตัวแปร _gvBsetPage เพราะมันอยู่คนละ scope กับฟังก์ชันนี้ — ลองแล้วอ่านไม่ได้ ตกมาปิดชีตทั้งอัน
+    const _bk = document.getElementById('gv-bset-back');
+    if (_bk && _bk.style.display !== 'none') return call('gvBsetBack');
+    return call('gvBsetClose');
+  }
   // ── ชั้นที่มีตัวปิดพร้อมใช้ ──
   const MAP = {
     'gsum-ov': 'closeGardenSummary',
+    'fc-ov': 'fcClose',
     'bill-picker-ov': 'closeBillPicker',
     'gv-bset-cm-bg': 'gvBsetCmClose',
     'gv-bset-progress-bg': 'gvBsetProgressClose',
@@ -13897,7 +14143,10 @@ function renderUsers() {
         const stTxt = u.perms.billEdit ? 'แก้ได้' : 'ดูอย่างเดียว';
         const hint = u.perms.billEdit ? 'เปิด = แก้บิลได้เต็ม' : 'ปิดอยู่ = เปิดบิลดูได้ แต่แก้ไม่ได้';
         const subChk = `<div class="perm-sub-wrap"><label class="perm-sub"><input type="checkbox" ${beChecked} ${dis} onchange="togglePerm(${idx}, 'billEdit', this.checked)"><span>${NOTEBOOK_LABELS.billEdit}</span><span class="perm-sub-st ${stCls}">${stTxt}</span></label><div class="perm-sub-hint">${hint}</div></div>`;
-        return chk + subChk;
+        // build 1148: ช่องย่อย "เห็นคาดการณ์/วางแผน" — กล่องคาดการณ์บนการ์ดสวนที่ยังเปิด + หน้าวางแผนราคา
+        const fvOn = !!u.perms.forecastView;
+        const fvChk = `<div class="perm-sub-wrap"><label class="perm-sub"><input type="checkbox" ${fvOn ? 'checked' : ''} ${dis} onchange="togglePerm(${idx}, 'forecastView', this.checked)"><span>${NOTEBOOK_LABELS.forecastView}</span><span class="perm-sub-st ${fvOn ? 'edit' : 'view'}">${fvOn ? 'เห็น' : 'ไม่เห็น'}</span></label><div class="perm-sub-hint">${fvOn ? 'เห็นกล่องคาดการณ์บนการ์ดสวน และวางแผนราคาได้' : 'ปิดอยู่ = ไม่เห็นกล่องคาดการณ์ และเข้าหน้าวางแผนไม่ได้'}</div></div>`;
+        return chk + subChk + fvChk;
       }
       return chk;
     }).join('');
@@ -13927,13 +14176,13 @@ function togglePerm(idx, perm, val) {
   if (users[idx].role === 'admin') return;
   users[idx].perms[perm] = val;
   // ปิด "เห็นกำไร/ขาดทุน" → ล้าง "แก้ไขบิล" ด้วย (sub ต้องอยู่ใต้ profitView เสมอ)
-  if (perm === 'profitView' && !val) users[idx].perms.billEdit = false;
+  if (perm === 'profitView' && !val) { users[idx].perms.billEdit = false; users[idx].perms.forecastView = false; }
   saveUsers(users);
   toast(`${val?'เปิด':'ปิด'} ${NOTEBOOK_LABELS[perm]} ของ ${users[idx].name}`);
   console.log('[PERM]', currentUser.id, '→', users[idx].id, perm, val);
   if (users[idx].id === currentUser.id) { currentUser = users[idx]; renderBooks(); }
   // toggle profitView → วาดใหม่เพื่อโชว์/ซ่อน sub "แก้ไขบิล"
-  if (perm === 'profitView' && typeof renderUsers === 'function') renderUsers();
+  if ((perm === 'profitView' || perm === 'forecastView') && typeof renderUsers === 'function') renderUsers();
   // sync to cloud
   if (window.supaReady) {
     _cloudUpdateUser(users[idx].id, { perms: users[idx].perms }).catch(()=>{});
@@ -15596,11 +15845,26 @@ loadFruitNames();
       const pf = JSON.parse(localStorage.getItem('thodsapon_pf_v1') || localStorage.getItem('thodsapon_price_forms_v1') || '[]');
       (Array.isArray(pf) ? pf : []).forEach(x => { if (String(x.fruit || '').trim() === nm) used++; });
     } catch (e) {}
-    if (used > 0) { if (typeof toast === 'function') toast('ลบไม่ได้ · มี ' + used + ' รายการใช้ "' + nm + '" อยู่'); return; }
+    // สวนที่เก็บเข้าคลังแล้ว — ตอรุ่นใหม่เก็บ fruit ไว้ (นับได้) · ตอรุ่นเก่าไม่มี (ตรวจไม่ได้ ต้องบอก)
+    let archUsed = 0, archUnk = 0;
+    try {
+      (typeof archStubLoad === 'function' ? archStubLoad() : []).forEach(s => {
+        if (!s) return;
+        if (!s.fruit) archUnk++;
+        else if (String(s.fruit).trim() === nm) archUsed++;
+      });
+    } catch (e) {}
+    if (used + archUsed > 0) {
+      if (typeof toast === 'function') toast('ลบไม่ได้ · มี ' + (used + archUsed) + ' รายการใช้ "' + nm + '" อยู่'
+        + (archUsed ? ' (รวมสวนในคลัง ' + archUsed + ')' : ''));
+      return;
+    }
     window.fruitNames = (window.fruitNames || []).filter(x => x.id !== id);
     if (typeof saveFruitNames === 'function') saveFruitNames();
     fpRenderSheet();
-    if (typeof toast === 'function') toast('ลบแล้ว');
+    if (typeof toast === 'function') toast(archUnk
+      ? ('ลบแล้ว · สวนในคลัง ' + archUnk + ' สวนตรวจไม่ได้ ถ้าดึงกลับมาชื่อไม่ตรงจะโผล่ที่ "ชื่อนอกคลัง"')
+      : 'ลบแล้ว');
   };
 })();
 
@@ -16143,6 +16407,14 @@ window.pfSaveForm = function () {
   const fruit = (fEl && fEl.value || '').trim();
   const date = (dEl && dEl.value) || '';
   if (!fruit) { if (typeof toast === 'function') toast('ใส่ชื่อผลไม้ก่อน'); return; }
+  // อุดรู: ผลไม้ต้อง "อยู่ในคลัง" เหมือนด่านของสวน(saveGarden)+บิล(saveQuote)
+  // เดิมเช็คแค่ !fruit → ชื่อนอกคลังหลุดเข้าคลังราคาได้ แล้วยังกลายเป็นแท็บผลไม้ของตัวเองด้วย
+  // (แท็บสร้างจาก pfAllFruits = ชื่อในฟอร์ม ∪ คลัง ไม่ใช่จากคลังอย่างเดียว) → ดูเหมือนเป็นชนิดที่ระบบรับรอง
+  if (typeof window.fruitInLib === 'function' && !window.fruitInLib(fruit)) {
+    if (typeof toast === 'function') toast('ผลไม้ "' + fruit + '" ไม่มีในคลัง — เลือกจากรายการ หรือรวมชื่อที่ ⚙ ตั้งค่า › ชื่อผลไม้ › ชื่อนอกคลัง');
+    if (typeof fpOpen === 'function') setTimeout(() => fpOpen('pf-fruit'), 220);
+    return;
+  }
   const rows = (window._pfDraftRows || [])
     .map(r => ({ name: (r.name || '').trim(), price: (r.price === '' || r.price == null) ? null : Number(r.price) }))
     .filter(r => r.name || (r.price != null && !isNaN(r.price)));
@@ -21806,7 +22078,8 @@ function archStubPut(g) {
     if (!g || !g.id) return;
     if (!g.stamp || typeof g.stamp.amount !== 'number') return;   // ไม่มีผลประทับ = ไม่ต้องเก็บ
     const list = archStubLoad();
-    const stub = { id: g.id, name: g.name || '', openedAt: g.openedAt || null, stamp: g.stamp };
+    // เก็บ fruit ไว้ด้วย (build 1146) — ตอรุ่นก่อนไม่มี ทำให้ตอนลบชื่อผลไม้ตรวจสวนในคลังไม่ได้
+    const stub = { id: g.id, name: g.name || '', fruit: g.fruit || '', openedAt: g.openedAt || null, stamp: g.stamp };
     const i = list.findIndex(x => x.id === g.id);
     if (i >= 0) list[i] = stub; else list.push(stub);
     archStubSave(list);
@@ -22837,6 +23110,1057 @@ function _stampBillKg(qid) {
 }
 
 // ── กล่องกำไร/ขาดทุนบนการ์ด (จากบิลที่ประทับ) ──
+// ═══════════════════ คาดการณ์กำไร สวนที่ยังเปิด (build 1148) ═══════════════════
+// สูตรเดียวกับกล่องเขียวจริง: ขาย − (ค่าเปิดสวน + ค่าจัดทำ + ค่าใช้จ่ายแฝง) · ขาย = ของเก็บ × ราคา + รายได้แฝง
+// • เก็บแล้ว: ราคาจริงรายวัน — ราคาในบิลที่ส่งแล้ว (soldPrice) ก่อน · ไม่มีใช้ฟอร์มราคาของวันนั้น
+//   จับคู่ "ตามลำดับแถว" แบบเดียวกับดึงราคา (ลำดับแถวเที่ยวเก็บ = ลำดับแถวในบิล)
+// • ส่วนที่เหลือ (เป้า − เก็บแล้ว): แบ่งเบอร์ตามสัดส่วนที่เก็บ หรือสวนอ้างอิง (ยังไม่เก็บ)
+//   ราคาตั้งต้นฟอร์มล่าสุด · ตั้งเองเป็นก้อน หรือแบ่งเป็นวันได้
+// • ค่าจัดทำ/โล แยกเบอร์ = เฉลี่ยจากบิลของสวนที่ปิดแล้ว (ผลไม้เดียวกัน · ปิดไม่เกิน 2 เดือน · สูงสุด 12 สวน)
+//   ถ่วงตามน้ำหนัก · เบอร์ที่ไม่มีใช้เรทที่จำไว้ในบิลล่าสุด · ไม่มีอีก = ว่างให้กรอก
+// • ช่องที่ไม่มีข้อมูล = null ไม่ใช่ 0 → นับเป็น "ขาด" แล้วกล่องบอกว่าขาดอะไร · ไม่เดาตัวเลขให้
+// แผนที่ผู้ใช้ตั้งเก็บใน g.forecastPlan (ซิงค์ไปกับสวน) · ประทับตราปิดสวนแล้วกล่องจริงมาแทน
+const FC_WINDOW_DAYS = 60;
+const FC_MAX_REF = 12;
+function fcKey(s) {
+  let t = String(s == null ? '' : s);
+  try { if (typeof fruitCleanName === 'function') t = fruitCleanName(t); } catch (e) {}
+  return t.normalize('NFC').replace(/\s+/g, '').toUpperCase();
+}
+function fcNum(v) { if (v === '' || v == null) return null; const n = Number(v); return isFinite(n) ? n : null; }
+function fcRowKg(r) { return (Number(r.baskets) || 0) * (Number(r.kgPer) || 0) + (Number(r.extra) || 0); }
+// แถวของเที่ยวเก็บ 1 วัน → [{grade, key, kg}] ตามลำดับเดิม (กรองแบบเดียวกับตอนส่งบิล)
+function fcDayRows(c) {
+  const rows = (Array.isArray(c && c.rows) ? c.rows : []).filter(r => r && (Number(r.baskets) || Number(r.extra)));
+  if (rows.length) return rows.map(r => { const gr = String(r.grade || '').trim() || '—'; return { grade: gr, key: fcKey(gr), kg: fcRowKg(r) }; });
+  const kg = Number(c && c.kg) || 0;
+  return kg > 0 ? [{ grade: '—', key: fcKey('—'), kg }] : [];
+}
+function fcIsClosed(g) { return !!(g && (g.status === 'done' || g.closedAt)); }
+// ขึ้นกล่องเฉพาะสวนที่ "เปิดสวน" แล้ว ยังไม่ปิด และยังไม่ประทับตรา
+function fcIsOpen(g) { return !!(g && g.status === 'collecting' && !fcIsClosed(g) && !g.stamp); }
+function fcClosedOn(g) { return String((g && (g.closedAt || (g.stamp && g.stamp.date))) || '').slice(0, 10); }
+function fcSameFruit(a, b) {
+  const k = v => (typeof fruitCleanName === 'function') ? fruitCleanName(v) : String(v || '').trim();
+  return !!a && !!b && k(a) === k(b);
+}
+function fcISO(d) { const z = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()); }
+// ── บิลอ่านจากเครื่องตรงๆ · แคชสั้นๆ (การ์ดวาดทีละหลายใบ ไม่ต้อง parse ซ้ำทุกใบ) ──
+let _fcQCache = null, _fcQAt = 0;
+function fcQuotes() {
+  const now = Date.now();
+  if (_fcQCache && now - _fcQAt < 1500) return _fcQCache;
+  let a = [];
+  try { a = JSON.parse(localStorage.getItem('tospon_quotes_v1') || '[]'); } catch (e) { a = []; }
+  _fcQCache = Array.isArray(a) ? a.filter(q => q && typeof q === 'object') : [];
+  _fcQAt = now;
+  return _fcQCache;
+}
+function fcCacheReset() { _fcQCache = null; }
+function fcBillOf(g) {
+  const list = fcQuotes().filter(q => q.gardenId === g.id);
+  if (!list.length) return null;
+  list.sort((a, b) => (Number(b.updatedAt) || 0) - (Number(a.updatedAt) || 0));
+  return list[0];
+}
+// แบ่งจำนวนตามน้ำหนัก — ปัดเศษแบบเศษเหลือมากได้ก่อน → ผลรวมเท่าของเดิมพอดี
+function fcSplit(total, w, order) {
+  const o = {}; let tw = 0;
+  order.forEach(k => { tw += Math.max(0, Number(w[k]) || 0); });
+  const T = Math.round(total);
+  if (!(tw > 0) || !(T > 0)) { order.forEach(k => { o[k] = 0; }); return o; }
+  const raw = order.map(k => ({ k, v: T * Math.max(0, Number(w[k]) || 0) / tw }));
+  let s = 0; raw.forEach(x => { o[x.k] = Math.floor(x.v); s += o[x.k]; });
+  raw.slice().sort((a, b) => (b.v - Math.floor(b.v)) - (a.v - Math.floor(a.v))).slice(0, Math.max(0, T - s)).forEach(x => { o[x.k]++; });
+  return o;
+}
+// สวนอ้างอิง: ปิดแล้ว · ผลไม้เดียวกัน · มีของเก็บ · ล่าสุดก่อน
+function fcRefGardens(g) {
+  const out = [];
+  (typeof gardens !== 'undefined' && Array.isArray(gardens) ? gardens : []).forEach(x => {
+    if (!x || x.id === g.id || !fcIsClosed(x) || !fcSameFruit(x.fruit, g.fruit)) return;
+    let kg = 0; (x.collections || []).forEach(c => fcDayRows(c).forEach(r => { kg += r.kg; }));
+    if (kg > 0) out.push({ g: x, kg, on: fcClosedOn(x) });
+  });
+  out.sort((a, b) => (b.on || '').localeCompare(a.on || ''));
+  return out;
+}
+// "เฉลี่ยทุกสวน" = 12 สวนล่าสุดที่ปิดไม่เกิน 2 เดือน · มีไม่ถึงก็เท่าที่มี · ไม่ขยายเกิน 2 เดือน
+function fcAvgRefs(g) {
+  const t = new Date(); t.setDate(t.getDate() - FC_WINDOW_DAYS);
+  const from = fcISO(t);
+  return fcRefGardens(g).filter(r => r.on && r.on >= from).slice(0, FC_MAX_REF);
+}
+// สัดส่วนเบอร์ของกลุ่มสวน — รวม กก. เบอร์เดียวกันข้ามสวน (= ถ่วงตามน้ำหนักในตัว)
+function fcMixOf(refs) {
+  const kgBy = {}, name = {}, order = []; let kg = 0;
+  refs.forEach(r => (r.g.collections || []).forEach(c => fcDayRows(c).forEach(row => {
+    if (!(row.key in kgBy)) { kgBy[row.key] = 0; name[row.key] = row.grade; order.push(row.key); }
+    kgBy[row.key] += row.kg; kg += row.kg;
+  })));
+  const pctMap = fcSplit(100, kgBy, order);   // % เต็มหน่วย รวม 100 พอดี
+  return { order, name, kgBy, kg, rows: order.map(k => ({ name: name[k], pct: pctMap[k] })) };
+}
+// เรทค่าจัดทำ/โล ของบิล 1 ใบ แยกเบอร์ (อ่านแบบเดียวกับฟอร์มบิล _procEff)
+function fcBillProc(q) {
+  const ex = (q && q.expenses) || {};
+  const rows = (Array.isArray(q && q.rows) ? q.rows : []).filter(r => r && typeof r === 'object');
+  const kgBy = {}, order = []; let tot = 0;
+  rows.forEach(r => {
+    const gname = String((r._date && r._grade != null) ? r._grade : (r.grade || '')).trim() || '—';
+    const k = fcKey(gname), kg = fcRowKg(r);
+    if (!(k in kgBy)) { kgBy[k] = 0; order.push(k); }
+    kgBy[k] += kg; tot += kg;
+  });
+  if (!(tot > 0)) return null;
+  const rate = {};
+  if (ex.processMode === 'grade' && ex.processGrades && typeof ex.processGrades === 'object') {
+    const pg = {}; Object.keys(ex.processGrades).forEach(n => { pg[fcKey(n)] = ex.processGrades[n] || {}; });
+    const first = pg[order[0]] || {};
+    order.forEach(k => {
+      const st = pg[k] || {};
+      const v = fcNum((st.own || (st.v !== '' && st.v != null)) ? st.v : first.v);
+      if (v != null && v > 0) rate[k] = v;
+    });
+  } else if (ex.processMode === 'mul' && Number(ex.processRate) > 0) {
+    order.forEach(k => { rate[k] = Number(ex.processRate); });
+  } else if (Number(ex.processing) > 0) {
+    const r = Number(ex.processing) / tot;
+    order.forEach(k => { rate[k] = r; });
+  }
+  return { rate, kgBy, order };
+}
+// ค่าจัดทำ/โล เฉลี่ยแยกเบอร์ จากบิลของสวนอ้างอิง (ชุดเดียวกับ "เฉลี่ยทุกสวน") ถ่วงตามน้ำหนัก
+function fcProcAvg(g) {
+  const byId = {}; fcQuotes().forEach(q => { byId[q.id] = q; });
+  const sum = {}, w = {}; let n = 0;
+  fcAvgRefs(g).forEach(r => {
+    const qid = r.g.stamp && r.g.stamp.quoteId;
+    const bill = (qid && byId[qid]) || fcBillOf(r.g);
+    const bp = bill ? fcBillProc(bill) : null; if (!bp) return;
+    let used = false;
+    bp.order.forEach(k => {
+      if (bp.rate[k] == null || !(bp.kgBy[k] > 0)) return;
+      sum[k] = (sum[k] || 0) + bp.rate[k] * bp.kgBy[k]; w[k] = (w[k] || 0) + bp.kgBy[k]; used = true;
+    });
+    if (used) n++;
+  });
+  const rate = {}; Object.keys(sum).forEach(k => { rate[k] = Math.round(sum[k] / w[k] * 100) / 100; });
+  return { rate, n };
+}
+// เรทแยกเบอร์ที่จำไว้ล่าสุดในบิล — ตัวสำรองเมื่อเบอร์นั้นไม่มีในบิลช่วง 2 เดือน
+function fcProcMem() {
+  const out = {};
+  try {
+    const m = JSON.parse(localStorage.getItem('thodsapon_proc_lastrate_v1') || '{}') || {};
+    const gr = (m && m.grade) || {}; const names = Object.keys(gr);
+    const first = names.length ? (gr[names[0]] || {}) : {};
+    names.forEach(n => {
+      const st = gr[n] || {};
+      const v = fcNum((st.own || (st.v !== '' && st.v != null)) ? st.v : first.v);
+      if (v != null && v > 0) out[fcKey(n)] = v;
+    });
+  } catch (e) {}
+  return out;
+}
+// ค่าเปิดสวน: เหมา (คงที่) · รายโล (× กก. ครบเป้า) · แยกเบอร์ (× กก. ครบเป้ารายเบอร์)
+function fcDeal(g, projBy, projKg, names) {
+  const gp = {};
+  (Array.isArray(g.gradePrices) ? g.gradePrices : []).forEach(x => { if (x && x.grade != null && fcNum(x.price) != null) gp[fcKey(x.grade)] = Number(x.price); });
+  const lump = Number(g.lumpTotal) || 0, kgp = Number(g.kgPrice) || 0, t = g.dealType;
+  const type = (t === 'lump' || t === 'kg-all' || t === 'kg-grade') ? t
+    : (lump > 0 ? 'lump' : (kgp > 0 ? 'kg-all' : (Object.keys(gp).length ? 'kg-grade' : '')));
+  if (type === 'lump') return lump > 0 ? { type, amt: lump } : { type, amt: 0, miss: true };
+  if (type === 'kg-all') return kgp > 0 ? { type, amt: kgp * projKg, rate: kgp } : { type, amt: 0, miss: true };
+  if (type === 'kg-grade') {
+    let amt = 0; const missG = [];
+    Object.keys(projBy).forEach(k => { if (!(projBy[k] > 0)) return; if (gp[k] == null) missG.push(names[k] || k); else amt += gp[k] * projBy[k]; });
+    return { type, amt, gp, miss: missG.length > 0, missGrades: missG };
+  }
+  return { type: '', amt: 0, miss: true };
+}
+function fcHidAmt(it, kg) { if (!it) return 0; const v = Number(it.v) || 0; return it.u === 'kg' ? v * kg : v; }
+
+// ── ตัวหลัก: คืนทุกอย่างที่กล่องบนการ์ดกับหน้าวางแผนต้องใช้ ──
+function fcModel(g, planIn) {
+  const plan = (planIn && typeof planIn === 'object') ? planIn : null;
+  const fruit = String(g.fruit || '').trim();
+  const target = Number(g.expectedKg) || 0;
+  const today = (typeof todayISO === 'function') ? todayISO() : fcISO(new Date());
+  // ฟอร์มราคาต้องเป็นผลไม้เดียวกันเท่านั้น — pfFindForm ไม่เจอจะถอยไปใช้ฟอร์มผลไม้อื่น (หน้าดึงราคาให้คนเลือกเอง)
+  // แต่คาดการณ์คิดเงียบๆ → ห้ามเอาราคาผลไม้อื่นมาเดา (เบอร์ชื่อเดียวกันจะได้ราคาผิดโดยไม่มีใครเห็น)
+  const pf = (fr, d) => { try { const f = (typeof pfFindForm === 'function' && fr) ? pfFindForm(fr, d) : null; return (f && fcSameFruit(f.fruit, fr)) ? f : null; } catch (e) { return null; } };
+
+  // ① เก็บแล้ว — ราคาในบิล > ฟอร์มของวันนั้น · ผู้ใช้แก้ในแผนได้ (ไม่แตะบิล)
+  const bill = fcBillOf(g), billBy = {};
+  if (bill) (Array.isArray(bill.rows) ? bill.rows : []).forEach(r => { if (r && r._date) (billBy[r._date] = billBy[r._date] || []).push(fcNum(r.soldPrice)); });
+  const colls = (g.collections || []).filter(c => c && c.date).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const names = {}, order = [], collBy = {};
+  let collKg = 0, pastRev = 0, pastMiss = 0;
+  const past = colls.map(c => {
+    const rows = fcDayRows(c); if (!rows.length) return null;
+    const form = pf(fruit, c.date), bp = billBy[c.date] || [];
+    const pid = c.id || c.date, ov = (plan && plan.past && plan.past[pid]) || {};
+    let kg = 0, rev = 0, nb = 0, nf = 0, edited = false;
+    const out = rows.map((r, i) => {
+      if (!(r.key in collBy)) { collBy[r.key] = 0; names[r.key] = r.grade; order.push(r.key); }
+      collBy[r.key] += r.kg; kg += r.kg;
+      let p0 = null, src = 'none';
+      if (bp[i] != null && bp[i] > 0) { p0 = bp[i]; src = 'bill'; nb++; }
+      else if (form && Array.isArray(form.rows) && form.rows[i] && fcNum(form.rows[i].price) != null) { p0 = Number(form.rows[i].price); src = 'form'; nf++; }
+      const pv = fcNum(ov[r.key]);
+      const p = pv != null ? pv : p0;
+      if (pv != null && pv !== p0) edited = true;
+      if (p == null) pastMiss++; else rev += r.kg * p;
+      return { grade: r.grade, key: r.key, kg: r.kg, p0, p, src };
+    });
+    collKg += kg; pastRev += rev;
+    return { pid, date: c.date, rows: out, kg, rev, form: form ? form.date : null, edited,
+      src: (nb && !nf) ? 'bill' : ((nf && !nb) ? 'form' : ((nb || nf) ? 'mix' : 'none')) };
+  }).filter(Boolean);
+  const hasColl = collKg > 0;
+
+  // ② สัดส่วนเบอร์ของส่วนที่เหลือ
+  let mixMode = 'coll', mixInfo = null, mixOrder = [], mixPct = {}, mixPct0 = {}, mixRows = [], mixBad = false;
+  const rowPrice = {}, rowRate = {};
+  if (hasColl) {
+    mixOrder = order.slice();
+    mixPct = fcSplit(100, collBy, mixOrder); mixPct0 = Object.assign({}, mixPct);
+  } else {
+    const refs = fcAvgRefs(g), all = fcRefGardens(g);
+    let mode = plan && plan.mixMode;
+    if (mode !== 'avg' && mode !== 'one' && mode !== 'manual') mode = refs.length ? 'avg' : (all.length ? 'one' : 'manual');
+    let base = null;
+    if (mode === 'avg') {
+      if (refs.length) { base = fcMixOf(refs); mixInfo = { n: refs.length, from: refs[refs.length - 1].on, to: refs[0].on, kg: base.kg }; }
+      else mode = all.length ? 'one' : 'manual';
+    }
+    if (mode === 'one') {
+      const r = all.find(x => x.g.id === (plan && plan.mixRef)) || all[0];
+      if (r) { base = fcMixOf([r]); mixInfo = { gid: r.g.id, name: r.g.name || '', on: r.on, kg: base.kg }; }
+      else mode = 'manual';
+    }
+    mixMode = mode;
+    const usePlan = !!(plan && Array.isArray(plan.mixRows) && plan.mixMode === mode && (mode !== 'one' || plan.mixRef === (mixInfo && mixInfo.gid)));
+    mixRows = usePlan ? plan.mixRows.map(r => ({ name: String((r && r.name) || ''), pct: fcNum(r && r.pct), price: fcNum(r && r.price), rate: fcNum(r && r.rate) }))
+      : (base ? base.rows.map(r => ({ name: r.name, pct: r.pct, price: null, rate: null })) : []);
+    if (base) { const bp0 = fcSplit(100, base.kgBy, base.order); base.order.forEach(k => { mixPct0[k] = bp0[k]; }); }
+    mixRows.forEach(r => {
+      const nm = r.name.trim(); if (!nm || r.pct == null) { mixBad = true; }
+      if (!nm) return;
+      const k = fcKey(nm);
+      if (!(k in mixPct)) { mixOrder.push(k); mixPct[k] = 0; names[k] = nm; }
+      mixPct[k] += (r.pct || 0);
+      if (r.price != null) rowPrice[k] = r.price;   // ราคา/ค่าจัดทำที่กรอกในแถว (ยังไม่เก็บ)
+      if (r.rate != null) rowRate[k] = r.rate;
+    });
+    if (!mixOrder.length) mixBad = true;
+  }
+  let mixSum = 0; mixOrder.forEach(k => { mixSum += mixPct[k] || 0; });
+  if (!hasColl && !(mixSum > 0)) mixBad = true;
+
+  // ส่วนที่เหลือ (กก.) แยกเบอร์
+  const remKg = target > 0 ? Math.max(0, target - collKg) : 0;
+  let remBy = {};
+  if (hasColl) remBy = fcSplit(remKg, collBy, mixOrder);
+  else if (Math.abs(mixSum - 100) < 0.001) remBy = fcSplit(remKg, mixPct, mixOrder);
+  else mixOrder.forEach(k => { remBy[k] = Math.round(remKg * (mixPct[k] || 0) / 100); });
+  let remKgEff = 0; mixOrder.forEach(k => { remKgEff += remBy[k] || 0; });
+
+  // ราคาตั้งต้นส่วนที่เหลือ = ฟอร์มล่าสุด · ชื่อเบอร์ตรงก่อน → ไม่เจอใช้ลำดับแถวของเที่ยวเก็บล่าสุด
+  const latest = pf(fruit, today);
+  const lastRows = past.length ? past[past.length - 1].rows : [];
+  const remP0 = {}, remP = {};
+  mixOrder.forEach(k => {
+    let p = null;
+    if (latest && Array.isArray(latest.rows)) {
+      const hit = latest.rows.find(fr => fr && fcKey(fr.name) === k && fcNum(fr.price) != null);
+      if (hit) p = Number(hit.price);
+      else { const i = lastRows.findIndex(r => r.key === k); if (i >= 0 && latest.rows[i] && fcNum(latest.rows[i].price) != null) p = Number(latest.rows[i].price); }
+    }
+    remP0[k] = p;
+    const v = (plan && plan.remPrice) ? fcNum(plan.remPrice[k]) : null;
+    remP[k] = v != null ? v : (rowPrice[k] != null ? rowPrice[k] : p);
+  });
+  const remMode = (plan && plan.remMode === 'days') ? 'days' : 'block';
+  let days = [], unBy = {}, remRev = 0, remMiss = 0;
+  if (remMode === 'days') {
+    let left = remKgEff;
+    days = (Array.isArray(plan.days) ? plan.days : []).map(d => {
+      const kg = Math.max(0, Math.min(Number(d && d.kg) || 0, left)); left -= kg;
+      const by = fcSplit(kg, remBy, mixOrder), p = {}; let rev = 0;
+      mixOrder.forEach(k => {
+        const v = (d && d.p) ? fcNum(d.p[k]) : null; p[k] = v != null ? v : remP[k];
+        if (by[k] > 0) { if (p[k] == null) remMiss++; else rev += by[k] * p[k]; }
+      });
+      remRev += rev;
+      return { date: String((d && d.date) || ''), kg, by, p, rev };
+    });
+    mixOrder.forEach(k => { let s = remBy[k] || 0; days.forEach(d => { s -= d.by[k] || 0; }); unBy[k] = Math.max(0, s); });
+  } else mixOrder.forEach(k => { unBy[k] = remBy[k] || 0; });
+  let unKg = 0, unRev = 0;
+  mixOrder.forEach(k => { if (unBy[k] > 0) { unKg += unBy[k]; if (remP[k] == null) remMiss++; else unRev += unBy[k] * remP[k]; } });
+  remRev += unRev;
+
+  // น้ำหนักครบเป้ารายเบอร์ (ใช้คิดค่าจัดทำ / ค่าเปิดสวนรายโล / ค่าแฝงต่อโล)
+  const projBy = {}; let projKg = 0;
+  order.concat(mixOrder).forEach(k => { if (k in projBy) return; projBy[k] = (collBy[k] || 0) + (remBy[k] || 0); projKg += projBy[k]; });
+
+  // ค่าจัดทำ/โล แยกเบอร์
+  const avg = fcProcAvg(g), mem = fcProcMem();
+  const rate0 = {}, rateSrc = {}, rate = {};
+  let proc = 0, procMiss = 0;
+  Object.keys(projBy).forEach(k => {
+    if (avg.rate[k] != null) { rate0[k] = avg.rate[k]; rateSrc[k] = 'avg'; }
+    else if (mem[k] != null) { rate0[k] = mem[k]; rateSrc[k] = 'mem'; }
+    else { rate0[k] = null; rateSrc[k] = 'none'; }
+    const v = (plan && plan.rate) ? fcNum(plan.rate[k]) : null;
+    rate[k] = v != null ? v : (rowRate[k] != null ? rowRate[k] : rate0[k]);
+    if (projBy[k] > 0) { if (rate[k] == null) procMiss++; else proc += projBy[k] * rate[k]; }
+  });
+
+  const deal = fcDeal(g, projBy, projKg, names);
+  const inc = (plan && Array.isArray(plan.inc)) ? plan.inc : [], exp = (plan && Array.isArray(plan.exp)) ? plan.exp : [];
+  let hInc = 0, hExp = 0;
+  inc.forEach(it => { hInc += fcHidAmt(it, projKg); }); exp.forEach(it => { hExp += fcHidAmt(it, projKg); });
+
+  const missing = [];
+  if (!(target > 0)) missing.push('เป้า');
+  if (deal.miss) missing.push('ราคาดีล');
+  if (!hasColl && mixBad) missing.push('สัดส่วนเบอร์');
+  if (pastMiss || remMiss) missing.push('ราคาขาย');
+  if (procMiss) missing.push('ค่าจัดทำ');
+
+  const goods = pastRev + remRev, sold = goods + hInc, cost = deal.amt + proc + hExp, profit = sold - cost;
+  return {
+    target, collKg, hasColl, past, order, names, collBy,
+    mixMode, mixInfo, mixOrder, mixPct, mixPct0, mixRows, mixSum,
+    remKg, remKgEff, remBy, remMode, remP, remP0, latest: latest ? latest.date : null, days, unBy, unKg, unRev,
+    projBy, projKg, rate, rate0, rateSrc, procN: avg.n, proc, deal,
+    inc, exp, hInc, hExp, pastRev, remRev, goods, sold, cost, profit,
+    pct: cost > 0 ? profit / cost * 100 : null,
+    missing, complete: missing.length === 0, planned: !!(plan && plan.updatedAt)
+  };
+}
+// ── สิทธิ์: แอดมินเห็นเสมอ · คนอื่นต้องเปิด "เห็นกำไร" + ช่องย่อย "เห็นคาดการณ์/วางแผน" ──
+function canViewForecast() {
+  if (typeof currentUser === 'undefined' || !currentUser) return false;
+  if (currentUser.role === 'admin') return true;
+  return !!(currentUser.perms && currentUser.perms.profitView && currentUser.perms.forecastView);
+}
+// ซ่อนตามรูปตาเหมือนกล่องกำไรจริง
+function fcVisible() { return canViewForecast() && !(typeof _profitHidden !== 'undefined' && _profitHidden); }
+window.fcModel = fcModel; window.fcKey = fcKey; window.fcIsOpen = fcIsOpen;
+window.canViewForecast = canViewForecast; window.fcVisible = fcVisible; window.fcCacheReset = fcCacheReset;
+window.fcAvgRefs = function (g) { return fcAvgRefs(g).map(r => ({ id: r.g.id, name: r.g.name, on: r.on, kg: r.kg })); };
+window.fcRefList = function (g) { return fcRefGardens(g).map(r => ({ id: r.g.id, name: r.g.name, on: r.on, kg: r.kg })); };
+
+// กล่องคาดการณ์บนการ์ด — โครงเดียวกับกล่องกำไรจริง · ข้อมูลไม่พอ = กล่องเทาบอกว่าขาดอะไร (ไม่เดาตัวเลข)
+function buildForecastBox(g) {
+  let m;
+  try { m = fcModel(g, g.forecastPlan); } catch (e) { console.error('[fc] model', e); return ''; }
+  const gid = gbEscapeHtml(g.id);
+  const open = `onclick="event.stopPropagation();fcOpen('${gid}')"`;
+  if (!m.complete) {
+    return `<div class="lc-pbox lc-fbox wait" ${open}>
+      <span class="lc-fb-tag">คาดการณ์</span>
+      <div class="lc-fb-w">ยังคาดไม่ได้</div>
+      <div class="lc-fb-ws">ขาด: ${m.missing.map(gbEscapeHtml).join(' · ')}</div>
+      <div class="lc-fb-go">กรอกข้อมูล ›</div>
+    </div>`;
+  }
+  const gain = m.profit >= 0, amt = Math.round(m.profit);
+  const pctTxt = (m.pct == null) ? '—' : Math.abs(m.pct).toFixed(1) + '%';
+  return `<div class="lc-pbox lc-fbox ${gain ? 'gain' : 'loss'}" ${open}>
+      <span class="lc-fb-tag">คาดการณ์</span>
+      <div class="lc-pb-row"><span>ทุน</span><span class="v">${fmtNum(Math.round(m.cost))}</span></div>
+      <div class="lc-pb-row"><span>ขาย</span><span class="v">${fmtNum(Math.round(m.sold))}</span></div>
+      <div class="lc-pb-sep"></div>
+      <div class="lc-pb-net"><span class="lc-pb-pct"><span class="lc-pb-arr">${gain ? '▲' : '▼'}</span>${pctTxt}</span><span class="lc-pb-amt">${(gain ? '+' : '−') + fmtNum(Math.abs(amt))}</span></div>
+      <div class="lc-fb-go">${m.planned ? 'ตามแผน · แก้ไข ›' : 'ดูวิธีคิด · วางแผน ›'}</div>
+    </div>`;
+}
+window.buildForecastBox = buildForecastBox;
+
+// ═══════════ build 1148: หน้าวางแผนราคา (เต็มจอ แบบเดียวกับหน้าสรุปสวน) ═══════════
+// ทุกช่องในหน้านี้เป็น "แผน" ของสวนนี้เท่านั้น — ไม่แตะบิล ไม่แตะคลังราคา · กด "บันทึกแผน" ถึงจะเก็บลงสวน (g.forecastPlan)
+// พิมพ์ตัวเลข → อัปเดตเฉพาะตัวเลข (ไม่สร้างช่องใหม่ระหว่างพิมพ์ กันแป้นพิมพ์ปิด/เคอร์เซอร์หลุด)
+// เปลี่ยนโครง (เพิ่ม/ลบแถว · สลับโหมด · เปลี่ยนชื่อเบอร์) → วาดใหม่ทั้งหน้า แล้วคืนตำแหน่งเลื่อน + ช่องที่กำลังพิมพ์
+let _fcG = null, _fcD = null, _fcDirty = false, _fcOpenDays = {}, _fcRefOpen = false, _fcRefAll = false;
+let _fcClrArm = 0, _fcBackArm = 0, _fcK = null;
+const FC_BAR = ['#3f6e22', '#5d8f33', '#79a845', '#9cc068', '#b9d68c', '#d2e3ae', '#e6edcd', '#8a7350'];
+function _fcClone(o) { try { return JSON.parse(JSON.stringify(o || {})) || {}; } catch (e) { return {}; } }
+function _fcF0(n) { return (n == null || !isFinite(n)) ? '—' : Math.round(n).toLocaleString('en-US'); }
+function _fcFp(n) { return (n == null || !isFinite(n)) ? '' : String(Math.round(n * 100) / 100); }
+function _fcF2(n) { return (n == null || !isFinite(n)) ? '—' : (Math.round(n * 100) / 100).toFixed(2); }
+function _fcSgn(n) { return (n < 0 ? '−' : '+') + _fcF0(Math.abs(n)); }
+function _fcR2(n) { return Math.max(0, Math.round(n * 100) / 100); }
+const FC_MAX = { p: 9999, pct: 100, kg: 1e7, b: 1e8 };
+function _fcIn(v, max) { const s = String(v == null ? '' : v).trim(); if (s === '') return ''; const n = Number(s); return (isFinite(n) && n >= 0 && n <= (max == null ? FC_MAX.kg : max)) ? n : null; }
+function _fcEsc(s) { return (typeof gbEscapeHtml === 'function') ? gbEscapeHtml(String(s == null ? '' : s)) : String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+function _fcDl(iso) { if (!iso) return '—'; try { return (typeof fmtDate === 'function') ? fmtDate(iso) : iso; } catch (e) { return iso; } }
+function _fcM() { return fcModel(_fcG, _fcD); }
+function _fcDeal(g) {
+  const t = g.dealType;
+  if (t === 'lump' || (!t && Number(g.lumpTotal) > 0)) return 'เหมา ' + _fcF0(Number(g.lumpTotal) || 0);
+  if (t === 'kg-all') return 'รายโล ' + _fcFp(Number(g.kgPrice) || 0);
+  if (t === 'kg-grade') return 'รายโล แยกเบอร์';
+  return 'ยังไม่ได้ตั้งแบบซื้อ';
+}
+function _fcISO(d) { const z = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()); }
+function _fcNextDate() {
+  const ds = (_fcD && Array.isArray(_fcD.days)) ? _fcD.days : [];
+  const last = ds.length ? String(ds[ds.length - 1].date || '') : '';
+  let d;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(last)) { const a = last.split('-').map(Number); d = new Date(a[0], a[1] - 1, a[2] + 1); }
+  else { d = new Date(); d.setDate(d.getDate() + 1); }
+  return _fcISO(d);   // เวลาท้องถิ่น (toISOString = UTC → ไทยได้วันเดิมซ้ำ)
+}
+function _fcPin(id, val, cls, dn, up, inp, opt) {
+  opt = opt || {};
+  return `<span class="fc-pin${cls ? ' ' + cls : ''}${opt.pct ? ' pct' : ''}" id="fcpin-${id}">`
+    + `<button type="button" aria-label="ลด" onclick="${dn}"${opt.dis ? ' disabled' : ''}>−</button>`
+    + `<input id="fcin-${id}" type="number" min="0" max="${opt.max || FC_MAX.p}" step="${opt.step || 0.5}" inputmode="decimal" placeholder="${opt.ph || '—'}" value="${_fcFp(val)}" oninput="${inp};_fcVal(this)" onchange="_fcFix(this)"${opt.dis ? ' disabled' : ''}>`
+    + (opt.pct ? '<span class="u">%</span>' : '')
+    + `<button type="button" aria-label="เพิ่ม" onclick="${up}"${opt.dis ? ' disabled' : ''}>+</button></span>`;
+}
+function _fcVal(el) {
+  const pin = el && el.closest('.fc-pin'); if (!pin) return;
+  const s = String(el.value).trim(), n = Number(s), mx = Number(el.getAttribute('max')) || FC_MAX.p;
+  const bad = (s !== '' && !(isFinite(n) && n >= 0 && n <= mx)) || (s === '' && el.validity && el.validity.badInput);
+  pin.classList.toggle('bad', !!bad);
+  pin.title = bad ? ('ค่าใช้ไม่ได้ (0 – ' + mx.toLocaleString('en-US') + ') · ไม่นับ') : '';
+  if (bad && typeof toast === 'function' && Date.now() - (_fcVal.t || 0) > 2500) { _fcVal.t = Date.now(); toast('ใส่ได้ 0 – ' + mx.toLocaleString('en-US') + ' · ค่านี้ไม่นับ'); }
+}
+function _fcFix(el) { const pin = el && el.closest('.fc-pin'); if (pin && pin.classList.contains('bad')) { pin.classList.remove('bad'); setTimeout(_fcRerender, 0); } }
+window._fcVal = _fcVal; window._fcFix = _fcFix;
+function _fcSetIn(id, v) { const e = document.getElementById('fcin-' + id); if (e && document.activeElement !== e) e.value = _fcFp(v); }
+function _fcTxt(id, t) { const e = document.getElementById(id); if (e && e.textContent !== t) e.textContent = t; }
+function _fcCls(id, c, on) { const e = document.getElementById(id); if (e) e.classList.toggle(c, !!on); }
+function _fcTouch() { _fcDirty = true; _fcBackArm = 0; }
+// ช่องที่ยังว่าง (ใช้บอก "ยังขาด N ช่อง")
+function _fcMissN(m) {
+  let n = 0;
+  m.past.forEach(d => d.rows.forEach(r => { if (r.p == null) n++; }));
+  if (!m.hasColl) m.mixRows.forEach(r => { if (!String(r.name || '').trim()) n++; if (r.pct == null) n++; });
+  if (m.remMode === 'days') m.days.forEach(d => m.mixOrder.forEach(k => { if (d.by[k] > 0 && d.p[k] == null) n++; }));
+  m.mixOrder.forEach(k => { if ((m.unBy[k] || 0) > 0 && m.remP[k] == null) n++; });
+  Object.keys(m.projBy).forEach(k => { if (m.projBy[k] > 0 && m.rate[k] == null) n++; });
+  return n;
+}
+// สัดส่วนของสวนอ้างอิงเป็นแถบสี
+function _fcRefCard(mix, title, meta, sel, click) {
+  const rows = mix.rows.filter(r => r.pct > 0);
+  const bar = rows.map((r, i) => `<span style="width:${r.pct}%;background:${FC_BAR[i % FC_BAR.length]}"></span>`).join('');
+  const leg = rows.map((r, i) => `<span><span class="fc-dotg" style="background:${FC_BAR[i % FC_BAR.length]}"></span>${_fcEsc(r.name)} <b>${r.pct}%</b></span>`).join('');
+  const tag = click ? 'button' : 'div';
+  return `<${tag}${click ? ` type="button" onclick="${click}"` : ''} class="fc-rrow${sel ? ' sel' : ''}${click ? '' : ' static'}">`
+    + `<span class="rd"></span><span class="rt"><span class="rn">${_fcEsc(title)}</span><span class="rm">${_fcEsc(meta)}</span></span>`
+    + `<span class="fc-rbar">${bar}</span><span class="fc-rleg">${leg}</span></${tag}>`;
+}
+
+function _fcRender() {
+  const g = _fcG, ov = document.getElementById('fc-ov');
+  if (!g || !ov) return;
+  let m = _fcM();
+  // ไม่มีอะไรให้อ้างอิงเลย → เริ่มด้วยเบอร์ว่าง 2 แถวให้กรอก (ยังไม่นับว่าแก้แผน)
+  if (!m.hasColl && m.mixMode === 'manual' && !Array.isArray(_fcD.mixRows)) {
+    _fcD.mixMode = 'manual'; _fcD.mixRows = [{ name: '', pct: null }, { name: '', pct: null }]; m = _fcM();
+  }
+  const planned = !!(g.forecastPlan && g.forecastPlan.updatedAt);
+  document.getElementById('fc-t2').textContent = (g.name || '') + ' · ' + (g.fruit || '—') + ' · ' + _fcDeal(g);
+  document.getElementById('fc-badge').textContent = planned ? 'ตามแผน' : 'คาดการณ์';
+  const rateKeys = Object.keys(m.projBy);
+  _fcK = { mix: m.mixOrder.slice(), rate: rateKeys, rows: m.hasColl ? -1 : m.mixRows.length, days: m.days.length };
+  let h = '';
+  // ── หัว: ถ้าครบเป้า ──
+  h += `<div class="fc-hero" id="fc-hero"><div class="h2"><span class="l" id="fc-hl"></span><span class="pct" id="fc-hpct"></span></div>
+    <div class="amt"><span id="fc-hamt">—</span><span class="cur">บาท</span></div>
+    <div class="cmp"><div><div class="k">ทุน</div><div class="v" id="fc-hcost">—</div></div><div><div class="k">ขาย</div><div class="v" id="fc-hsold">—</div></div></div>
+    <div class="miss" id="fc-hmiss" hidden></div></div>`;
+
+  if (m.hasColl) {
+    // ① เก็บแล้ว · ราคาแต่ละวัน
+    h += `<div class="fc-sec"><span class="n">①</span> เก็บแล้ว · ราคาแต่ละวัน <small>แตะวันเพื่อพับ · แก้ราคาได้</small></div><div class="fc-box">`;
+    m.past.forEach((d, di) => {
+      const open = (d.pid in _fcOpenDays) ? _fcOpenDays[d.pid] : (m.past.length <= 3 || di === m.past.length - 1);
+      h += `<div class="fc-day${open ? ' open' : ''}"><div class="dh" onclick="fcTogDay(${di})">
+        <span class="dt">${_fcEsc(_fcDl(d.date))}</span>
+        <span class="mid"><span class="kg">${_fcF0(d.kg)} กก.</span><span class="fc-src" id="fc-src-${di}"></span></span>
+        <span class="rv"><span id="fc-drv-${di}"></span><small id="fc-davg-${di}"></small></span><span class="ch">▾</span></div><div class="dg">`;
+      d.rows.forEach((r, ri) => {
+        const id = `p${di}_${ri}`;
+        h += `<div class="fc-pr"><span class="g">${_fcEsc(r.grade)}</span><span class="k">${_fcF0(r.kg)}<small>กก.</small></span>`
+          + _fcPin(id, r.p, '', `fcPastBump(${di},${ri},-0.5)`, `fcPastBump(${di},${ri},0.5)`, `fcPastP(${di},${ri},this.value)`)
+          + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
+      });
+      h += `</div></div>`;
+    });
+    h += `<div class="fc-sub"><span>รวมเก็บแล้ว ${_fcF0(m.collKg)} กก.</span><span class="v" id="fc-pastsum"></span></div></div>`;
+    h += `<p class="fc-note">ตั้งต้น: ส่งบิลแล้ว = <b>ราคาในบิล</b> · ยังไม่ส่ง = <b>ฟอร์มราคาวันนั้น</b> · ช่องที่แก้ขึ้นกรอบส้ม ใต้ช่องบอกราคาเดิม`
+      + `<span id="fc-lk-past" hidden> · <span class="lk" onclick="fcReset('past')">กลับไปใช้ราคาเดิมทั้งหมด</span></span></p>`;
+
+    // ② ส่วนที่เหลือ
+    if (m.target > 0 && m.remKg > 0) {
+      const mixTxt = m.mixOrder.map(k => (m.mixPct[k] || 0)).join(' · ') + '%';
+      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ · ตั้งราคาเอง <small>เป้า − เก็บแล้ว = ${_fcF0(m.remKg)} กก.</small></div><div class="fc-box">
+        <div class="fc-zsrc"><span class="fc-seg" role="group" aria-label="วิธีตั้งราคาส่วนที่เหลือ"><button type="button" class="${m.remMode === 'block' ? 'on' : ''}" onclick="fcRemMode('block')">ก้อนเดียว</button><button type="button" class="${m.remMode === 'days' ? 'on' : ''}" onclick="fcRemMode('days')">แบ่งเป็นวัน</button></span>
+        <span class="t">แบ่งเบอร์ตามสัดส่วนที่เก็บแล้ว <b>${_fcEsc(mixTxt)}</b></span></div>`;
+      h += _fcRemHtml(m);
+      h += `<div class="fc-sub"><span>รวมส่วนที่เหลือ ${_fcF0(m.remKgEff)} กก.</span><span class="v" id="fc-remsum"></span></div></div>`;
+      h += `<p class="fc-note">ตั้งต้น = ฟอร์มราคาล่าสุด${m.latest ? ' (' + _fcEsc(_fcDl(m.latest)) + ')' : ' · ยังไม่มีฟอร์มราคา' + _fcEsc(g.fruit || '') + ' ต้องกรอกเอง'}`
+        + `<span id="fc-lk-rem" hidden> · <span class="lk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</span></span></p>`;
+    } else if (m.target > 0) {
+      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ</div><div class="fc-box"><div class="fc-emp ok">เก็บครบเป้าแล้ว — ไม่มีส่วนที่เหลือ · ตัวเลขด้านบนคิดจากที่เก็บจริงทั้งหมด</div></div>`;
+    } else {
+      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ</div><div class="fc-box"><div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div></div>`;
+    }
+  } else {
+    // ① สัดส่วนเบอร์ (ยังไม่ได้เก็บ)
+    const all = fcRefGardens(g), avgRefs = fcAvgRefs(g);
+    h += `<div class="fc-sec"><span class="n">①</span> สัดส่วนเบอร์ <small>${m.mixMode === 'manual' ? 'กรอกเอง' : 'ยังไม่ได้เก็บ · ดึงจากสวนที่ปิดแล้ว'}</small></div><div class="fc-box">`;
+    if (m.mixMode === 'manual') {
+      h += `<div class="fc-emp">ยังไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดแล้ว — ใส่ชื่อเบอร์และสัดส่วนเอง</div>`;
+    } else {
+      h += `<div class="fc-zsrc"><span class="fc-seg" role="group" aria-label="ที่มาของสัดส่วนเบอร์"><button type="button" class="${m.mixMode === 'avg' ? 'on' : ''}" onclick="fcMixMode('avg')"${avgRefs.length ? '' : ' disabled'}>เฉลี่ยทุกสวน</button><button type="button" class="${m.mixMode === 'one' ? 'on' : ''}" onclick="fcMixMode('one')">เลือกสวนเดียว</button></span>`
+        + (avgRefs.length ? '' : `<span class="t">ไม่มีสวนที่ปิดใน 2 เดือน</span>`) + `</div><div class="fc-rlist">`;
+      if (m.mixMode === 'avg') {
+        h += _fcRefCard(fcMixOf(avgRefs), 'เฉลี่ย ' + avgRefs.length + ' สวน', (g.fruit || '') + 'ที่ปิดใน 2 เดือน (สูงสุด 12 สวน) · ' + _fcF0(m.mixInfo ? m.mixInfo.kg : 0) + ' กก.', true, '');
+      } else if (_fcRefOpen) {
+        const lim = _fcRefAll ? all.length : Math.min(5, all.length);
+        all.slice(0, lim).forEach(r => {
+          h += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', m.mixInfo && m.mixInfo.gid === r.g.id, `fcPickRef('${_fcEsc(r.g.id)}')`);
+        });
+        if (all.length > lim) h += `<button type="button" class="fc-rchg" onclick="fcRefAll()">ดูทั้งหมด (${all.length} สวน) ›</button>`;
+      } else if (m.mixInfo) {
+        const r = all.find(x => x.g.id === m.mixInfo.gid);
+        if (r) h += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', true, '');
+        h += `<button type="button" class="fc-rchg" onclick="fcRefOpen()">เปลี่ยนสวน ›</button>`;
+      }
+      h += `</div>`;
+    }
+    const base = {}; Object.keys(m.mixPct0).forEach(k => { base[k] = m.mixPct0[k]; });
+    h += `<div class="fc-mxh"><span>เบอร์</span><span>สัดส่วน</span><span>กก. ครบเป้า</span><span></span></div>`;
+    const sugg = {};
+    m.mixRows.forEach((r, i) => {
+      const nm = String(r.name || '').trim(), k = fcKey(nm), isBase = nm && (k in base) && m.mixMode !== 'manual';
+      h += `<div class="fc-mx">` + (isBase
+        ? `<span class="g">${_fcEsc(nm)}</span>`
+        : `<input class="gn${nm ? '' : ' miss'}" id="fcin-gn${i}" placeholder="เช่น A" value="${_fcEsc(nm)}" list="fc-gdl" onchange="fcMxName(${i},this.value)">`)
+        + _fcPin('mx' + i, r.pct, r.pct == null ? 'miss' : '', `fcMxBump(${i},-1)`, `fcMxBump(${i},1)`, `fcMxPct(${i},this.value)`, { pct: 1, step: 1, max: 100 })
+        + `<span class="k"><span id="fc-mxk${i}">0</span><small id="fc-mxw${i}"></small></span>`
+        + `<button class="x" type="button" aria-label="ลบเบอร์" onclick="fcMxDel(${i})">×</button></div>`;
+    });
+    if (!m.mixRows.length) h += `<div class="fc-empty">ยังไม่มีเบอร์ · กด ＋ เพิ่มเบอร์</div>`;
+    // ชื่อเบอร์ที่แนะนำ: จากฟอร์มราคาล่าสุด + สวนอ้างอิง
+    try { const lf = (typeof pfFindForm === 'function') ? pfFindForm(g.fruit, (typeof todayISO === 'function') ? todayISO() : _fcISO(new Date())) : null; (lf && lf.rows || []).forEach(x => { if (x && x.name) sugg[String(x.name).trim()] = 1; }); } catch (e) {}
+    all.slice(0, 12).forEach(r => (r.g.collections || []).forEach(c => fcDayRows(c).forEach(x => { sugg[x.grade] = 1; })));
+    h += `<datalist id="fc-gdl">${Object.keys(sugg).filter(Boolean).map(s => `<option value="${_fcEsc(s)}">`).join('')}</datalist>`;
+    h += `<div class="fc-mxadd"><button type="button" onclick="fcMxAdd()">＋ เพิ่มเบอร์</button>`
+      + (m.mixMode !== 'manual' ? `<span class="lk" id="fc-lk-mix" hidden onclick="fcReset('mix')">กลับไปใช้สัดส่วนเดิม</span>` : '') + `</div>`;
+    h += `<div class="fc-msum" id="fc-msum"></div></div>`;
+    h += `<p class="fc-note">${m.mixMode === 'manual' ? 'ช่องที่ยังว่างขอบเส้นประสีส้ม · กรอกครบแล้วตัวเลขจะขึ้นเอง' : 'แก้ % ต่อได้ · ช่องที่แก้ขึ้นสีส้ม ใต้ กก. บอก % เดิม · สลับวิธีหรือเปลี่ยนสวน = ตั้ง % ใหม่ตามที่เลือก'}</p>`;
+
+    // ② ราคาขาย
+    h += `<div class="fc-sec"><span class="n">②</span> ราคาขาย · ตั้งเอง <small>${m.latest ? 'ตั้งต้นฟอร์มล่าสุด ' + _fcEsc(_fcDl(m.latest)) : 'ยังไม่มีฟอร์มราคา · กรอกเอง'}</small></div><div class="fc-box">`;
+    if (m.target > 0) {
+      h += `<div class="fc-ptop"><span class="t">ราคาที่คาดว่าจะขายได้</span><span class="fc-stp"><button type="button" onclick="fcRemAll(-1)" aria-label="ลดทุกเบอร์ 1 บาท">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcRemAll(1)" aria-label="เพิ่มทุกเบอร์ 1 บาท">+</button></span></div>`;
+      h += _fcBlockRows(m);
+      h += `<div class="fc-sub"><span id="fc-reml">รวม</span><span class="v" id="fc-remsum"></span></div>`;
+    } else h += `<div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div>`;
+    h += `</div>`;
+    if (m.latest) h += `<p class="fc-note" id="fc-lk-rem" hidden><span class="lk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</span></p>`;
+  }
+
+  // ③ รายได้แฝง
+  h += `<div class="fc-sec"><span class="n">③</span> รายได้แฝง <small>เช่น ขายลูกร่วง ตกเกรด ค่าตะกร้าคืน</small></div><div class="fc-box">${_fcHidHtml('inc')}</div>`;
+
+  // ④ ต้นทุน
+  const dl = m.deal;
+  let dsm = '';
+  if (dl.type === 'lump') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคาเหมาในสวนนี้' : 'เหมา · คงที่';
+  else if (dl.type === 'kg-all') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคารายโลในสวนนี้' : 'รายโล ' + _fcFp(dl.rate) + ' × <span id="fc-dkg">' + _fcF0(m.projKg) + '</span> กก.';
+  else if (dl.type === 'kg-grade') dsm = dl.miss ? 'ยังไม่มีราคาดีลของเบอร์ ' + _fcEsc((dl.missGrades || []).join(', ')) : 'รายโล แยกเบอร์ × กก. ครบเป้า';
+  else dsm = 'ยังไม่ได้ตั้งแบบซื้อในสวนนี้';
+  h += `<div class="fc-sec"><span class="n">④</span> ต้นทุน <small>ค่าขนส่ง/อบ ใส่เองในค่าใช้จ่ายแฝง</small></div><div class="fc-box">
+    <div class="fc-cr"><span class="k">ค่าเปิดสวน<small class="${dl.miss ? 'warn' : ''}">${dsm}</small></span><span class="v" id="fc-deal"></span></div>`;
+  if (rateKeys.length) {
+    h += `<div class="fc-chd"><span>เบอร์</span><span>กก. ครบเป้า</span><span>ค่าจัดทำ/โล</span><span>รวม</span></div>`;
+    rateKeys.forEach((k, j) => {
+      h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-ck${j}"></span><small>กก.</small></span>`
+        + _fcPin('c' + j, m.rate[k], '', `fcRateBump(${j},-0.5)`, `fcRateBump(${j},0.5)`, `fcRate(${j},this.value)`)
+        + `<span class="rv"><span id="fc-rv-c${j}"></span><span class="was" id="fc-was-c${j}"></span></span></div>`;
+    });
+  }
+  h += `<div class="fc-cr"><span class="k">ค่าจัดทำรวม<small id="fc-pkg"></small></span><span class="v" id="fc-proc"></span></div>`;
+  h += _fcHidHtml('exp');
+  h += `<div class="fc-cr tot"><span class="k">ทุนรวม</span><span class="v" id="fc-cost"></span></div></div>`;
+  h += `<p class="fc-note">${m.procN > 0 ? 'เรทตั้งต้น = <b>เฉลี่ยแยกเบอร์จาก ' + m.procN + ' บิลล่าสุดที่ปิดไม่เกิน 2 เดือน</b> ถ่วงตามน้ำหนัก' : 'ยังไม่มีบิลที่ปิดใน 2 เดือน — ใช้เรทที่จำไว้จากบิลล่าสุด หรือกรอกเอง'} · แก้ได้เฉพาะสวนนี้`
+    + `<span id="fc-lk-rate" hidden> · <span class="lk" onclick="fcReset('rate')">กลับไปใช้ค่าตั้งต้น</span></span></p>`;
+
+  document.getElementById('fc-body').innerHTML = `<div class="wrap">${h}</div>`;
+  const clr = document.getElementById('fc-clr'); if (clr) { clr.textContent = 'ล้างแผน'; clr.classList.remove('arm'); }
+  _fcClrArm = 0;
+  _fcRefresh(true);
+}
+// ② แบบก้อนเดียว / ราคาขาย (ยังไม่เก็บ)
+function _fcBlockRows(m) {
+  let h = '';
+  m.mixOrder.forEach((k, j) => {
+    const id = 'r' + j;
+    h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-rk${j}"></span><small>กก.</small></span>`
+      + _fcPin(id, m.remP[k], '', `fcRemBump(${j},-0.5)`, `fcRemBump(${j},0.5)`, `fcRemP(${j},this.value)`)
+      + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
+  });
+  return h;
+}
+function _fcRemHtml(m) {
+  if (m.remMode !== 'days') {
+    return `<div class="fc-ptop"><span class="t">ราคาเดียวทั้งก้อน</span><span class="fc-stp"><button type="button" onclick="fcRemAll(-1)" aria-label="ลดทุกเบอร์ 1 บาท">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcRemAll(1)" aria-label="เพิ่มทุกเบอร์ 1 บาท">+</button></span></div>` + _fcBlockRows(m);
+  }
+  let h = '';
+  m.days.forEach((d, i) => {
+    h += `<div class="fc-pday"><div class="pdh"><span class="pdn">วันที่ ${i + 1}</span>
+      <input type="date" id="fcin-dd${i}" value="${_fcEsc(d.date)}" aria-label="วันที่ขาย" onchange="fcDayDate(${i},this.value)">
+      <button class="x" type="button" aria-label="ลบวัน" onclick="fcDayDel(${i})">×</button></div>
+      <div class="pdq"><span class="kgw">${_fcPin('dk' + i, d.kg, '', `fcDayKgBump(${i},-500)`, `fcDayKgBump(${i},500)`, `fcDayKg(${i},this.value)`, { step: 100, ph: '0', max: FC_MAX.kg })}<span>กก.</span></span>
+      <span class="fc-stp"><button type="button" onclick="fcDayAll(${i},-1)" aria-label="ลดทุกเบอร์">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcDayAll(${i},1)" aria-label="เพิ่มทุกเบอร์">+</button></span></div>`;
+    m.mixOrder.forEach((k, j) => {
+      const id = `d${i}_${j}`;
+      h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-pk-${id}"></span><small>กก.</small></span>`
+        + _fcPin(id, d.p[k], '', `fcDayBump(${i},${j},-0.5)`, `fcDayBump(${i},${j},0.5)`, `fcDayP(${i},${j},this.value)`)
+        + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
+    });
+    h += `<div class="pdsum"><span>รวมวันนี้</span><span class="v" id="fc-pds${i}"></span></div></div>`;
+  });
+  h += `<div class="fc-pun" id="fc-pun"></div><div class="fc-mxadd"><button type="button" onclick="fcDayAdd()">＋ เพิ่มวัน</button></div>`;
+  return h;
+}
+// รายได้แฝง (inc) / ค่าใช้จ่ายแฝง (exp)
+function _fcHidHtml(t) {
+  const list = (_fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []);
+  let h = t === 'exp' ? `<div class="fc-hxh"><span>ค่าใช้จ่ายแฝง</span><small>เช่น ค่าน้ำมัน ค่าเลี้ยงคนงาน ค่าขนส่ง</small></div>` : '';
+  list.forEach((it, i) => {
+    const id = 'h' + t + i, step = it.u === 'kg' ? 0.1 : 500;
+    h += `<div class="fc-hx ${t}"><div class="top"><input class="nm" id="fcin-hn${t}${i}" value="${_fcEsc(it.n || '')}" placeholder="ชื่อรายการ เช่น ${t === 'inc' ? 'ขายลูกร่วง' : 'ค่าน้ำมัน'}" oninput="fcHidName('${t}',${i},this.value)">
+      <button class="x" type="button" aria-label="ลบรายการ" onclick="fcHidDel('${t}',${i})">×</button></div>
+      <div class="bot">${_fcPin(id, Number(it.v) || 0, '', `fcHidBump('${t}',${i},-${step})`, `fcHidBump('${t}',${i},${step})`, `fcHidVal('${t}',${i},this.value)`, { step, ph: '0', max: it.u === 'kg' ? FC_MAX.p : FC_MAX.b })}
+      <span class="fc-seg sm" role="group" aria-label="หน่วย"><button type="button" class="${it.u !== 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'b')">บาท</button><button type="button" class="${it.u === 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'kg')">ต่อโล</button></span>
+      <span class="tt" id="fc-ht${t}${i}"></span></div></div>`;
+  });
+  if (t === 'inc' && !list.length) h += `<div class="fc-empty">ยังไม่มีรายการ</div>`;
+  h += `<div class="fc-mxadd"><button type="button" onclick="fcHidAdd('${t}')">＋ เพิ่ม${t === 'inc' ? 'รายได้แฝง' : 'ค่าใช้จ่ายแฝง'}</button></div>`
+    + `<div class="fc-hxsum ${t}"><span>รวม${t === 'inc' ? 'รายได้แฝง' : 'ค่าใช้จ่ายแฝง'}</span><span class="v" id="fc-hs${t}"></span></div>`;
+  return h;
+}
+// อัปเดตเฉพาะตัวเลข · โครงเปลี่ยน (เบอร์/วัน/แถว) → วาดใหม่แบบคืนช่องที่พิมพ์
+function _fcRefresh(fromRender) {
+  if (!_fcG) return;
+  const m = _fcM();
+  const rateKeys = Object.keys(m.projBy);
+  if (!fromRender && _fcK && (_fcK.mix.join('\u0001') !== m.mixOrder.join('\u0001') || _fcK.rate.join('\u0001') !== rateKeys.join('\u0001')
+      || _fcK.rows !== (m.hasColl ? -1 : m.mixRows.length) || _fcK.days !== m.days.length)) { _fcRerender(); return; }
+  // ① วันที่เก็บแล้ว
+  m.past.forEach((d, di) => {
+    d.rows.forEach((r, ri) => {
+      const id = `p${di}_${ri}`, chg = r.p0 != null ? r.p !== r.p0 : r.p != null;
+      _fcTxt('fc-rv-' + id, r.p == null ? '—' : _fcF0(r.kg * r.p));
+      _fcTxt('fc-was-' + id, r.src === 'bill' ? 'บิล ' + _fcFp(r.p0) : (r.src === 'form' ? 'ฟอร์ม ' + _fcFp(r.p0) : 'ยังไม่มีราคา'));
+      _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', r.p == null);
+    });
+    _fcTxt('fc-drv-' + di, _fcF0(d.rev));
+    _fcTxt('fc-davg-' + di, d.kg > 0 ? 'เฉลี่ย ' + _fcF2(d.rev / d.kg) : '');
+    const s = document.getElementById('fc-src-' + di);
+    if (s) {
+      const miss = d.rows.some(r => r.p == null);
+      const c = d.edited ? 'edit' : (miss ? 'none' : (d.src === 'bill' ? 'bill' : 'form'));
+      s.className = 'fc-src ' + c;
+      s.textContent = d.edited ? 'แก้ในแผน' : (miss ? 'ยังไม่มีราคา' : (d.src === 'bill' ? 'ราคาในบิล' : (d.src === 'mix' ? 'บิล + ฟอร์ม' : 'ฟอร์ม ' + _fcDl(d.form))));
+    }
+  });
+  _fcTxt('fc-pastsum', _fcF0(m.pastRev));
+  // ② ส่วนที่เหลือ
+  if (m.remMode === 'days' && m.hasColl) {
+    m.days.forEach((d, i) => {
+      let tot = 0;
+      m.mixOrder.forEach((k, j) => {
+        const id = `d${i}_${j}`, kg = d.by[k] || 0, p = d.p[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
+        if (p != null) tot += kg * p;
+        _fcTxt('fc-pk-' + id, _fcF0(kg)); _fcTxt('fc-rv-' + id, p == null ? '—' : _fcF0(kg * p));
+        _fcTxt('fc-was-' + id, m.remP0[k] != null ? 'ฟอร์ม ' + _fcFp(m.remP0[k]) : 'ไม่มีในฟอร์ม');
+        _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
+      });
+      _fcTxt('fc-pds' + i, _fcF0(tot));
+      const ki = document.getElementById('fcin-dk' + i);
+      if (ki && document.activeElement !== ki && Number(ki.value) !== d.kg) ki.value = _fcFp(d.kg);
+    });
+    const pe = document.getElementById('fc-pun');
+    if (pe) {
+      pe.className = 'fc-pun' + (m.unKg ? '' : ' ok');
+      pe.innerHTML = m.unKg ? `<span>ยังไม่ได้แบ่ง <b>${_fcF0(m.unKg)}</b> กก. · คิดราคาฟอร์มล่าสุดไปก่อน</span><span class="v">${_fcF0(m.unRev)}</span>`
+        : `<span>แบ่งครบ ${_fcF0(m.remKgEff)} กก. แล้ว</span><span class="v">ครบ</span>`;
+    }
+  } else {
+    m.mixOrder.forEach((k, j) => {
+      const id = 'r' + j, kg = m.remBy[k] || 0, p = m.remP[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
+      _fcTxt('fc-rk' + j, _fcF0(kg)); _fcTxt('fc-rv-' + id, p == null ? '—' : _fcF0(kg * p));
+      _fcTxt('fc-was-' + id, m.remP0[k] != null ? 'ฟอร์ม ' + _fcFp(m.remP0[k]) : 'ไม่มีในฟอร์ม');
+      _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
+    });
+  }
+  _fcTxt('fc-reml', 'รวม ' + _fcF0(m.remKgEff) + ' กก.');
+  _fcTxt('fc-remsum', _fcF0(m.remRev));
+  // ① สัดส่วน (ยังไม่เก็บ)
+  if (!m.hasColl) {
+    m.mixRows.forEach((r, i) => {
+      const nm = String(r.name || '').trim(), k = fcKey(nm);
+      const dup = m.mixRows.filter(x => fcKey(String(x.name || '').trim()) === k).length;
+      // ชื่อซ้ำ/ยังไม่มีชื่อ → โชว์ตาม % ของแถวนั้นเอง (ตัวคำนวณรวมเบอร์ชื่อเดียวกันเป็นก้อนเดียว)
+      _fcTxt('fc-mxk' + i, _fcF0((nm && dup === 1 && m.remBy[k] != null) ? m.remBy[k] : Math.round(m.remKg * (r.pct || 0) / 100)));
+      const b0 = (k in m.mixPct0) && m.mixMode !== 'manual' ? m.mixPct0[k] : null;
+      const chg = b0 != null ? r.pct !== b0 : false;
+      const w = document.getElementById('fc-mxw' + i);
+      if (w) { w.textContent = m.mixMode === 'manual' ? 'กก.' : (b0 != null ? 'เดิม ' + b0 + '%' : 'เพิ่มเอง'); w.className = chg ? 'on' : ''; }
+      _fcCls('fcpin-mx' + i, 'chg', chg); _fcCls('fcpin-mx' + i, 'miss', r.pct == null);
+      _fcCls('fcin-gn' + i, 'miss', !nm);
+    });
+    const sm = document.getElementById('fc-msum');
+    if (sm) {
+      const ok = Math.abs(m.mixSum - 100) < 0.001;
+      sm.className = 'fc-msum' + (ok ? '' : ' bad');
+      const seen = {}, dup = [];
+      m.mixRows.forEach(r => { const nm = String(r.name || '').trim(), k = fcKey(nm); if (!nm) return; if (seen[k] && dup.indexOf(nm) < 0) dup.push(nm); seen[k] = 1; });
+      if (dup.length) { sm.className = 'fc-msum bad'; sm.innerHTML = `<span>ชื่อเบอร์ซ้ำ: ${_fcEsc(dup.join(', '))} — นับรวมเป็นเบอร์เดียว ลบแถวที่ซ้ำออก</span><span class="v">${_fcFp(m.mixSum)}%</span>`; }
+      else sm.innerHTML = ok ? '<span>รวม</span><span class="v">100%</span>'
+        : `<span>รวม ${_fcFp(m.mixSum)}% · ${m.mixSum < 100 ? 'ขาด ' + _fcFp(100 - m.mixSum) : 'เกิน ' + _fcFp(m.mixSum - 100)}%</span><span class="v">${_fcFp(m.mixSum)}%</span>`;
+    }
+  }
+  // ④ ต้นทุน
+  rateKeys.forEach((k, j) => {
+    const kg = m.projBy[k] || 0, r = m.rate[k], r0 = m.rate0[k], chg = r != null && r0 != null && r !== r0;
+    _fcTxt('fc-ck' + j, _fcF0(kg)); _fcTxt('fc-rv-c' + j, r == null ? '—' : _fcF0(kg * r));
+    _fcTxt('fc-was-c' + j, m.rateSrc[k] === 'avg' ? 'เฉลี่ย ' + _fcF2(r0) : (m.rateSrc[k] === 'mem' ? 'จำไว้ ' + _fcFp(r0) : 'ไม่มีบิลอ้างอิง'));
+    _fcCls('fc-was-c' + j, 'on', chg); _fcCls('fcpin-c' + j, 'chg', chg); _fcCls('fcpin-c' + j, 'miss', r == null && kg > 0);
+  });
+  _fcTxt('fc-dkg', _fcF0(m.projKg));
+  _fcTxt('fc-deal', m.deal.miss && !m.deal.amt ? '—' : _fcF0(m.deal.amt));
+  _fcTxt('fc-pkg', _fcF0(m.projKg) + ' กก.');
+  _fcTxt('fc-proc', _fcF0(m.proc));
+  ['inc', 'exp'].forEach(t => {
+    let tot = 0;
+    (_fcD[t] || []).forEach((it, i) => {
+      const a = (it.u === 'kg' ? (Number(it.v) || 0) * m.projKg : (Number(it.v) || 0)); tot += a;
+      const el = document.getElementById('fc-ht' + t + i);
+      if (el) el.innerHTML = (t === 'inc' ? '+' : '−') + _fcF0(a) + (it.u === 'kg' ? `<small>${_fcFp(Number(it.v) || 0)} × ${_fcF0(m.projKg)} กก.</small>` : '');
+    });
+    _fcTxt('fc-hs' + t, (t === 'inc' ? '+' : '−') + _fcF0(tot));
+  });
+  _fcTxt('fc-cost', _fcF0(m.cost));
+  const nz = o => !!(o && Object.keys(o).some(k => o[k] != null && (typeof o[k] !== 'object' || Object.keys(o[k]).length)));
+  const lk = (id, on) => { const e = document.getElementById(id); if (e) e.hidden = !on; };
+  lk('fc-lk-past', nz(_fcD.past)); lk('fc-lk-rem', nz(_fcD.remPrice) || _fcD.remMode === 'days'); lk('fc-lk-rate', nz(_fcD.rate));
+  lk('fc-lk-mix', Array.isArray(_fcD.mixRows) && _fcD.mixMode === m.mixMode);
+  // หัว
+  const hero = document.getElementById('fc-hero'), ms = document.getElementById('fc-hmiss');
+  const tl = !(m.target > 0) ? 'ยังไม่ได้ตั้งเป้า'
+    : (m.collKg >= m.target ? 'เก็บครบเป้าแล้ว · ' + _fcF0(m.collKg) + ' กก.' : 'ถ้า' + (m.hasColl ? '' : 'เก็บ') + 'ครบเป้า ' + _fcF0(m.target) + ' กก.');
+  _fcTxt('fc-hl', tl);
+  if (hero) {
+    if (!m.complete) {
+      hero.className = 'fc-hero wait';
+      _fcTxt('fc-hamt', '—'); _fcTxt('fc-hpct', 'ยังไม่ครบ'); _fcTxt('fc-hcost', '—'); _fcTxt('fc-hsold', '—');
+      const n = _fcMissN(m);
+      if (ms) { ms.hidden = false; ms.textContent = 'ยังขาด: ' + m.missing.join(' · ') + (n ? ' (' + n + ' ช่อง)' : '') + ' — กรอกช่องที่ขอบเส้นประให้ครบ แล้วตัวเลขจะขึ้นเอง'; }
+    } else {
+      const gain = m.profit >= 0;
+      hero.className = 'fc-hero ' + (gain ? 'gain' : 'loss');
+      _fcTxt('fc-hamt', _fcSgn(m.profit));
+      _fcTxt('fc-hpct', (gain ? '▲ ' : '▼ ') + (m.pct == null ? '—' : Math.abs(m.pct).toFixed(1) + '%'));
+      _fcTxt('fc-hcost', _fcF0(m.cost)); _fcTxt('fc-hsold', _fcF0(m.sold));
+      const bad = !m.hasColl && Math.abs(m.mixSum - 100) >= 0.001;
+      if (ms) { ms.hidden = !bad; if (bad) ms.textContent = 'สัดส่วนรวมยังไม่ใช่ 100% — ตัวเลขคิดจาก ' + _fcF0(m.remKgEff) + ' กก.'; }
+    }
+  }
+}
+function _fcRerender() {
+  const ae = document.activeElement, body = document.getElementById('fc-body');
+  const id = (ae && ae.id && ae.closest && ae.closest('#fc-ov')) ? ae.id : null;
+  let ss = null; try { ss = ae.selectionStart; } catch (e) {}
+  const st = body ? body.scrollTop : 0;
+  _fcRender();
+  if (body) body.scrollTop = st;
+  if (id) { const n = document.getElementById(id); if (n) { try { n.focus({ preventScroll: true }); if (ss != null) n.setSelectionRange(ss, ss); } catch (e) {} } }
+}
+function _fcEnsureOv() {
+  let ov = document.getElementById('fc-ov');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.className = 'fc-ov'; ov.id = 'fc-ov';
+  ov.innerHTML = `<div class="fc-hd"><button class="bk" type="button" onclick="fcClose()">← กลับ</button>
+    <div class="ti"><div class="t1">วางแผนราคา</div><div class="t2" id="fc-t2">—</div></div><span class="badge" id="fc-badge">คาดการณ์</span></div>
+    <div class="fc-body" id="fc-body"></div>
+    <div class="fc-foot"><button class="clr" id="fc-clr" type="button" onclick="fcClear()">ล้างแผน</button><button class="save" type="button" onclick="fcSave()">บันทึกแผน</button></div>`;
+  document.body.appendChild(ov);
+  return ov;
+}
+window.fcOpen = function (gid) {
+  if (!canViewForecast()) {
+    if (typeof toast === 'function') toast('ไม่มีสิทธิ์ดูคาดการณ์ — ให้แอดมินเปิด "เห็นคาดการณ์/วางแผน" ในหน้าจัดการผู้ใช้');
+    return;
+  }
+  const g = (typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === gid) : null;
+  if (!g) { if (typeof toast === 'function') toast('ไม่พบสวนนี้'); return; }
+  if (!fcIsOpen(g)) { if (typeof toast === 'function') toast('สวนนี้ไม่ได้อยู่ในสถานะเปิดสวน — คาดการณ์ใช้ได้เฉพาะสวนที่เปิดอยู่'); return; }
+  try {
+    fcCacheReset();
+    _fcG = g; _fcD = _fcClone(g.forecastPlan); _fcDirty = false; _fcOpenDays = {}; _fcRefOpen = false; _fcRefAll = false; _fcBackArm = 0;
+    const ov = _fcEnsureOv();
+    _fcRender();
+    ov.classList.add('open');
+    document.getElementById('fc-body').scrollTop = 0;
+    if (typeof haptic === 'function') haptic(10);
+  } catch (e) {
+    try { console.error('[fc] open', e); } catch (e2) {}
+    if (typeof toast === 'function') toast('เปิดหน้าวางแผนไม่ได้');
+  }
+};
+window.fcClose = function (force) {
+  // แก้แล้วยังไม่บันทึก → กดกลับครั้งแรกเตือน · กดซ้ำภายใน 3 วิ = ออกโดยไม่บันทึก
+  if (_fcDirty && force !== true && Date.now() - _fcBackArm > 3000) {
+    _fcBackArm = Date.now();
+    if (typeof toast === 'function') toast('ยังไม่ได้บันทึกแผน · กดกลับอีกครั้งเพื่อออกโดยไม่บันทึก');
+    return;
+  }
+  const ov = document.getElementById('fc-ov');
+  if (ov) ov.classList.remove('open');
+  _fcG = null; _fcD = null; _fcDirty = false; _fcBackArm = 0;
+};
+function _fcLive() {
+  const id = _fcG && _fcG.id;
+  const g = (id && typeof gardens !== 'undefined' && Array.isArray(gardens)) ? gardens.find(x => x && x.id === id) : null;
+  return g || _fcG;
+}
+function _fcCleanPlan(d) {
+  const o = _fcClone(d);
+  ['past', 'remPrice', 'rate'].forEach(k => { if (o[k] && typeof o[k] === 'object') {
+    if (k === 'past') Object.keys(o.past).forEach(p => { if (!o.past[p] || !Object.keys(o.past[p]).length) delete o.past[p]; });
+    if (!Object.keys(o[k]).length) delete o[k];
+  } });
+  ['inc', 'exp'].forEach(k => { if (Array.isArray(o[k])) { o[k] = o[k].filter(it => it && (String(it.n || '').trim() || Number(it.v))); if (!o[k].length) delete o[k]; } });
+  if (o.remMode !== 'days') { delete o.remMode; delete o.days; }
+  return o;
+}
+window.fcSave = function () {
+  if (!_fcG) return;
+  const g = _fcLive();
+  const p = _fcCleanPlan(_fcD);
+  p.updatedAt = Date.now();
+  g.forecastPlan = p;
+  try { if (typeof saveGardens === 'function') saveGardens(gardens); } catch (e) { console.error('[fc] save', e); }
+  fcCacheReset();
+  _fcDirty = false;
+  window.fcClose(true);
+  try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}
+  if (typeof haptic === 'function') haptic(15);
+  if (typeof toast === 'function') toast('บันทึกแผนแล้ว · กล่องบนการ์ดคิดตามแผนนี้');
+};
+window.fcClear = function () {
+  if (!_fcG) return;
+  const btn = document.getElementById('fc-clr');
+  if (Date.now() - _fcClrArm > 3000) {   // แตะครั้งแรก = เตือน (ไม่ใช้กล่องถามของเบราว์เซอร์)
+    _fcClrArm = Date.now();
+    if (btn) { btn.textContent = 'แตะอีกครั้งเพื่อล้าง'; btn.classList.add('arm'); }
+    setTimeout(() => { if (_fcClrArm && Date.now() - _fcClrArm >= 2900 && btn) { btn.textContent = 'ล้างแผน'; btn.classList.remove('arm'); _fcClrArm = 0; } }, 3000);
+    return;
+  }
+  _fcClrArm = 0;
+  _fcG = _fcLive();
+  const had = !!(_fcG.forecastPlan && _fcG.forecastPlan.updatedAt);
+  _fcD = {}; _fcDirty = false; _fcRefOpen = false; _fcRefAll = false;
+  if (had) {
+    _fcG.forecastPlan = null;   // null (ไม่ลบช่อง) — ให้เครื่องอื่นรับค่าว่างตอนซิงก์ด้วย
+    try { if (typeof saveGardens === 'function') saveGardens(gardens); } catch (e) {}
+    try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}
+  }
+  _fcRender();
+  if (typeof toast === 'function') toast(had ? 'ล้างแผนแล้ว · กลับไปใช้ค่าตั้งต้น' : 'กลับไปใช้ค่าตั้งต้นแล้ว');
+};
+window.fcReset = function (what) {
+  if (!_fcD) return;
+  if (what === 'past') delete _fcD.past;
+  if (what === 'rem') { delete _fcD.remPrice; delete _fcD.days; delete _fcD.remMode; }
+  if (what === 'rate') delete _fcD.rate;
+  if (what === 'mix') delete _fcD.mixRows;
+  _fcTouch(); _fcRerender();
+};
+// ── ① วันที่เก็บแล้ว ──
+window.fcTogDay = function (di) {
+  const m = _fcM(), d = m.past[di]; if (!d) return;
+  const el = document.querySelectorAll('#fc-body .fc-day')[di];
+  const now = el ? !el.classList.contains('open') : true;
+  _fcOpenDays[d.pid] = now;
+  if (el) el.classList.toggle('open', now);
+};
+function _fcPastSet(di, ri, n) {
+  const m = _fcM(), d = m.past[di], r = d && d.rows[ri]; if (!r) return;
+  _fcD.past = _fcD.past || {};
+  const o = (_fcD.past[d.pid] = _fcD.past[d.pid] || {});
+  if (n === '' || n == null || n === r.p0) delete o[r.key]; else o[r.key] = n;
+  _fcTouch();
+}
+window.fcPastP = function (di, ri, v) { const n = _fcIn(v, FC_MAX.p); if (n === null) return; _fcPastSet(di, ri, n); _fcRefresh(); };
+window.fcPastBump = function (di, ri, dl) {
+  const r = (_fcM().past[di] || { rows: [] }).rows[ri]; if (!r) return;
+  const n = _fcR2((r.p || 0) + dl); _fcPastSet(di, ri, n); _fcSetIn(`p${di}_${ri}`, n); _fcRefresh();
+};
+// ── ② ส่วนที่เหลือ / ราคาขาย ──
+window.fcRemMode = function (mode) {
+  const m = _fcM();
+  if (mode === 'days') {
+    _fcD.remMode = 'days';
+    if (!Array.isArray(_fcD.days) || !_fcD.days.length) {
+      const half = Math.round(m.remKgEff / 2 / 100) * 100;
+      _fcD.days = [{ date: _fcNextDate(), kg: half > 0 ? half : m.remKgEff }];
+    }
+  } else _fcD.remMode = 'block';
+  _fcTouch(); _fcRerender();
+};
+function _fcRemSet(k, n, m) {
+  _fcD.remPrice = _fcD.remPrice || {};
+  if (n === '' || n == null || (m.remP0[k] != null && n === m.remP0[k])) delete _fcD.remPrice[k]; else _fcD.remPrice[k] = n;
+}
+window.fcRemP = function (j, v) {
+  const n = _fcIn(v, FC_MAX.p); if (n === null) return;
+  const m = _fcM(), k = m.mixOrder[j]; if (k == null) return;
+  _fcRemSet(k, n, m); _fcTouch(); _fcRefresh();
+};
+window.fcRemBump = function (j, dl) {
+  const m = _fcM(), k = m.mixOrder[j]; if (k == null) return;
+  const n = _fcR2((m.remP[k] || 0) + dl); _fcRemSet(k, n, m); _fcSetIn('r' + j, n); _fcTouch(); _fcRefresh();
+};
+window.fcRemAll = function (dl) {
+  const m = _fcM();
+  m.mixOrder.forEach((k, j) => { if (m.remP[k] == null) return; const n = _fcR2(m.remP[k] + dl); _fcRemSet(k, n, m); _fcSetIn('r' + j, n); });
+  _fcTouch(); _fcRefresh();
+};
+// แบ่งเป็นวัน
+window.fcDayAdd = function () {
+  const m = _fcM();
+  _fcD.days = Array.isArray(_fcD.days) ? _fcD.days : [];
+  _fcD.days.push({ date: _fcNextDate(), kg: Math.max(0, Math.round(m.unKg)) });   // วันใหม่รับส่วนที่ยังไม่ได้แบ่ง
+  _fcTouch(); _fcRerender();
+};
+window.fcDayDel = function (i) { if (!Array.isArray(_fcD.days)) return; _fcD.days.splice(i, 1); _fcTouch(); _fcRerender(); };
+window.fcDayDate = function (i, v) { const d = (_fcD.days || [])[i]; if (!d) return; d.date = String(v || ''); _fcTouch(); };
+function _fcDayMax(i) { const m = _fcM(); let used = 0; m.days.forEach((d, x) => { if (x !== i) used += d.kg; }); return Math.max(0, m.remKgEff - used); }
+window.fcDayKg = function (i, v) {
+  const d = (_fcD.days || [])[i]; if (!d) return;
+  let n = _fcIn(v); if (n === null) return; if (n === '') n = 0;
+  const mx = _fcDayMax(i);
+  if (n > mx) { n = mx; const e = document.getElementById('fcin-dk' + i); if (e) e.value = _fcFp(n); if (typeof toast === 'function') toast('เกินส่วนที่เหลือ · ตั้งเป็น ' + _fcF0(n) + ' กก. (สูงสุดที่ใส่ได้)'); }   // ห้ามเกินส่วนที่เหลือ
+  d.kg = n; _fcTouch(); _fcRefresh();
+};
+window.fcDayKgBump = function (i, dl) {
+  const d = (_fcD.days || [])[i]; if (!d) return;
+  d.kg = Math.min(_fcDayMax(i), Math.max(0, (Number(d.kg) || 0) + dl)); _fcSetIn('dk' + i, d.kg); _fcTouch(); _fcRefresh();
+};
+function _fcDaySet(i, k, n) {
+  const d = (_fcD.days || [])[i]; if (!d) return;
+  d.p = d.p || {};
+  if (n === '' || n == null) delete d.p[k]; else d.p[k] = n;
+}
+window.fcDayP = function (i, j, v) {
+  const n = _fcIn(v, FC_MAX.p); if (n === null) return;
+  const k = _fcM().mixOrder[j]; if (k == null) return;
+  _fcDaySet(i, k, n); _fcTouch(); _fcRefresh();
+};
+window.fcDayBump = function (i, j, dl) {
+  const m = _fcM(), k = m.mixOrder[j], d = m.days[i]; if (k == null || !d) return;
+  const n = _fcR2((d.p[k] || 0) + dl); _fcDaySet(i, k, n); _fcSetIn(`d${i}_${j}`, n); _fcTouch(); _fcRefresh();
+};
+window.fcDayAll = function (i, dl) {
+  const m = _fcM(), d = m.days[i]; if (!d) return;
+  m.mixOrder.forEach((k, j) => { if (d.p[k] == null) return; const n = _fcR2(d.p[k] + dl); _fcDaySet(i, k, n); _fcSetIn(`d${i}_${j}`, n); });
+  _fcTouch(); _fcRefresh();
+};
+// ── ① สัดส่วนเบอร์ (ยังไม่เก็บ) ──
+function _fcMat() {
+  const m = _fcM();
+  const use = Array.isArray(_fcD.mixRows) && _fcD.mixMode === m.mixMode && (m.mixMode !== 'one' || _fcD.mixRef === (m.mixInfo && m.mixInfo.gid));
+  if (use) return;
+  _fcD.mixMode = m.mixMode;
+  if (m.mixMode === 'one' && m.mixInfo) _fcD.mixRef = m.mixInfo.gid;
+  _fcD.mixRows = m.mixRows.map(r => ({ name: r.name, pct: r.pct }));
+}
+window.fcMixMode = function (mode) {
+  if (mode !== 'avg' && mode !== 'one') return;
+  _fcD.mixMode = mode; delete _fcD.mixRows;
+  if (mode === 'one') {
+    const all = fcRefGardens(_fcG);
+    if (!all.find(r => r.g.id === _fcD.mixRef)) _fcD.mixRef = all.length ? all[0].g.id : undefined;
+    _fcRefOpen = true;   // เพิ่งสลับมา → กางรายการให้เลือกก่อน
+  } else _fcRefOpen = false;
+  _fcTouch(); _fcRerender();
+};
+window.fcRefOpen = function () { _fcRefOpen = true; _fcRerender(); };
+window.fcRefAll = function () { _fcRefAll = true; _fcRerender(); };
+window.fcPickRef = function (gid) { _fcD.mixMode = 'one'; _fcD.mixRef = gid; delete _fcD.mixRows; _fcRefOpen = false; _fcTouch(); _fcRerender(); };
+window.fcMxPct = function (i, v) {
+  const n = _fcIn(v, 100); if (n === null) return;
+  _fcMat(); const r = _fcD.mixRows[i]; if (!r) return;
+  r.pct = n === '' ? null : n; _fcTouch(); _fcRefresh();
+};
+window.fcMxBump = function (i, dl) {
+  _fcMat(); const r = _fcD.mixRows[i]; if (!r) return;
+  r.pct = Math.min(100, Math.max(0, (Number(r.pct) || 0) + dl)); _fcSetIn('mx' + i, r.pct); _fcTouch(); _fcRefresh();
+};
+window.fcMxName = function (i, v) {
+  _fcMat(); const r = _fcD.mixRows[i]; if (!r) return;
+  const oldK = fcKey(String(r.name || '').trim()), nm = String(v || '').trim(), newK = fcKey(nm);
+  r.name = nm;
+  // เปลี่ยนชื่อเบอร์ → ย้ายราคา/ค่าจัดทำที่กรอกไว้ตามไปด้วย
+  ['remPrice', 'rate'].forEach(f => { const o = _fcD[f]; if (o && oldK && newK && oldK !== newK && (oldK in o) && !(newK in o)) { o[newK] = o[oldK]; delete o[oldK]; } });
+  _fcTouch();
+  setTimeout(_fcRerender, 0);   // รอให้โฟกัสย้ายไปช่องที่แตะก่อน แล้วคืนโฟกัสหลังวาดใหม่
+};
+window.fcMxDel = function (i) { _fcMat(); _fcD.mixRows.splice(i, 1); _fcTouch(); _fcRerender(); };
+window.fcMxAdd = function () {
+  _fcMat(); _fcD.mixRows.push({ name: '', pct: null }); _fcTouch(); _fcRerender();
+  const e = document.getElementById('fcin-gn' + (_fcD.mixRows.length - 1)); if (e) e.focus();
+};
+// ── ④ ค่าจัดทำ ──
+function _fcRateKeys(m) { return Object.keys(m.projBy); }
+function _fcRateSet(k, n, m) {
+  _fcD.rate = _fcD.rate || {};
+  if (n === '' || n == null || (m.rate0[k] != null && n === m.rate0[k])) delete _fcD.rate[k]; else _fcD.rate[k] = n;
+}
+window.fcRate = function (j, v) {
+  const n = _fcIn(v, FC_MAX.p); if (n === null) return;
+  const m = _fcM(), k = _fcRateKeys(m)[j]; if (k == null) return;
+  _fcRateSet(k, n, m); _fcTouch(); _fcRefresh();
+};
+window.fcRateBump = function (j, dl) {
+  const m = _fcM(), k = _fcRateKeys(m)[j]; if (k == null) return;
+  const n = _fcR2((m.rate[k] || 0) + dl); _fcRateSet(k, n, m); _fcSetIn('c' + j, n); _fcTouch(); _fcRefresh();
+};
+// ── รายได้แฝง / ค่าใช้จ่ายแฝง ──
+window.fcHidAdd = function (t) {
+  _fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []; _fcD[t].push({ n: '', v: 0, u: 'b' }); _fcTouch(); _fcRerender();
+  const e = document.getElementById('fcin-hn' + t + (_fcD[t].length - 1)); if (e) e.focus();
+};
+window.fcHidDel = function (t, i) { if (!Array.isArray(_fcD[t])) return; _fcD[t].splice(i, 1); _fcTouch(); _fcRerender(); };
+window.fcHidName = function (t, i, v) { const it = (_fcD[t] || [])[i]; if (it) { it.n = v; _fcTouch(); } };
+window.fcHidVal = function (t, i, v) { const it = (_fcD[t] || [])[i]; if (!it) return; const n = _fcIn(v, it.u === 'kg' ? FC_MAX.p : FC_MAX.b); if (n === null) return; it.v = n === '' ? 0 : n; _fcTouch(); _fcRefresh(); };
+window.fcHidBump = function (t, i, dl) {
+  const it = (_fcD[t] || [])[i]; if (!it) return;
+  it.v = _fcR2((Number(it.v) || 0) + dl); _fcSetIn('h' + t + i, it.v); _fcTouch(); _fcRefresh();
+};
+window.fcHidUnit = function (t, i, u) {
+  const it = (_fcD[t] || [])[i]; if (!it || it.u === u) return;
+  it.u = u; it.v = 0; _fcTouch(); _fcRerender();   // เปลี่ยนหน่วย = ตัวเลขเดิมไม่มีความหมายแล้ว → เริ่ม 0
+  const e = document.getElementById('fcin-h' + t + i); if (e) e.focus();
+};
+
 function buildStampBox(s, gid) {
   if (!s) return '';
   const gain = (Number(s.amount) || 0) >= 0;
@@ -23520,7 +24844,10 @@ function renderListView() {
         </div>
         ${((typeof profitVisible === 'function' && profitVisible() && g.stamp)
             ? `<div class="lc-mid"><div class="lc-mid-left">${row2Html || ''}</div>${buildStampBox(g.stamp, g.id)}</div>`
-            : (row2Html ? `<div class="lc-row2">${row2Html}</div>` : ''))}
+            // สวนที่ยังเปิด (ไม่มีตรา) → กล่องคาดการณ์ · ต้องมีสิทธิ์ "เห็นคาดการณ์" และไม่ได้กดรูปตาซ่อน
+            : ((typeof fcVisible === 'function' && fcVisible() && fcIsOpen(g))
+                ? `<div class="lc-mid"><div class="lc-mid-left">${row2Html || ''}</div>${buildForecastBox(g)}</div>`
+                : (row2Html ? `<div class="lc-row2">${row2Html}</div>` : '')))}
         ${progBarHtml}
         ${(g.status === 'done' || g.closedAt) ? stamp : ''}
       </div>
@@ -25809,21 +27136,21 @@ function confirmBillPicker() {
   if (_selectedBills.size === 0) return;
   const g = gardens.find(x => x.id === currentDetailId);
   if (!g) return;
-  const billCount = _selectedBills.size;
 
-  // Close picker first
+  // ── ส่งทันทีที่กด ──
+  // เดิม: ปิดป๊อปอัป 250ms → นกบิน 2,400ms → หน่วง 200ms → จาง 420ms = 3,270ms แล้วค่อยส่ง
+  //       กดย้อนกลับก่อนครบ = บิลไม่ถูกส่งเลย และไม่มีอะไรบอก
+  // ใหม่: บันทึกก่อนเป็นอย่างแรก (openSendToQuote เป็น synchronous อยู่แล้ว + มี toast ของตัวเอง)
+  //       ตัดอนิเมชันนกออก เหลือ toast อย่างเดียว
+  if (typeof haptic === 'function') haptic(30);
+  openSendToQuote();
+
+  // ปิดป๊อปอัปหลังส่งเสร็จ (openSendToQuote ล้าง _selectedBills + renderDetail ให้แล้ว)
   const ov = document.getElementById('bill-picker-ov');
   if (ov) {
     ov.classList.remove('open');
-    setTimeout(() => ov.remove(), 350);
+    setTimeout(() => { if (ov && ov.parentNode) ov.remove(); }, 350);
   }
-
-  if (typeof haptic === 'function') haptic(30);
-  // Launch eagle 200ms after popup starts closing
-  setTimeout(() => playEagleFlight(billCount, () => {
-    // After animation, actually send
-    openSendToQuote();
-  }), 250);
 }
 
 // ─── Eagle flight animation ───
@@ -29047,6 +30374,7 @@ function gvBsetRender() {
   if (_gvBsetPage === 'profit') { if (ttlEl) ttlEl.textContent = '📊 สรุป กำไร/ขาดทุน'; if (backEl) backEl.style.display = ''; gvBsetRenderProfit(); return; }
   if (_gvBsetPage === 'fruit') { if (ttlEl) ttlEl.textContent = '🍎 ชื่อผลไม้'; if (backEl) backEl.style.display = ''; gvBsetRenderFruit(); return; }
   if (_gvBsetPage === 'fruitmerge') { if (ttlEl) ttlEl.textContent = '🔀 รวมผลไม้'; if (backEl) backEl.style.display = ''; gvBsetRenderFruitMerge(); return; }
+  if (_gvBsetPage === 'fruitorphan') { if (ttlEl) ttlEl.textContent = '⚠ ชื่อนอกคลัง'; if (backEl) backEl.style.display = ''; gvBsetRenderFruitOrphan(); return; }
   if (ttlEl) ttlEl.textContent = '⚙ ตั้งค่าเล่มสวน';
   if (backEl) backEl.style.display = 'none';
   const showProfit = (typeof profitVisible === 'function' && profitVisible());
@@ -29066,8 +30394,8 @@ window.gvBsetGo = function (p) {
   gvBsetRender();
 };
 window.gvBsetBack = function () {
-  // หน้ารวมผลไม้ = หน้าย่อยของ "ชื่อผลไม้" → ‹ กลับไปหน้าชื่อผลไม้ ไม่ใช่เมนูหลัก
-  if (_gvBsetPage === 'fruitmerge') { _gvBsetPage = 'fruit'; gvBsetRender(); return; }
+  // หน้ารวมผลไม้ / ชื่อนอกคลัง = หน้าย่อยของ "ชื่อผลไม้" → ‹ กลับไปหน้าชื่อผลไม้ ไม่ใช่เมนูหลัก
+  if (_gvBsetPage === 'fruitmerge' || _gvBsetPage === 'fruitorphan') { _gvBsetPage = 'fruit'; gvBsetRender(); return; }
   _gvBsetPage = 'menu'; gvBsetRender();
 };
 
@@ -29406,20 +30734,24 @@ function gvBsetRenderFruit() {
   const body = document.getElementById('gv-bset-body'); if (!body) return;
   const total = (window.fruitNames || []).length;
   // ── โครงเบา render ทันที → ชีตเปิดไม่หน่วง แตะไม่ค้าง ──
+  // กล่องวินิจฉัย (build 1064) — เดิมโผล่ให้ผู้ใช้เห็นทุกครั้ง ตอนนี้ซ่อน เปิดดูได้ด้วย window.__HUD = 1 แล้วเปิดหน้าใหม่
+  // ตัววัด window.__DIAG + rAF ที่กัน iOS จอค้าง อยู่ใน IIFE ตอนโหลดหน้า ทำงานต่อเหมือนเดิม ไม่ได้ถูกแตะ
+  const _hud = !!window.__HUD;
   body.innerHTML = `
-    <div id="diag-hud" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;
+    ${_hud ? `<div id="diag-hud" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;
       background:#1c1a17;color:#7fe27f;border:1px solid #3a5a3a;border-radius:8px;padding:7px 9px;margin-bottom:10px;
-      white-space:pre-wrap;word-break:break-all;">กำลังวัด…</div>
+      white-space:pre-wrap;word-break:break-all;">กำลังวัด…</div>` : ''}
     <div class="gvh-sec-lbl">🍎 ชื่อผลไม้ (${total})</div>
     <div class="gvh-what" style="margin:2px 2px 11px;">เลือกจากรายการนี้ตอนกรอกสวน/บิล → ค้นหา &amp; กราฟไม่มั่ว · แก้/ลบ/เลือกสีได้อิสระ</div>
     <button class="gvh-add-fruit" onclick="fruitMgrAddOpen()">＋ เพิ่มชื่อผลไม้</button>
+    <div id="gvh-orphanslot"></div>
     ${total > 1 ? `<button class="gvh-manual-merge" onclick="fruitMergeManualOpen()">🔀 รวมผลไม้ (เลือกเอง)</button>` : ''}
     <div id="gvh-mergeslot"></div>
     ${total > 12 ? `<input id="gvh-fsearch" class="gvh-fsearch" placeholder="🔍 ค้นหาชื่อผลไม้..." value="${gbEscapeHtml(_fruitMgrQuery || '')}" oninput="fruitMgrSearch(this.value)" autocomplete="off">` : ''}
     <div class="gvh-flist" id="gvh-flist"><div class="gvh-what" style="text-align:center;padding:16px;">กำลังโหลด…</div></div>
   `;
   if (window.__DIAG) window.__DIAG.openMs = +(performance.now() - _t0).toFixed(1);
-  gvDiagStart();
+  if (_hud) gvDiagStart();   // ไม่มีกล่อง = ไม่ต้องเดินนาฬิกา 400ms เปล่าๆ
   // ── งานหนัก (usage map + list + หา duplicate) เลื่อนไปหลัง paint → ไม่บล็อกการเปิด ──
   const _t1 = performance.now();
   const _tok = (gvBsetRenderFruit._tok = (gvBsetRenderFruit._tok || 0) + 1);
@@ -29432,6 +30764,14 @@ function gvBsetRenderFruit() {
       const grpCount = (typeof fruitFindGroups === 'function') ? fruitFindGroups().length : 0;
       const slot = document.getElementById('gvh-mergeslot');
       if (slot && grpCount) slot.innerHTML = `<button class="gvh-merge-btn" onclick="fruitMergeOpen()">🔗 รวมชื่อซ้ำ · พบ ${grpCount} กลุ่ม</button>`;
+    } catch (e) {}
+    // ชื่อนอกคลัง — ขึ้นปุ่มเฉพาะเมื่อมีจริง (งานหนักอยู่ในบล็อกที่เลื่อนมาหลัง paint แล้ว)
+    try {
+      const orph = (typeof fruitOrphanList === 'function') ? fruitOrphanList() : [];
+      const os = document.getElementById('gvh-orphanslot');
+      if (os) os.innerHTML = orph.length
+        ? `<button class="gvh-orphan-btn" onclick="fruitOrphanOpen()">⚠ ชื่อนอกคลัง — ยังค้างในข้อมูล<span class="cnt">${orph.length}</span></button>`
+        : '';
     } catch (e) {}
     if (window.__DIAG) {
       window.__DIAG.deferMs = +(performance.now() - _t1).toFixed(1);
@@ -29717,13 +31057,37 @@ function _fruitMgrCommit(id, name, color) {
 function fruitMgrDelete(id) {
   if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
   const f = (window.fruitNames || []).find(x => x.id === id); if (!f) return;
-  const u = fruitUsage(f.name);
-  const used = u.g || u.q;
+  const nm = String(f.name || '').trim();
+  const u = fruitUsage(nm);
+  // เดิมนับแค่สวน+บิล และบอกว่า "แค่หายจากตัวเลือก + สี" ซึ่งไม่ตรง —
+  // ลบแล้วชื่อนี้กลายเป็น "ชื่อนอกคลัง" → เปิดของเก่าขึ้นมากดบันทึกไม่ผ่านด่าน fruitInLib เลย
+  let pf = 0;
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(x => { if (String(x.fruit || '').trim() === nm) pf++; }); } catch (e) {}
+  let archUsed = 0, archUnk = 0;
+  try {
+    (typeof archStubLoad === 'function' ? archStubLoad() : []).forEach(s => {
+      if (!s) return;
+      if (!s.fruit) archUnk++;
+      else if (String(s.fruit).trim() === nm) archUsed++;
+    });
+  } catch (e) {}
+  const parts = [];
+  if (u.g) parts.push(u.g + ' สวน');
+  if (u.q) parts.push(u.q + ' บิล');
+  if (pf) parts.push(pf + ' ฟอร์มราคา');
+  if (archUsed) parts.push(archUsed + ' สวนในคลัง');
+  const unkNote = archUnk
+    ? `<br><br>สวนที่เก็บเข้าคลังแล้ว ${archUnk} สวน <b>ตรวจไม่ได้</b> (ตอรุ่นเก่าไม่ได้เก็บชื่อผลไม้) — ถ้าดึงกลับมาแล้วใช้ชื่อนี้ จะโผล่ที่ “ชื่อนอกคลัง”`
+    : '';
+  const warn = parts.length
+    ? `ใช้อยู่ใน <b>${parts.join(' · ')}</b><br><br>ลบได้ แต่ชื่อนี้จะกลายเป็น <b>“ชื่อนอกคลัง”</b>:`
+      + `<br>· ของเดิมยังแสดงชื่อเดิม แต่เปิดแก้แล้ว<b>กดบันทึกไม่ได้</b> จนเปลี่ยนผลไม้`
+      + `<br>· เลือกชื่อนี้ตอนกรอกสวน/บิล/ฟอร์มราคาใหม่ไม่ได้`
+      + `<br><br>ถ้าจะเลิกใช้ชื่อนี้ แนะนำ <b>รวมเข้าชื่ออื่นก่อน</b> ที่ปุ่ม “⚠ ชื่อนอกคลัง”` + unkNote
+    : 'ผลไม้นี้ยังไม่มีใครใช้ · ลบได้ปลอดภัย' + unkNote;
   gvBsetCmOpen(`
     <div class="gv-bset-cm-h"><div class="ttl">🗑 ลบ "${gbEscapeHtml(f.name)}"?</div></div>
-    <div class="gv-bset-cm-body"><div class="gv-bset-cm-warn">${used
-      ? `ผลไม้นี้ใช้ใน <b>${u.g} สวน${u.q ? ' · ' + u.q + ' บิล' : ''}</b> — ลบออกจากรายการได้ แต่ของเดิม<b>ยังแสดงชื่อเดิม</b> (แค่หายจากตัวเลือก + สี)`
-      : 'ผลไม้นี้ยังไม่มีใครใช้ · ลบได้ปลอดภัย'}</div></div>
+    <div class="gv-bset-cm-body"><div class="gv-bset-cm-warn">${warn}</div></div>
     <div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose()">ยกเลิก</button><button class="gv-bset-cm-btn danger" onclick="fruitMgrDeleteConfirm('${id}')">ลบ</button></div>
   `);
 }
@@ -29794,6 +31158,190 @@ function fruitCountUses(name) {
   return u.g + u.q + pf;
 }
 window.fruitCountUses = fruitCountUses;
+
+// ═══════════════════ ชื่อผลไม้นอกคลัง (build 1146) ═══════════════════
+// ชื่อที่ค้างอยู่ในสวน/บิล/ฟอร์มราคา แต่ "ไม่มีในคลัง" → เลือกตอนกรอกใหม่ไม่ได้
+// และเปิดสวน/บิลเก่าขึ้นมากดบันทึกก็ไม่ผ่าน (ด่าน fruitInLib) = แก้อะไรไม่ได้จนเปลี่ยนผลไม้
+// เครื่องมือ "รวมชื่อซ้ำ" เดิมไล่จาก window.fruitNames เท่านั้น จึงมองชื่อพวกนี้ไม่เห็นเลย
+function _foKey(v) {
+  return (typeof window.fruitCleanName === 'function') ? window.fruitCleanName(v) : String(v == null ? '' : v).trim();
+}
+function fruitOrphanList() {
+  const m = {};
+  const add = (nm, k) => {
+    const n = String(nm || '').trim(); if (!n) return;
+    if (!m[n]) m[n] = { name: n, g: 0, q: 0, pf: 0 };
+    m[n][k]++;
+  };
+  try { gardens.forEach(g => add(g.fruit, 'g')); } catch (e) {}
+  try { ((window.state && window.state.quotes) || []).forEach(q => add(q.fruit, 'q')); } catch (e) {}
+  try { (typeof priceForms !== 'undefined' ? priceForms : []).forEach(f => add(f.fruit, 'pf')); } catch (e) {}
+  const lib = new Set((window.fruitNames || []).map(f => _foKey(f.name)));
+  return Object.keys(m)
+    .filter(n => !lib.has(_foKey(n)))
+    .map(n => { const o = m[n]; o.total = o.g + o.q + o.pf; return o; })
+    .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, 'th'));
+}
+window.fruitOrphanList = fruitOrphanList;
+
+// สวนที่เก็บเข้าคลัง (ย้ายไปอยู่บนคลาวด์) ตรวจไม่ได้ — ตอที่เก็บไว้ในเครื่องรุ่นเก่าไม่มีชื่อผลไม้
+function fruitArchUnknown() {
+  try { return (typeof archStubLoad === 'function' ? archStubLoad() : []).filter(s => s && !s.fruit).length; }
+  catch (e) { return 0; }
+}
+window.fruitArchUnknown = fruitArchUnknown;
+
+// เดาชื่อปลายทางให้ — ① ตาดูเหมือนกัน/ต่างกันตัวเดียว ② ชื่อหนึ่งเป็นคำขึ้นต้นของอีกชื่อ (ลำไย ↔ ลำไย อิดอ)
+// เดาไม่ได้ → คืนค่าว่าง แล้วปุ่มรวมจะกดไม่ได้จนเลือกเอง (ไม่เดาเกินจริง)
+function fruitGuessTarget(orphan) {
+  const o = _foKey(orphan); if (!o) return '';
+  const lib = (window.fruitNames || []).map(f => f.name).filter(Boolean);
+  if (typeof fruitNormalize === 'function') {
+    const hit = lib.find(n => fruitNormalize(n) === fruitNormalize(orphan));
+    if (hit) return hit;
+  }
+  const pre = lib.filter(n => { const k = _foKey(n); return k && (k.indexOf(o) === 0 || o.indexOf(k) === 0); })
+                 .sort((a, b) => a.length - b.length);
+  return pre[0] || '';
+}
+window.fruitGuessTarget = fruitGuessTarget;
+
+let _foOpen = null;   // ชื่อที่กางอยู่ (ทีละใบ)
+let _foPick = {};     // ชื่อนอกคลัง → ชื่อปลายทางที่เลือกไว้
+
+window.fruitOrphanOpen = function () {
+  if (!fruitMgrCanEdit()) { toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
+  _foOpen = null; _foPick = {};
+  _gvBsetPage = 'fruitorphan';
+  gvBsetRender();
+};
+window.foToggle = function (nm) {
+  _foOpen = (_foOpen === nm) ? null : nm;
+  if (_foOpen && !_foPick[_foOpen]) _foPick[_foOpen] = fruitGuessTarget(_foOpen) || '';
+  gvBsetRenderFruitOrphan();
+};
+window.foPickTarget = function (nm, target) { _foPick[nm] = target; gvBsetRenderFruitOrphan(); };
+
+function gvBsetRenderFruitOrphan() {
+  const body = document.getElementById('gv-bset-body'); if (!body) return;
+  const list = fruitOrphanList();
+  const unk = fruitArchUnknown();
+  if (!list.length) {
+    body.innerHTML = `<div class="fo-done"><span class="big">✓ ไม่มีชื่อนอกคลัง</span>
+      ชื่อผลไม้ในสวน บิล และฟอร์มราคา ตรงกับคลังทั้งหมด</div>`
+      + (unk ? `<div class="fo-danger">สวนที่เก็บเข้าคลังแล้ว ${unk} สวน ตรวจไม่ได้ (ไม่ได้เก็บชื่อผลไม้ไว้ในเครื่อง) — ถ้าดึงกลับมาแล้วชื่อไม่ตรง จะโผล่ที่หน้านี้</div>` : '');
+    return;
+  }
+  const lib = (window.fruitNames || []).slice();
+  // ชื่อที่ "ตาดูเหมือนกันเป๊ะแต่คนละรหัส" (ลำไย ำ ตัวเดียว vs ลําไย นิคหิต+สระอา)
+  // ต้องเทียบกับชื่อนอกคลังตัวอื่นด้วย ไม่ใช่เทียบแค่กับคลัง — คู่แฝดมักค้างมาด้วยกันทั้งคู่
+  const _norm = (typeof fruitNormalize === 'function') ? fruitNormalize : null;
+  const _peers = lib.map(f => f.name).concat(list.map(x => x.name));
+  const rows = list.map(o => {
+    const open = (_foOpen === o.name);
+    const tgt = _foPick[o.name] || '';
+    const look = !!_norm && _peers.filter(n => _norm(n) === _norm(o.name)).length > 1;
+    const parts = [];
+    if (o.g) parts.push(o.g + ' สวน');
+    if (o.q) parts.push(o.q + ' บิล');
+    if (o.pf) parts.push(o.pf + ' ฟอร์มราคา');
+    let pick = '';
+    if (open) {
+      const opts = lib.map(f => {
+        const c = fruitCountUses(f.name);
+        return `<div class="fo-opt ${f.name === tgt ? 'sel' : ''}" onclick='foPickTarget(${JSON.stringify(o.name)},${JSON.stringify(f.name)})'>`
+          + `<span class="fo-radio"></span><span class="fo-onm">${gbEscapeHtml(f.name)}</span>`
+          + `<span class="fo-ouse">${c ? c + ' รายการ' : 'ยังไม่มีใครใช้'}</span></div>`;
+      }).join('');
+      const go = tgt
+        ? `<button class="fo-go" onclick='foApply(${JSON.stringify(o.name)})'>รวม “${gbEscapeHtml(o.name)}” → “${gbEscapeHtml(tgt)}” · แก้ ${o.total} รายการ</button>`
+        : `<button class="fo-go" disabled>เลือกชื่อปลายทางก่อน</button>`;
+      pick = `<div class="fo-pick">
+        <div class="fo-ph">รวมเข้าชื่อไหน?</div>
+        ${opts || '<div class="fo-ouse" style="padding:6px 2px">คลังยังไม่มีชื่อผลไม้เลย — กด ＋ ด้านล่างเก็บชื่อนี้เข้าคลังก่อน</div>'}
+        <div class="fo-opt fo-add" onclick='foAddToLib(${JSON.stringify(o.name)})'>＋ เก็บ “${gbEscapeHtml(o.name)}” เป็นชนิดใหม่ในคลัง</div>
+        ${go}
+        <div class="fo-danger">แก้แล้วย้อนกลับไม่ได้${unk ? ` · สวนที่เก็บเข้าคลังแล้ว ${unk} สวน จะไม่ถูกแก้` : ''}</div>
+      </div>`;
+    }
+    return `<div class="fo-row">
+      <div class="fo-head" onclick='foToggle(${JSON.stringify(o.name)})'>
+        <span class="fo-dot">!</span>
+        <div class="fo-meta">
+          <div class="fo-name">${gbEscapeHtml(o.name)}${look ? '<span class="fo-same">พิมพ์ต่าง ตาดูเหมือนกัน</span>' : ''}</div>
+          <div class="fo-use">${parts.length ? parts.join(' · ') : '<span class="z">ไม่มีใครใช้</span>'}</div>
+        </div>
+        <button type="button" class="fo-chev">${open ? '▴' : '▾'}</button>
+      </div>
+      ${pick}
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="gvh-what" style="margin:2px 2px 11px;">ชื่อพวกนี้อยู่ในสวน/บิล/ฟอร์มราคา แต่<b>ไม่มีในคลัง</b> → รวมเข้าชื่อที่ถูก แล้วข้อมูลเก่าถูกแก้ตามให้ทั้งหมด (ไม่หาย)</div>
+    ${rows}`;
+}
+window.gvBsetRenderFruitOrphan = gvBsetRenderFruitOrphan;
+
+function _foConfirm(ttl, bodyHtml, okLabel) {
+  if (typeof gvBsetCmOpen !== 'function') return Promise.resolve(confirm(ttl));
+  return new Promise(res => {
+    window.__foRes = res;
+    gvBsetCmOpen(`<div class="gv-bset-cm-h"><div class="ttl">${ttl}</div></div>`
+      + `<div class="gv-bset-cm-body"><div class="gv-bset-cm-info">${bodyHtml}</div></div>`
+      + `<div class="gv-bset-cm-acts"><button class="gv-bset-cm-btn cancel" onclick="gvBsetCmClose();window.__foRes&&window.__foRes(false)">ยกเลิก</button>`
+      + `<button class="gv-bset-cm-btn confirm" onclick="gvBsetCmClose();window.__foRes&&window.__foRes(true)">${okLabel}</button></div>`);
+  });
+}
+
+window.foApply = async function (nm) {
+  if (!fruitMgrCanEdit()) return;
+  const tgt = _foPick[nm]; if (!tgt) return;
+  const o = fruitOrphanList().find(x => x.name === nm); if (!o) return;
+  const where = [o.g ? o.g + ' สวน' : '', o.q ? o.q + ' บิล' : '', o.pf ? o.pf + ' ฟอร์มราคา' : ''].filter(Boolean).join(' · ');
+  const unk = fruitArchUnknown();
+  const ok = await _foConfirm('🔀 ยืนยันการรวม',
+    `จะเปลี่ยนผลไม้ชื่อ <b>${gbEscapeHtml(nm)}</b><br>ให้เป็น <b>${gbEscapeHtml(tgt)}</b>`
+    + `<br><br>แก้ข้อมูล <b>${o.total} รายการ</b>${where ? ' (' + where + ')' : ''}`
+    + (unk ? `<br>สวนที่เก็บเข้าคลังแล้ว ${unk} สวน จะไม่ถูกแก้` : '')
+    + `<br><br><span style="color:#b5281b">ย้อนกลับไม่ได้</span>`, '🔀 รวมเลย');
+  if (!ok) return;
+  let changed = 0;
+  try { changed = fruitMergeApply(tgt, [nm]); } catch (e) { console.error('[fo] merge', e); }
+  _fruitUsageMapCache = null;
+  delete _foPick[nm];
+  _foOpen = null;
+  gvBsetRenderFruitOrphan();
+  try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}
+  // เซฟไม่ติด (พื้นที่เต็ม) → _fruitSaveAllRecords ย้อนความจำกลับให้แล้ว ห้าม toast ว่าสำเร็จ
+  if (typeof toast === 'function') {
+    if (window.__fruitPropOk === false) toast('⚠ บันทึกไม่ติด — ยังไม่ได้แก้ ลองใหม่');
+    else toast('รวมแล้ว ✓ แก้ ' + changed + ' รายการ');
+  }
+  if (typeof haptic === 'function') haptic(15);
+};
+
+window.foAddToLib = async function (nm) {
+  if (!fruitMgrCanEdit()) return;
+  if (window.fruitInLib && window.fruitInLib(nm)) { toast('ชื่อนี้อยู่ในคลังแล้ว'); gvBsetRenderFruitOrphan(); return; }
+  const ok = await _foConfirm('＋ เก็บเป็นชนิดใหม่',
+    `เก็บ <b>${gbEscapeHtml(nm)}</b> เป็นผลไม้อีกชนิดในคลัง`
+    + `<br><br>ใช้เมื่อชื่อนี้<b>ถูกอยู่แล้ว</b> แค่ยังไม่ได้ลงทะเบียน<br>ข้อมูลเก่าไม่ถูกแตะ`, '＋ เก็บเข้าคลัง');
+  if (!ok) return;
+  if (!window.fruitNames) window.fruitNames = [];
+  const id = fruitNewId();
+  const i = window.fruitNames.length;
+  window.fruitNames.push({ id, name: nm, color: FRUIT_PALETTE[i % FRUIT_PALETTE.length] });
+  const okSave = (typeof saveFruitNames === 'function') ? (saveFruitNames() !== false) : true;
+  // เซฟไม่ติด → ถอนออกจากความจำ ไม่ให้จอโชว์ว่าเพิ่มแล้วทั้งที่ในเครื่องไม่มี (saveFruitNames เตือนเองแล้ว)
+  if (!okSave) window.fruitNames = window.fruitNames.filter(f => f.id !== id);
+  _fruitUsageMapCache = null;
+  _foOpen = null;
+  gvBsetRenderFruitOrphan();
+  try { if (typeof renderListView === 'function') renderListView(); } catch (e) {}
+  if (okSave && typeof toast === 'function') toast('เพิ่ม "' + nm + '" เข้าคลังแล้ว ✓');
+  if (typeof haptic === 'function') haptic(12);
+};
+
 // จัดกลุ่มชื่อที่น่าจะซ้ำ/คล้ายกัน
 function fruitFindGroups() {
   const arr = fruitAllUsedNames();
