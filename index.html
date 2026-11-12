@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1148;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (148)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1149;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (149)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11568,190 +11568,202 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
              inset 0 1px 1px rgba(255,255,255,.55),
              inset 0 -1px 1px rgba(0,0,0,.18); }
 
-/* ═══════════ build 1148: หน้าวางแผนราคา (คาดการณ์) — ภาษาเดียวกับหน้าสรุปสวน ═══════════ */
-.fc-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column; overflow:hidden;
-  font-family:'IBM Plex Sans Thai',sans-serif; color:#2a1c0c; }
+/* ═══════════ build 1149: หน้าวางแผน (คาดการณ์) ผังใหม่ — สมการ ขาย − ทุน · กล่องเงินเข้า/เงินออก ═══════════ */
+.fc-ov { --fc-ink:#2a1c0c; --fc-ink2:#5f4a2a; --fc-mute:#8a7350; --fc-line:#e3d8bd; --fc-line2:#d3c49d; --fc-card:#fffdf7; --fc-paper:#f6f0e0;
+  --fc-gold:#c9a24a; --fc-gold2:#e9cf86; --fc-in:#2f7d1f; --fc-in-bg:#eaf3e2; --fc-out:#b5281b; --fc-out-bg:#fbeceb;
+  --fc-edit:#c46a12; --fc-edit-bg:#fff3e2; --fc-miss:#c98a2a; --fc-miss-bg:#fff8ec; --fc-est:#9cc068;
+  position:fixed; inset:0; z-index:9999; background:var(--fc-paper); display:none; flex-direction:column; overflow:hidden;
+  font-family:'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink); }
 .fc-ov.open { display:flex; }
-.fc-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:max(44px, calc(env(safe-area-inset-top, 0px) + 11px)) 14px 11px;
-  display:flex; align-items:center; gap:10px; flex:0 0 auto; }
-.fc-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8; border-radius:8px; padding:6px 12px;
-  font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+.fc-ov .num, .fc-ov .k, .fc-ov .m, .fc-ov .v, .fc-ov .tot { font-variant-numeric:tabular-nums; }
+.fc-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:max(44px, calc(env(safe-area-inset-top, 0px) + 11px)) 12px 11px;
+  display:flex; align-items:center; gap:9px; flex:0 0 auto; position:relative; }
+.fc-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8; border-radius:8px; width:36px; height:32px;
+  font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; padding:0; flex:0 0 auto; }
 .fc-hd .ti { flex:1; min-width:0; }
-.fc-hd .t1 { font-weight:800; font-size:16px; line-height:1.15; }
-.fc-hd .t2 { font-size:10.5px; color:#c9b88a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.fc-hd .badge { background:#f3ecd4; border:1px dashed #c9a24a; color:#6b5320; border-radius:999px; padding:2px 9px; font-size:10.5px; font-weight:800; white-space:nowrap; }
-.fc-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 12px 24px; }
-.fc-body .wrap { max-width:460px; margin:0 auto; }
-.fc-foot { display:flex; gap:8px; padding:10px 12px max(12px, env(safe-area-inset-bottom, 0px)); background:#efe6cf; border-top:1px solid #d9caa3; flex:0 0 auto; }
-.fc-foot .save { flex:1; border-radius:11px; border:1.5px solid #4e6b28; background:linear-gradient(180deg,#6b8e3d,#557030); color:#fff; font-weight:800; font-size:14px; padding:11px; font-family:inherit; cursor:pointer; }
-.fc-foot .clr { border-radius:11px; border:1.3px solid rgba(107,68,35,.35); background:#fff; color:#6b5320; font-weight:700; font-size:13px; padding:11px 13px; font-family:inherit; cursor:pointer; white-space:nowrap; }
-.fc-foot .clr.arm { border-color:#c0392b; color:#b5281b; background:#fdecec; }
+.fc-hd .t1 { font-weight:700; font-size:15.5px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fc-hd .t2 { font-size:11px; color:#cdbd8f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fc-hd .badge { font-size:10.5px; font-weight:700; border:1px dashed var(--fc-gold); color:#f0dca4; border-radius:999px; padding:1px 8px; white-space:nowrap; flex:0 0 auto; }
+.fc-hd .more { width:32px; height:32px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#f3e8c8; cursor:pointer;
+  display:grid; place-items:center; padding:0; flex:0 0 auto; }
+.fc-menu { position:absolute; right:10px; top:calc(100% - 4px); background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:10px;
+  box-shadow:0 10px 24px -10px rgba(0,0,0,.35); padding:5px; z-index:5; min-width:200px; }
+.fc-menu button { display:block; width:100%; text-align:left; border:0; background:none; font:600 13.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-out);
+  padding:9px 10px; border-radius:7px; cursor:pointer; }
+.fc-menu button:active { background:var(--fc-out-bg); }
+.fc-menu small { display:block; color:var(--fc-mute); font-weight:500; font-size:11px; }
+.fc-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 11px 22px; }
+.fc-body .wrap { max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
+.fc-foot { display:flex; align-items:center; gap:10px; padding:9px 12px max(11px, env(safe-area-inset-bottom, 0px)); background:#efe6cf; border-top:1px solid var(--fc-line2); flex:0 0 auto; }
+.fc-foot .res { flex:1; min-width:0; line-height:1.15; }
+.fc-foot .res small { display:block; font-size:10.5px; color:var(--fc-mute); }
+.fc-foot .res b { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:800; color:var(--fc-mute); font-variant-numeric:tabular-nums; }
+.fc-foot .res b.in { color:var(--fc-in); } .fc-foot .res b.out { color:var(--fc-out); }
+.fc-foot .save { border-radius:11px; border:1.5px solid #4e6b28; background:linear-gradient(180deg,#6b8e3d,#557030); color:#fff; font-weight:700; font-size:14px;
+  padding:10px 18px; font-family:inherit; cursor:pointer; flex:0 0 auto; }
 
-.fc-hero { background:linear-gradient(180deg,#faf5e8,#f3ecd8); border-radius:14px; border:1.5px dashed #c9a24a; padding:13px 15px; }
-.fc-hero .h2 { display:flex; align-items:center; gap:6px; }
-.fc-hero .h2 .l { font-size:11.5px; color:#8a6f2f; font-weight:700; }
-.fc-hero .h2 .pct { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px; border-radius:999px; padding:2px 9px; white-space:nowrap; }
-.fc-hero.gain .pct { color:#2f7d1f; background:rgba(74,158,58,.12); }
-.fc-hero.loss .pct { color:#b5281b; background:rgba(181,40,27,.1); }
-.fc-hero.wait { border-color:#b9ab8c; }
-.fc-hero.wait .pct { color:#6f5f45; background:rgba(122,106,80,.12); }
-.fc-hero .amt { overflow-wrap:anywhere; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:31px; line-height:1.1; margin-top:2px; font-variant-numeric:tabular-nums; }
-.fc-hero.gain .amt { color:#1f6b12; } .fc-hero.loss .amt { color:#a01e12; } .fc-hero.wait .amt { color:#b9ab8c; }
-.fc-hero .amt .cur { font-size:14px; font-weight:700; margin-left:3px; opacity:.6; }
-.fc-hero .cmp { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(201,162,74,.3); }
-.fc-hero .cmp .k { font-size:10px; color:#8a7350; font-weight:600; }
-.fc-hero .cmp .v { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; }
-.fc-hero .miss { margin-top:8px; font-size:11.5px; font-weight:700; color:#8a4b08; background:#fdf3e1; border-radius:8px; padding:6px 9px; line-height:1.45; }
+/* หัว: คำตอบ + สมการ */
+.fc-hero { background:var(--fc-card); border:1.5px dashed var(--fc-gold); border-radius:14px; padding:12px 13px; }
+.fc-hero .q { font-size:12px; color:var(--fc-mute); font-weight:600; }
+.fc-hero .ans { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-top:1px; }
+.fc-hero .big { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:30px; line-height:1.1; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.fc-hero .big small { font-size:13px; opacity:.6; margin-left:3px; font-family:'IBM Plex Sans Thai',sans-serif; }
+.fc-hero .pill { font-size:11.5px; font-weight:700; border-radius:999px; padding:1px 9px; }
+.fc-hero.gain .big { color:var(--fc-in); } .fc-hero.gain .pill { background:var(--fc-in-bg); color:var(--fc-in); }
+.fc-hero.loss .big { color:var(--fc-out); } .fc-hero.loss .pill { background:var(--fc-out-bg); color:var(--fc-out); }
+.fc-hero.wait { border-color:var(--fc-miss); } .fc-hero.wait .big { color:#c7b893; font-size:23px; font-family:'IBM Plex Sans Thai',sans-serif; }
+.fc-hero .eq { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:center; margin-top:10px; }
+.fc-hero .eq button { border:1px solid var(--fc-line); background:var(--fc-paper); border-radius:10px; padding:6px 9px; text-align:left; cursor:pointer; font:inherit; color:inherit; min-width:0; }
+.fc-hero .eq small { display:block; font-size:10.5px; color:var(--fc-mute); font-weight:600; }
+.fc-hero .eq b { font-family:'JetBrains Mono',monospace; font-size:14px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.fc-hero .eq .in b { color:var(--fc-in); } .fc-hero .eq .out b { color:var(--fc-out); }
+.fc-hero .eq .op { font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--fc-mute); }
+.fc-hero .bar { margin-top:11px; }
+.fc-hero .bar .tr { display:flex; height:10px; border-radius:6px; overflow:hidden; background:#efe7d2; border:1px solid var(--fc-line); }
+.fc-hero .bar .a { background:var(--fc-in); }
+.fc-hero .bar .b { background:repeating-linear-gradient(135deg,var(--fc-est) 0 5px,#c7dca5 5px 10px); }
+.fc-hero .bar .lg { display:flex; justify-content:space-between; gap:4px 8px; margin-top:4px; font-size:10.5px; color:var(--fc-ink2); flex-wrap:wrap; }
+.fc-hero .bar .lg > span { display:inline-flex; align-items:center; gap:4px; }
+.fc-hero .dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
+.fc-hero .dot.a { background:var(--fc-in); } .fc-hero .dot.b { background:var(--fc-est); }
+.fc-hero .need { margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:11.5px; color:var(--fc-ink2); }
+.fc-hero .need button { border:1.5px dashed var(--fc-miss); background:var(--fc-miss-bg); color:#8a4b08; border-radius:999px; font:700 11.5px 'IBM Plex Sans Thai',sans-serif; padding:2px 10px; cursor:pointer; }
+.fc-hero .need .more { color:var(--fc-mute); }
 
-.fc-sec { font-size:11px; font-weight:800; color:#7a6533; margin:16px 2px 7px; letter-spacing:.3px; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
-.fc-sec .n { font-family:'JetBrains Mono',monospace; color:#8a6f2f; }
-.fc-sec small { font-weight:600; color:#8a7350; letter-spacing:0; font-size:10.5px; }
-.fc-box { background:rgba(255,250,235,.55); border:1px solid rgba(107,68,35,.32); border-radius:9px; overflow:hidden; }
-.fc-note { font-size:10.5px; color:#8a7350; padding:6px 4px 0; line-height:1.45; margin:0; }
-.fc-note b { color:#4a3c1c; }
-.fc-ov .lk { text-decoration:underline; cursor:pointer; color:#6b5320; font-weight:700; }
+/* กล่องใหญ่ เงินเข้า / เงินออก */
+.fc-blk { background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:13px; overflow:hidden; scroll-margin-top:8px; }
+.fc-blk-h { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--fc-line); }
+.fc-blk-h .ic { width:24px; height:24px; border-radius:7px; display:grid; place-items:center; flex:0 0 auto; }
+.fc-blk.in .ic { background:var(--fc-in-bg); color:var(--fc-in); } .fc-blk.out .ic { background:var(--fc-out-bg); color:var(--fc-out); }
+.fc-blk-h .nm { font-weight:700; font-size:14.5px; flex:1; min-width:0; }
+.fc-blk-h .nm small { font-weight:500; color:var(--fc-mute); font-size:11px; margin-left:5px; }
+.fc-blk-h .tot { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px; }
+.fc-blk.in .fc-blk-h .tot { color:var(--fc-in); } .fc-blk.out .fc-blk-h .tot { color:var(--fc-out); }
+.fc-sec { border-bottom:1px solid var(--fc-line); }
+.fc-sec:last-child { border-bottom:0; }
+.fc-sec-h { display:grid; grid-template-columns:minmax(0,1fr) auto 14px; gap:8px; align-items:center; padding:9px 12px; cursor:pointer; background:none; border:0; width:100%; text-align:left; font:inherit; color:inherit; }
+.fc-sec-h .t { font-weight:700; font-size:13px; line-height:1.35; }
+.fc-sec-h .t small { display:block; font-weight:500; color:var(--fc-mute); font-size:11px; }
+.fc-sec-h .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; }
+.fc-sec-h .ch, .fc-day-h .ch { color:var(--fc-mute); transition:transform .15s; display:grid; place-items:center; }
+.fc-sec.open > .fc-sec-h .ch, .fc-day.open .fc-day-h .ch { transform:rotate(180deg); }
+.fc-sec-b { display:none; padding:0 12px 11px; }
+.fc-sec.open > .fc-sec-b { display:block; }
+.fc-fix { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 12px; border-bottom:1px solid var(--fc-line); }
+.fc-fix .t { font-weight:700; font-size:13px; min-width:0; }
+.fc-fix .t small { display:block; font-weight:500; color:var(--fc-mute); font-size:11px; }
+.fc-fix .t small.warn { color:#8a4b08; font-weight:700; }
+.fc-fix .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; white-space:nowrap; }
+.fc-tag { display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:0 6px; line-height:17px; vertical-align:1px; white-space:nowrap; font-family:'IBM Plex Sans Thai',sans-serif; }
+.fc-tag.bill { background:#e3eedb; color:#2f6a1f; } .fc-tag.form { background:#efe6cc; color:#6b5320; }
+.fc-tag.edit { background:var(--fc-edit-bg); color:var(--fc-edit); } .fc-tag.none { background:var(--fc-miss-bg); color:#8a4b08; }
+.fc-tag.est { background:#eef3e2; color:#56702d; border:1px dashed var(--fc-est); line-height:15px; }
+.fc-hint { font-size:11.5px; color:var(--fc-mute); margin:0 0 8px; line-height:1.5; }
+.fc-hint b { color:var(--fc-ink2); }
+.fc-step { font-size:12px; font-weight:700; color:var(--fc-ink2); margin:10px 0 6px; }
+.fc-step:first-child { margin-top:0; }
+.fc-emp { padding:8px 10px; font-size:11.5px; color:#8a4b08; background:var(--fc-miss-bg); border-radius:9px; line-height:1.45; margin-bottom:6px; }
+.fc-emp.ok { color:var(--fc-in); background:var(--fc-in-bg); }
+.fc-empty { padding:8px 2px; font-size:11.5px; color:var(--fc-mute); }
 
-.fc-pin { display:flex; align-items:center; border:1.5px solid #c9a24a; border-radius:8px; overflow:hidden; background:#fffdf6; height:32px; }
-.fc-pin button { width:26px; height:100%; border:0; background:#f7efd8; font-weight:800; color:#6b5320; cursor:pointer; font-size:14px; flex:0 0 auto; font-family:inherit; padding:0; }
-.fc-pin button:active { background:#ecdfbd; }
-.fc-pin button:disabled { opacity:.4; }
-.fc-pin input { width:100%; min-width:0; border:0; background:transparent; text-align:center; font-family:'JetBrains Mono',monospace; font-weight:800;
-  font-size:13.5px; color:#2a1c0c; padding:0; -moz-appearance:textfield; appearance:textfield; }
+/* วันที่เก็บแล้ว */
+.fc-day { border:1px solid var(--fc-line); border-radius:10px; margin-top:8px; overflow:hidden; background:#fffefa; }
+.fc-day-h { display:flex; align-items:center; gap:7px; padding:7px 10px; background:#f7f0dd; font-size:12.5px; cursor:pointer; border:0; width:100%; font-family:inherit; color:inherit; text-align:left; }
+.fc-day-h .d { font-weight:700; }
+.fc-day-h .k { color:var(--fc-mute); font-family:'JetBrains Mono',monospace; font-size:11.5px; }
+.fc-day-h .v { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; }
+.fc-day .fc-tb { display:none; } .fc-day.open .fc-tb { display:block; }
+
+/* ตาราง: เบอร์ · กก. · ราคา · เป็นเงิน */
+.fc-tb { font-size:12.5px; }
+.fc-tr { display:grid; grid-template-columns:48px minmax(0,1fr) 84px minmax(0,1fr); gap:6px; align-items:center; padding:5px 10px; border-top:1px solid #efe6cf; }
+.fc-tr.fc-th, .fc-mx.fc-th { font-size:10px; font-weight:700; color:var(--fc-mute); padding-top:5px; padding-bottom:3px; border-top:0; }
+.fc-tr .g, .fc-mx .g { font-weight:700; overflow-wrap:anywhere; line-height:1.2; }
+.fc-tr .k, .fc-tr .m, .fc-mx .m { font-family:'JetBrains Mono',monospace; text-align:right; }
+.fc-tr .k { color:var(--fc-ink2); }
+.fc-tr .m, .fc-mx .m { font-weight:700; }
+.fc-th .k, .fc-th .m { font-family:'IBM Plex Sans Thai',sans-serif !important; }
+.fc-th .p { text-align:center; }
+.fc-sec-b > .fc-tb, .fc-pday .fc-tb { margin:0 -2px; }
+.fc-mx { display:grid; grid-template-columns:60px 84px minmax(0,1fr) 28px; gap:6px; align-items:center; padding:5px 2px; border-top:1px solid #efe6cf; }
+.fc-mx .gn { width:100%; min-width:0; height:30px; border:1.5px solid var(--fc-gold); border-radius:8px; background:#fffdf4; text-align:center; font:700 12.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink); padding:0 4px; }
+.fc-mx .gn:focus { outline:none; box-shadow:0 0 0 3px rgba(201,162,74,.3); }
+.fc-mx .gn.miss { border-style:dashed; border-color:var(--fc-miss); background:var(--fc-miss-bg); }
+.fc-pin { display:flex; flex-direction:column; align-items:center; min-width:0; }
+.fc-pin input { width:100%; height:30px; border:1.5px solid var(--fc-gold); border-radius:8px; background:#fffdf4; text-align:center;
+  font:800 13.5px 'JetBrains Mono',monospace; color:var(--fc-ink); padding:0 4px; -moz-appearance:textfield; appearance:textfield; }
 .fc-pin input::-webkit-outer-spin-button, .fc-pin input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-.fc-pin input:focus { outline:none; }
-.fc-pin input::placeholder { color:#c2b08a; font-weight:500; }
-.fc-pin:focus-within { box-shadow:0 0 0 2px rgba(201,162,74,.35); }
-.fc-pin.chg { border-color:#d07a1e; background:#fff6e6; }
-.fc-pin.miss { border-style:dashed; border-color:#d39a3e; background:#fffaf0; }
-.fc-pin.bad { border-color:#c0392b; border-style:solid; background:#fdecec; }
-.fc-pin .u { font-size:10.5px; font-weight:700; color:#8a7350; padding-right:5px; }
-
-.fc-pr { display:grid; grid-template-columns:40px minmax(0,1fr) 108px 74px; gap:6px; align-items:center; padding:7px 11px; border-bottom:1px solid #e0d6bd; }
-.fc-pr .g { font-weight:800; font-size:13px; color:#4a3c1c; overflow-wrap:anywhere; line-height:1.15; }
-.fc-pr .k { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8a7350; line-height:1.2; }
-.fc-pr .k small { display:block; font-size:9.5px; }
-.fc-pr .rv { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; text-align:right; font-variant-numeric:tabular-nums; line-height:1.2; }
-.fc-pr .was { display:block; font-size:9.5px; color:#8a7350; font-weight:500; white-space:nowrap; }
-.fc-pr .was.on { color:#d07a1e; font-weight:700; }
-
-.fc-day { border-bottom:1px solid #e0d6bd; }
-.fc-day .dh { display:grid; grid-template-columns:58px 1fr auto 16px; gap:8px; align-items:center; padding:9px 11px; cursor:pointer; background:rgba(244,236,214,.55); }
-.fc-day .dt { font-weight:700; font-size:13px; color:#4a3c1c; }
-.fc-day .mid { min-width:0; }
-.fc-day .kg { font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8a7350; }
-.fc-day .dh .rv { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; }
-.fc-day .dh .rv small { display:block; font-size:10px; color:#8a7350; font-weight:500; }
-.fc-day .ch { font-size:10px; color:#8a7350; text-align:center; transition:transform .2s; }
-.fc-day.open .ch { transform:rotate(180deg); }
-.fc-day .dg { display:none; }
-.fc-day.open .dg { display:block; }
-.fc-src { display:inline-block; font-size:9.5px; font-weight:700; border-radius:5px; padding:0 5px; margin-left:4px; vertical-align:1px; }
-.fc-src.form { background:#efe6cc; color:#6b5320; }
-.fc-src.bill { background:#e3eedb; color:#2f6a1f; }
-.fc-src.edit { background:#fde9cf; color:#9a560e; }
-.fc-src.none { background:#fdf0dc; color:#8a4b08; }
-.fc-sub { display:flex; justify-content:space-between; padding:8px 11px; background:#f4ecd6; font-size:12px; font-weight:800; color:#4a3c1c; border-top:1px solid #e0d6bd; }
-.fc-sub .v { font-family:'JetBrains Mono',monospace; }
-
-.fc-ptop { display:flex; align-items:center; gap:7px; padding:9px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
-.fc-ptop .t { font-size:11.5px; color:#8a7350; flex:1 1 140px; min-width:0; }
-.fc-stp { display:inline-flex; align-items:center; border:1.3px solid rgba(107,68,35,.35); border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
-.fc-stp button { width:30px; height:30px; border:0; background:#f5eedd; font-size:15px; font-weight:800; color:#5f4a2a; cursor:pointer; font-family:'JetBrains Mono',monospace; padding:0; }
-.fc-stp .lb { font-size:10.5px; font-weight:800; color:#5f4a2a; padding:0 7px; white-space:nowrap; }
-.fc-zsrc { display:flex; align-items:center; gap:8px; padding:9px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
-.fc-zsrc .t { font-size:11.5px; color:#8a7350; font-weight:700; }
-.fc-zsrc .t b { color:#4a3c1c; font-family:'JetBrains Mono',monospace; }
-.fc-seg { display:inline-flex; border:1.5px solid #c9a24a; border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
-.fc-seg button { border:0; background:#fff; color:#6b5320; font-family:inherit; font-size:12px; font-weight:800; padding:7px 11px; cursor:pointer; }
-.fc-seg button + button { border-left:1.5px solid #c9a24a; }
+.fc-pin input:focus { outline:none; box-shadow:0 0 0 3px rgba(201,162,74,.3); }
+.fc-pin input::placeholder { color:#c2b08a; font-weight:500; font-family:'IBM Plex Sans Thai',sans-serif; font-size:12px; }
+.fc-pin .was { font-size:9.5px; color:var(--fc-mute); line-height:1.15; margin-top:1px; white-space:nowrap; }
+.fc-pin .was:empty { display:none; }
+.fc-pin.chg input { border-color:var(--fc-edit); background:var(--fc-edit-bg); color:#7a3e05; }
+.fc-pin.chg .was { color:var(--fc-edit); font-weight:700; }
+.fc-pin.miss input { border-style:dashed; border-color:var(--fc-miss); background:var(--fc-miss-bg); }
+.fc-pin.bad input { border-style:solid; border-color:#c0392b; background:#fdecec; }
+.fc-pin.flash input, .fc-left.flash { animation:fcFlash 1.1s ease 2; }
+@keyframes fcFlash { 50% { box-shadow:0 0 0 5px rgba(201,138,42,.45); } }
+.fc-pin.kg { width:84px; }
+.fc-seg { display:flex; border:1.5px solid var(--fc-gold); border-radius:10px; overflow:hidden; background:#fff; margin:0 0 9px; }
+.fc-seg button { flex:1; border:0; background:#fff; color:var(--fc-ink2); font:700 12.5px 'IBM Plex Sans Thai',sans-serif; padding:7px 6px; cursor:pointer; }
+.fc-seg button + button { border-left:1.5px solid var(--fc-gold); }
 .fc-seg button.on { background:linear-gradient(180deg,#f2d78c,#e2bd5c); color:#3e2a04; }
 .fc-seg button:disabled { color:#b9ab8c; cursor:default; }
-.fc-seg.sm button { font-size:11px; padding:6px 8px; }
-
-.fc-cr { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 11px; border-bottom:1px solid #e0d6bd; font-size:12.5px; }
-.fc-cr .k { color:#4a3c1c; min-width:0; }
-.fc-cr .k small { display:block; color:#8a7350; font-size:10.5px; }
-.fc-cr .k small.warn { color:#8a4b08; font-weight:700; }
-.fc-cr .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.fc-cr.tot { background:#f4ecd6; font-weight:800; border-bottom:0; }
-.fc-cr.tot .v { color:#b5281b; }
-.fc-chd, .fc-mxh { display:grid; gap:6px; padding:6px 11px 4px; font-size:9.5px; font-weight:700; color:#8a7350; border-bottom:1px solid #e0d6bd; background:rgba(244,236,214,.55); }
-.fc-chd { grid-template-columns:40px minmax(0,1fr) 108px 74px; }
-.fc-chd span:nth-child(3) { text-align:center; } .fc-chd span:last-child { text-align:right; }
-.fc-mxh, .fc-mx { grid-template-columns:64px 108px minmax(0,1fr) 30px; }
-.fc-mxh span:nth-child(2) { text-align:center; } .fc-mxh span:nth-child(3) { text-align:right; }
-.fc-mx { display:grid; gap:6px; align-items:center; padding:7px 11px; border-bottom:1px solid #e0d6bd; }
-.fc-mx .g { font-weight:800; font-size:13px; color:#4a3c1c; overflow-wrap:anywhere; }
-.fc-mx .gn { width:100%; min-width:0; height:32px; border:1.5px solid #c9a24a; border-radius:8px; background:#fffdf6; text-align:center; font-family:inherit;
-  font-weight:800; font-size:13px; color:#2a1c0c; padding:0 4px; }
-.fc-mx .gn:focus { outline:none; box-shadow:0 0 0 2px rgba(201,162,74,.35); }
-.fc-mx .gn::placeholder { color:#c2b08a; font-weight:500; }
-.fc-mx .gn.miss { border-style:dashed; border-color:#d39a3e; background:#fffaf0; }
-.fc-mx .k { font-family:'JetBrains Mono',monospace; font-size:12px; color:#4a3c1c; text-align:right; line-height:1.2; }
-.fc-mx .k small { display:block; font-size:9.5px; color:#8a7350; }
-.fc-mx .k small.on { color:#d07a1e; font-weight:700; }
-.fc-ov .x { width:30px; height:30px; border-radius:7px; border:1px solid #e0c3b7; background:#f7e8e2; color:#a94f30; font-weight:800; cursor:pointer; font-size:13px; flex:0 0 auto; padding:0; font-family:inherit; }
-.fc-mxadd { display:flex; gap:10px; align-items:center; padding:8px 11px; border-bottom:1px solid #e0d6bd; flex-wrap:wrap; font-size:11px; }
-.fc-mxadd button { border-radius:8px; border:1.3px dashed rgba(107,68,35,.4); background:#fff; color:#5f4a2a; font-weight:800; font-size:12px; padding:6px 10px; font-family:inherit; cursor:pointer; }
-.fc-msum { display:flex; justify-content:space-between; gap:8px; padding:8px 11px; font-size:12px; font-weight:800; background:#eef6e6; color:#2c5a1e; }
-.fc-msum.bad { background:#fdf0dc; color:#8a4b08; }
-.fc-msum .v { font-family:'JetBrains Mono',monospace; }
-.fc-emp { padding:8px 11px; font-size:11.5px; color:#8a4b08; background:#fdf3e1; border-bottom:1px solid #e0d6bd; line-height:1.4; }
-.fc-emp.ok { color:#2c5a1e; background:#eef6e6; }
-.fc-empty { padding:9px 11px 2px; font-size:11.5px; color:#8a7350; font-style:italic; }
-
-.fc-rlist { padding:8px 11px 9px; border-bottom:1px solid #e0d6bd; display:flex; flex-direction:column; gap:7px; }
-.fc-rrow { display:grid; grid-template-columns:20px minmax(0,1fr); gap:4px 9px; align-items:center; background:#fffdf8; border:1.5px solid rgba(107,68,35,.2);
-  border-radius:10px; padding:9px 10px; cursor:pointer; text-align:left; font-family:inherit; width:100%; color:#2a1c0c; }
-.fc-rrow.sel { border-color:#6b8e3d; background:#f1f6e8; box-shadow:0 0 0 2px rgba(107,142,61,.18); }
-.fc-rrow.static { cursor:default; }
-.fc-rrow .rd { width:18px; height:18px; border-radius:50%; border:2px solid #b6a582; align-self:start; margin-top:1px; }
-.fc-rrow.sel .rd { border-color:#2f7d1f; background:radial-gradient(circle,#2f7d1f 42%,transparent 46%); }
-.fc-rrow .rt { display:flex; align-items:baseline; gap:7px; min-width:0; flex-wrap:wrap; }
-.fc-rrow .rn { font-size:14px; font-weight:800; }
-.fc-rrow .rm { font-size:10.5px; color:#8a7350; }
-.fc-rbar { grid-column:2; display:flex; height:12px; border-radius:6px; overflow:hidden; border:1px solid rgba(107,68,35,.18); }
-.fc-rbar span { height:100%; }
-.fc-rleg { grid-column:2; display:flex; flex-wrap:wrap; gap:2px 10px; font-size:11px; color:#4a3c1c; }
-.fc-rleg b { font-family:'JetBrains Mono',monospace; font-weight:800; }
-.fc-dotg { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:3px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
-.fc-rchg { align-self:flex-end; border:0; background:none; color:#6b5320; font-family:inherit; font-size:12px; font-weight:800; text-decoration:underline; cursor:pointer; padding:2px 2px 0; }
-
-.fc-hx { padding:8px 11px; border-bottom:1px solid #e0d6bd; }
-.fc-hx .top { display:flex; gap:6px; align-items:center; }
-.fc-hx .nm { flex:1; min-width:0; height:32px; border:1.3px solid rgba(107,68,35,.3); border-radius:8px; background:#fffdf8; padding:0 9px; font-family:inherit; font-size:13px; font-weight:600; color:#2a1c0c; }
-.fc-hx .nm:focus { outline:none; border-color:#c9a24a; box-shadow:0 0 0 2px rgba(201,162,74,.3); }
-.fc-hx .nm::placeholder { color:#b0a07a; font-weight:400; }
-.fc-hx .bot { display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
-.fc-hx .bot .fc-pin { width:118px; }
-.fc-hx .tt { margin-left:auto; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12.5px; line-height:1.2; }
-.fc-hx .tt small { display:block; font-size:9.5px; color:#8a7350; font-weight:500; }
-.fc-hx.inc .tt { color:#2f7d1f; } .fc-hx.exp .tt { color:#b5281b; }
-.fc-hxh { display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:7px 11px 5px; font-size:11.5px; font-weight:800; color:#4a3c1c; background:rgba(244,236,214,.55); border-bottom:1px solid #e0d6bd; }
-.fc-hxh small { font-weight:500; color:#8a7350; font-size:10px; }
-.fc-hxsum { display:flex; justify-content:space-between; padding:8px 11px; font-size:12px; font-weight:800; }
-.fc-hxsum .v { font-family:'JetBrains Mono',monospace; }
-.fc-hxsum.inc { background:#eef6e6; color:#2c5a1e; }
-.fc-hxsum.exp { background:#fbeeee; color:#8a2a1e; border-bottom:1px solid #e0d6bd; }
-
-.fc-pday { border-bottom:1px solid #e0d6bd; background:#fffdf8; }
-.fc-pday .pdh { display:flex; align-items:center; gap:6px; padding:8px 11px 6px; background:rgba(244,236,214,.7); border-bottom:1px solid #e0d6bd; flex-wrap:wrap; }
-.fc-pday .pdn { font-size:12.5px; font-weight:800; color:#4a3c1c; flex:0 0 auto; }
-.fc-pday input[type=date] { height:32px; border:1.5px solid #c9a24a; border-radius:8px; background:#fffdf6; font-family:inherit; font-size:12.5px; font-weight:700; color:#2a1c0c; padding:0 6px; min-width:0; flex:1 1 112px; }
-.fc-pday .pdh .x { margin-left:auto; }
-.fc-pday .pdq { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 11px; border-bottom:1px solid #e0d6bd; font-size:11px; color:#8a7350; flex-wrap:wrap; }
-.fc-pday .kgw { display:flex; align-items:center; gap:5px; font-weight:700; color:#4a3c1c; }
-.fc-pday .kgw .fc-pin { width:112px; }
-.fc-pday .pdsum { display:flex; justify-content:space-between; padding:6px 11px; font-size:11.5px; font-weight:800; color:#4a3c1c; background:#f8f1df; }
-.fc-pday .pdsum .v { font-family:'JetBrains Mono',monospace; }
-.fc-pun { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 11px; font-size:11.5px; color:#8a4b08; background:#fdf3e1; border-bottom:1px solid #e0d6bd; line-height:1.4; }
-.fc-pun b { font-family:'JetBrains Mono',monospace; }
-.fc-pun .v { font-family:'JetBrains Mono',monospace; font-weight:800; color:#4a3c1c; flex:0 0 auto; }
-.fc-pun.ok { color:#2c5a1e; background:#eef6e6; }
+.fc-tools { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 4px; flex-wrap:wrap; }
+.fc-tools .lb { font-size:11.5px; color:var(--fc-mute); }
+.fc-nudge { display:inline-flex; border:1.3px solid var(--fc-line2); border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
+.fc-nudge button { border:0; background:#f7efdc; font:700 12px 'JetBrains Mono',monospace; color:var(--fc-ink2); padding:5px 9px; cursor:pointer; }
+.fc-nudge > span { font-size:11px; font-weight:700; color:var(--fc-ink2); padding:0 7px; display:grid; place-items:center; border-left:1px solid var(--fc-line2); border-right:1px solid var(--fc-line2); }
+.fc-lnk { border:0; background:none; color:var(--fc-ink2); font:700 11.5px 'IBM Plex Sans Thai',sans-serif; text-decoration:underline; cursor:pointer; padding:0; }
+.fc-lnk.end { align-self:flex-end; }
+.fc-lkrow { margin-top:8px; }
+.fc-pday { border:1px solid var(--fc-line); border-radius:10px; margin-top:8px; overflow:hidden; background:#fffefa; }
+.fc-pday-h { display:flex; align-items:center; gap:6px; padding:7px 9px; background:#f7f0dd; flex-wrap:wrap; }
+.fc-pday-h b { font-size:12.5px; }
+.fc-pday-h .u { font-size:11.5px; color:var(--fc-mute); }
+.fc-pday-h .x { margin-left:auto; }
+.fc-ov .x { width:28px; height:28px; border-radius:7px; border:1px solid #e3c4b8; background:#f8ebe5; color:#a94f30; font-weight:700; cursor:pointer; font-size:13px; padding:0; font-family:inherit; flex:0 0 auto; }
+.fc-left { display:flex; justify-content:space-between; gap:8px; margin-top:8px; font-size:11.5px; border-radius:9px; padding:7px 10px; background:var(--fc-miss-bg); color:#8a4b08; }
+.fc-left.ok { background:var(--fc-in-bg); color:var(--fc-in); }
+.fc-left b { font-family:'JetBrains Mono',monospace; }
+.fc-addrow { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
+.fc-add { border:1.3px dashed var(--fc-line2); background:#fff; border-radius:9px; color:var(--fc-ink2); font:700 12px 'IBM Plex Sans Thai',sans-serif; padding:6px 10px; cursor:pointer; }
+.fc-msum { display:flex; justify-content:space-between; gap:8px; font-size:11.5px; font-weight:700; margin-top:8px; padding:6px 10px; border-radius:8px; background:var(--fc-in-bg); color:var(--fc-in); }
+.fc-msum.bad { background:var(--fc-miss-bg); color:#8a4b08; }
+.fc-msum span:last-child { font-family:'JetBrains Mono',monospace; }
+.fc-refs { display:flex; flex-direction:column; gap:6px; margin-bottom:8px; }
+.fc-ref { display:grid; grid-template-columns:18px minmax(0,1fr); gap:3px 8px; align-items:center; border:1.5px solid var(--fc-line); border-radius:10px; padding:7px 9px;
+  background:#fffefa; cursor:pointer; text-align:left; font:inherit; color:inherit; width:100%; }
+.fc-ref.static { cursor:default; }
+.fc-ref.sel { border-color:#6b8e3d; background:#f1f6e8; }
+.fc-ref .rd { width:16px; height:16px; border-radius:50%; border:2px solid #b6a582; }
+.fc-ref.sel .rd { border-color:var(--fc-in); background:radial-gradient(circle,var(--fc-in) 40%,transparent 45%); }
+.fc-ref .rn { font-weight:700; font-size:12.5px; min-width:0; }
+.fc-ref .rn small { font-weight:500; color:var(--fc-mute); font-size:10.5px; margin-left:5px; }
+.fc-ref .sb { grid-column:2; display:flex; height:9px; border-radius:5px; overflow:hidden; border:1px solid rgba(107,68,35,.15); }
+.fc-ref .sb span { height:100%; }
+.fc-ref .rl { grid-column:2; font-size:10.5px; color:var(--fc-ink2); font-family:'JetBrains Mono',monospace; }
+.fc-quick { display:flex; flex-wrap:wrap; gap:6px; }
+.fc-quick button { border:1px solid var(--fc-line2); background:#fff; border-radius:999px; font:600 12px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink2); padding:3px 10px; cursor:pointer; }
+.fc-item { display:grid; grid-template-columns:minmax(0,1fr) 84px auto 28px; gap:6px; align-items:center; margin-top:8px; }
+.fc-item input.n { height:30px; border:1px solid var(--fc-line2); border-radius:8px; padding:0 8px; font:600 12.5px 'IBM Plex Sans Thai',sans-serif; min-width:0; background:#fffefa; color:var(--fc-ink); }
+.fc-item input.n:focus { outline:none; border-color:var(--fc-gold); box-shadow:0 0 0 3px rgba(201,162,74,.3); }
+.fc-item .calc { grid-column:1/-1; text-align:right; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fc-mute); margin-top:-3px; }
+.fc-item .calc:empty { display:none; }
+.fc-unit { display:flex; border:1.3px solid var(--fc-line2); border-radius:8px; overflow:hidden; }
+.fc-unit button { border:0; background:#fff; font:700 11px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-mute); padding:6px 6px; cursor:pointer; }
+.fc-unit button.on { background:var(--fc-gold2); color:#3e2a04; }
+.fc-end { background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:13px; padding:10px 12px; display:grid; grid-template-columns:1fr auto; gap:3px 10px; font-size:13px; }
+.fc-end .v { font-family:'JetBrains Mono',monospace; font-weight:700; text-align:right; }
+.fc-end .v.in { color:var(--fc-in); } .fc-end .v.out { color:var(--fc-out); }
+.fc-end .r { border-top:1.5px solid var(--fc-ink); padding-top:4px; font-weight:700; }
 @media (max-width:370px) {
-  .fc-pr, .fc-chd { grid-template-columns:36px minmax(0,1fr) 100px 68px; gap:5px; padding-left:9px; padding-right:9px; }
-  .fc-mxh, .fc-mx { grid-template-columns:58px 100px minmax(0,1fr) 30px; gap:5px; }
+  .fc-tr { grid-template-columns:42px minmax(0,1fr) 78px minmax(0,1fr); gap:5px; padding-left:8px; padding-right:8px; }
+  .fc-mx { grid-template-columns:54px 78px minmax(0,1fr) 28px; gap:5px; }
+  .fc-item { grid-template-columns:minmax(0,1fr) 76px auto 28px; gap:5px; }
+  .fc-hero .big { font-size:27px; }
 }
+@media (prefers-reduced-motion:reduce) { .fc-pin.flash input, .fc-left.flash { animation:none; } }
 
 /* ═══════════ หน้าสรุปสวนเต็มจอ (garden summary overlay) ═══════════ */
 .gsum-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column;
@@ -23516,14 +23528,6 @@ function _fcNextDate() {
   else { d = new Date(); d.setDate(d.getDate() + 1); }
   return _fcISO(d);   // เวลาท้องถิ่น (toISOString = UTC → ไทยได้วันเดิมซ้ำ)
 }
-function _fcPin(id, val, cls, dn, up, inp, opt) {
-  opt = opt || {};
-  return `<span class="fc-pin${cls ? ' ' + cls : ''}${opt.pct ? ' pct' : ''}" id="fcpin-${id}">`
-    + `<button type="button" aria-label="ลด" onclick="${dn}"${opt.dis ? ' disabled' : ''}>−</button>`
-    + `<input id="fcin-${id}" type="number" min="0" max="${opt.max || FC_MAX.p}" step="${opt.step || 0.5}" inputmode="decimal" placeholder="${opt.ph || '—'}" value="${_fcFp(val)}" oninput="${inp};_fcVal(this)" onchange="_fcFix(this)"${opt.dis ? ' disabled' : ''}>`
-    + (opt.pct ? '<span class="u">%</span>' : '')
-    + `<button type="button" aria-label="เพิ่ม" onclick="${up}"${opt.dis ? ' disabled' : ''}>+</button></span>`;
-}
 function _fcVal(el) {
   const pin = el && el.closest('.fc-pin'); if (!pin) return;
   const s = String(el.value).trim(), n = Number(s), mx = Number(el.getAttribute('max')) || FC_MAX.p;
@@ -23548,15 +23552,36 @@ function _fcMissN(m) {
   Object.keys(m.projBy).forEach(k => { if (m.projBy[k] > 0 && m.rate[k] == null) n++; });
   return n;
 }
-// สัดส่วนของสวนอ้างอิงเป็นแถบสี
+function _fcPin(id, val, opt) {
+  opt = opt || {};
+  return `<span class="fc-pin${opt.cls ? ' ' + opt.cls : ''}" id="fcpin-${id}"><input id="fcin-${id}" type="number" min="0" max="${opt.max || FC_MAX.p}" step="any" inputmode="decimal"`
+    + ` placeholder="${opt.ph || 'กรอก'}" value="${_fcFp(val)}" oninput="${opt.oninput || ''};_fcVal(this)" onchange="_fcFix(this)"><span class="was" id="fc-was-${id}"></span></span>`;
+}
+// ═══ build 1149: ผังใหม่ — สมการ ขายได้ − ทุน = ผลลัพธ์ · กล่องเงินเข้า / เงินออก · ตารางมีหัวคอลัมน์ ═══
+let _fcSec = { coll: true, rem: true, inc: true, proc: true, exp: true };
+const FC_SVG_IN = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>';
+const FC_SVG_OUT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>';
+const FC_SVG_CH = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>';
+// สัดส่วนของสวนอ้างอิงเป็นแถบสี (การ์ดเลือกได้)
 function _fcRefCard(mix, title, meta, sel, click) {
   const rows = mix.rows.filter(r => r.pct > 0);
   const bar = rows.map((r, i) => `<span style="width:${r.pct}%;background:${FC_BAR[i % FC_BAR.length]}"></span>`).join('');
-  const leg = rows.map((r, i) => `<span><span class="fc-dotg" style="background:${FC_BAR[i % FC_BAR.length]}"></span>${_fcEsc(r.name)} <b>${r.pct}%</b></span>`).join('');
+  const leg = rows.map(r => `${_fcEsc(r.name)} ${r.pct}%`).join(' · ');
   const tag = click ? 'button' : 'div';
-  return `<${tag}${click ? ` type="button" onclick="${click}"` : ''} class="fc-rrow${sel ? ' sel' : ''}${click ? '' : ' static'}">`
-    + `<span class="rd"></span><span class="rt"><span class="rn">${_fcEsc(title)}</span><span class="rm">${_fcEsc(meta)}</span></span>`
-    + `<span class="fc-rbar">${bar}</span><span class="fc-rleg">${leg}</span></${tag}>`;
+  return `<${tag}${click ? ` type="button" onclick="${click}"` : ''} class="fc-ref${sel ? ' sel' : ''}${click ? '' : ' static'}">`
+    + `<span class="rd"></span><span class="rn">${_fcEsc(title)}<small>${_fcEsc(meta)}</small></span>`
+    + `<span class="sb">${bar}</span><span class="rl">${leg}</span></${tag}>`;
+}
+function _fcSecHtml(key, title, valId, body) {
+  return `<div class="fc-sec${_fcSec[key] ? ' open' : ''}" id="fc-sec-${key}"><button type="button" class="fc-sec-h" onclick="fcTogSec('${key}')">`
+    + `<span class="t">${title}</span><span class="v" id="${valId}"></span><span class="ch">${FC_SVG_CH}</span></button><div class="fc-sec-b">${body}</div></div>`;
+}
+function _fcTh(c3, c4) { return `<div class="fc-tr fc-th"><span>เบอร์</span><span class="k">กก.</span><span class="p">${c3}</span><span class="m">${c4 || 'เป็นเงิน'}</span></div>`; }
+function _fcRow(name, kgId, pinHtml, mId) {
+  return `<div class="fc-tr"><span class="g">${_fcEsc(name)}</span><span class="k" id="${kgId}"></span>${pinHtml}<span class="m" id="${mId}"></span></div>`;
+}
+function _fcNudge(fnDn, fnUp) {
+  return `<span class="fc-nudge"><button type="button" onclick="${fnDn}" aria-label="ลดทุกเบอร์ 1 บาท">−1</button><span>ทุกเบอร์</span><button type="button" onclick="${fnUp}" aria-label="เพิ่มทุกเบอร์ 1 บาท">+1</button></span>`;
 }
 
 function _fcRender() {
@@ -23568,190 +23593,194 @@ function _fcRender() {
     _fcD.mixMode = 'manual'; _fcD.mixRows = [{ name: '', pct: null }, { name: '', pct: null }]; m = _fcM();
   }
   const planned = !!(g.forecastPlan && g.forecastPlan.updatedAt);
-  document.getElementById('fc-t2').textContent = (g.name || '') + ' · ' + (g.fruit || '—') + ' · ' + _fcDeal(g);
+  document.getElementById('fc-t1').textContent = 'วางแผน · ' + (g.name || '');
+  document.getElementById('fc-t2').textContent = (g.fruit || '—') + ' · ' + _fcDeal(g) + (m.target > 0 ? ' · เป้า ' + _fcF0(m.target) + ' กก.' : '');
   document.getElementById('fc-badge').textContent = planned ? 'ตามแผน' : 'คาดการณ์';
+  const menu = document.getElementById('fc-menu'); if (menu) menu.hidden = true;
   const rateKeys = Object.keys(m.projBy);
   _fcK = { mix: m.mixOrder.slice(), rate: rateKeys, rows: m.hasColl ? -1 : m.mixRows.length, days: m.days.length };
   let h = '';
-  // ── หัว: ถ้าครบเป้า ──
-  h += `<div class="fc-hero" id="fc-hero"><div class="h2"><span class="l" id="fc-hl"></span><span class="pct" id="fc-hpct"></span></div>
-    <div class="amt"><span id="fc-hamt">—</span><span class="cur">บาท</span></div>
-    <div class="cmp"><div><div class="k">ทุน</div><div class="v" id="fc-hcost">—</div></div><div><div class="k">ขาย</div><div class="v" id="fc-hsold">—</div></div></div>
-    <div class="miss" id="fc-hmiss" hidden></div></div>`;
 
+  // ── หัว: คำตอบ + สมการ + แถบของจริง/ตัวคาด ──
+  h += `<div class="fc-hero" id="fc-hero"><div class="q" id="fc-hq"></div>
+    <div class="ans"><span class="big" id="fc-hamt">—</span><span class="pill" id="fc-hpct"></span></div>
+    <div class="eq"><button type="button" class="in" onclick="fcGo('fc-blk-in')"><small>ขายได้</small><b id="fc-hsold">—</b></button><span class="op">−</span>
+      <button type="button" class="out" onclick="fcGo('fc-blk-out')"><small>ทุน</small><b id="fc-hcost">—</b></button></div>
+    <div class="bar"><div class="tr"><span class="a" id="fc-hba"></span><span class="b" id="fc-hbb"></span></div>
+      <div class="lg"><span><i class="dot a"></i><span id="fc-hla"></span></span><span><i class="dot b"></i><span id="fc-hlb"></span></span></div></div>
+    <div class="need" id="fc-hneed" hidden></div></div>`;
+
+  // ══ เงินเข้า ══
+  h += `<div class="fc-blk in" id="fc-blk-in"><div class="fc-blk-h"><span class="ic">${FC_SVG_IN}</span><span class="nm">เงินเข้า<small>ขาย + รายได้อื่น</small></span><span class="tot" id="fc-tin">—</span></div>`;
   if (m.hasColl) {
-    // ① เก็บแล้ว · ราคาแต่ละวัน
-    h += `<div class="fc-sec"><span class="n">①</span> เก็บแล้ว · ราคาแต่ละวัน <small>แตะวันเพื่อพับ · แก้ราคาได้</small></div><div class="fc-box">`;
+    let b = `<div class="fc-hint"><span class="fc-tag bill">บิล</span> ราคาในบิลที่ส่งแล้ว · <span class="fc-tag form">ฟอร์ม</span> ยังไม่ส่งบิล ใช้ฟอร์มวันนั้น</div>`;
     m.past.forEach((d, di) => {
       const open = (d.pid in _fcOpenDays) ? _fcOpenDays[d.pid] : (m.past.length <= 3 || di === m.past.length - 1);
-      h += `<div class="fc-day${open ? ' open' : ''}"><div class="dh" onclick="fcTogDay(${di})">
-        <span class="dt">${_fcEsc(_fcDl(d.date))}</span>
-        <span class="mid"><span class="kg">${_fcF0(d.kg)} กก.</span><span class="fc-src" id="fc-src-${di}"></span></span>
-        <span class="rv"><span id="fc-drv-${di}"></span><small id="fc-davg-${di}"></small></span><span class="ch">▾</span></div><div class="dg">`;
-      d.rows.forEach((r, ri) => {
-        const id = `p${di}_${ri}`;
-        h += `<div class="fc-pr"><span class="g">${_fcEsc(r.grade)}</span><span class="k">${_fcF0(r.kg)}<small>กก.</small></span>`
-          + _fcPin(id, r.p, '', `fcPastBump(${di},${ri},-0.5)`, `fcPastBump(${di},${ri},0.5)`, `fcPastP(${di},${ri},this.value)`)
-          + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
-      });
-      h += `</div></div>`;
+      b += `<div class="fc-day${open ? ' open' : ''}"><button type="button" class="fc-day-h" onclick="fcTogDay(${di})"><span class="d">${_fcEsc(_fcDl(d.date))}</span><span class="k">${_fcF0(d.kg)} กก.</span>
+        <span class="fc-tag" id="fc-src-${di}"></span><span class="v" id="fc-drv-${di}"></span><span class="ch">${FC_SVG_CH}</span></button><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
+      d.rows.forEach((r, ri) => { const id = `p${di}_${ri}`; b += _fcRow(r.grade, 'fc-pk-' + id, _fcPin(id, r.p, { oninput: `fcPastP(${di},${ri},this.value)` }), 'fc-rv-' + id); });
+      b += `</div></div>`;
     });
-    h += `<div class="fc-sub"><span>รวมเก็บแล้ว ${_fcF0(m.collKg)} กก.</span><span class="v" id="fc-pastsum"></span></div></div>`;
-    h += `<p class="fc-note">ตั้งต้น: ส่งบิลแล้ว = <b>ราคาในบิล</b> · ยังไม่ส่ง = <b>ฟอร์มราคาวันนั้น</b> · ช่องที่แก้ขึ้นกรอบส้ม ใต้ช่องบอกราคาเดิม`
-      + `<span id="fc-lk-past" hidden> · <span class="lk" onclick="fcReset('past')">กลับไปใช้ราคาเดิมทั้งหมด</span></span></p>`;
-
-    // ② ส่วนที่เหลือ
-    if (m.target > 0 && m.remKg > 0) {
-      const mixTxt = m.mixOrder.map(k => (m.mixPct[k] || 0)).join(' · ') + '%';
-      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ · ตั้งราคาเอง <small>เป้า − เก็บแล้ว = ${_fcF0(m.remKg)} กก.</small></div><div class="fc-box">
-        <div class="fc-zsrc"><span class="fc-seg" role="group" aria-label="วิธีตั้งราคาส่วนที่เหลือ"><button type="button" class="${m.remMode === 'block' ? 'on' : ''}" onclick="fcRemMode('block')">ก้อนเดียว</button><button type="button" class="${m.remMode === 'days' ? 'on' : ''}" onclick="fcRemMode('days')">แบ่งเป็นวัน</button></span>
-        <span class="t">แบ่งเบอร์ตามสัดส่วนที่เก็บแล้ว <b>${_fcEsc(mixTxt)}</b></span></div>`;
-      h += _fcRemHtml(m);
-      h += `<div class="fc-sub"><span>รวมส่วนที่เหลือ ${_fcF0(m.remKgEff)} กก.</span><span class="v" id="fc-remsum"></span></div></div>`;
-      h += `<p class="fc-note">ตั้งต้น = ฟอร์มราคาล่าสุด${m.latest ? ' (' + _fcEsc(_fcDl(m.latest)) + ')' : ' · ยังไม่มีฟอร์มราคา' + _fcEsc(g.fruit || '') + ' ต้องกรอกเอง'}`
-        + `<span id="fc-lk-rem" hidden> · <span class="lk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</span></span></p>`;
-    } else if (m.target > 0) {
-      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ</div><div class="fc-box"><div class="fc-emp ok">เก็บครบเป้าแล้ว — ไม่มีส่วนที่เหลือ · ตัวเลขด้านบนคิดจากที่เก็บจริงทั้งหมด</div></div>`;
-    } else {
-      h += `<div class="fc-sec"><span class="n">②</span> ส่วนที่เหลือ</div><div class="fc-box"><div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div></div>`;
-    }
-  } else {
-    // ① สัดส่วนเบอร์ (ยังไม่ได้เก็บ)
-    const all = fcRefGardens(g), avgRefs = fcAvgRefs(g);
-    h += `<div class="fc-sec"><span class="n">①</span> สัดส่วนเบอร์ <small>${m.mixMode === 'manual' ? 'กรอกเอง' : 'ยังไม่ได้เก็บ · ดึงจากสวนที่ปิดแล้ว'}</small></div><div class="fc-box">`;
-    if (m.mixMode === 'manual') {
-      h += `<div class="fc-emp">ยังไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดแล้ว — ใส่ชื่อเบอร์และสัดส่วนเอง</div>`;
-    } else {
-      h += `<div class="fc-zsrc"><span class="fc-seg" role="group" aria-label="ที่มาของสัดส่วนเบอร์"><button type="button" class="${m.mixMode === 'avg' ? 'on' : ''}" onclick="fcMixMode('avg')"${avgRefs.length ? '' : ' disabled'}>เฉลี่ยทุกสวน</button><button type="button" class="${m.mixMode === 'one' ? 'on' : ''}" onclick="fcMixMode('one')">เลือกสวนเดียว</button></span>`
-        + (avgRefs.length ? '' : `<span class="t">ไม่มีสวนที่ปิดใน 2 เดือน</span>`) + `</div><div class="fc-rlist">`;
-      if (m.mixMode === 'avg') {
-        h += _fcRefCard(fcMixOf(avgRefs), 'เฉลี่ย ' + avgRefs.length + ' สวน', (g.fruit || '') + 'ที่ปิดใน 2 เดือน (สูงสุด 12 สวน) · ' + _fcF0(m.mixInfo ? m.mixInfo.kg : 0) + ' กก.', true, '');
-      } else if (_fcRefOpen) {
-        const lim = _fcRefAll ? all.length : Math.min(5, all.length);
-        all.slice(0, lim).forEach(r => {
-          h += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', m.mixInfo && m.mixInfo.gid === r.g.id, `fcPickRef('${_fcEsc(r.g.id)}')`);
-        });
-        if (all.length > lim) h += `<button type="button" class="fc-rchg" onclick="fcRefAll()">ดูทั้งหมด (${all.length} สวน) ›</button>`;
-      } else if (m.mixInfo) {
-        const r = all.find(x => x.g.id === m.mixInfo.gid);
-        if (r) h += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', true, '');
-        h += `<button type="button" class="fc-rchg" onclick="fcRefOpen()">เปลี่ยนสวน ›</button>`;
-      }
-      h += `</div>`;
-    }
-    const base = {}; Object.keys(m.mixPct0).forEach(k => { base[k] = m.mixPct0[k]; });
-    h += `<div class="fc-mxh"><span>เบอร์</span><span>สัดส่วน</span><span>กก. ครบเป้า</span><span></span></div>`;
-    const sugg = {};
-    m.mixRows.forEach((r, i) => {
-      const nm = String(r.name || '').trim(), k = fcKey(nm), isBase = nm && (k in base) && m.mixMode !== 'manual';
-      h += `<div class="fc-mx">` + (isBase
-        ? `<span class="g">${_fcEsc(nm)}</span>`
-        : `<input class="gn${nm ? '' : ' miss'}" id="fcin-gn${i}" placeholder="เช่น A" value="${_fcEsc(nm)}" list="fc-gdl" onchange="fcMxName(${i},this.value)">`)
-        + _fcPin('mx' + i, r.pct, r.pct == null ? 'miss' : '', `fcMxBump(${i},-1)`, `fcMxBump(${i},1)`, `fcMxPct(${i},this.value)`, { pct: 1, step: 1, max: 100 })
-        + `<span class="k"><span id="fc-mxk${i}">0</span><small id="fc-mxw${i}"></small></span>`
-        + `<button class="x" type="button" aria-label="ลบเบอร์" onclick="fcMxDel(${i})">×</button></div>`;
-    });
-    if (!m.mixRows.length) h += `<div class="fc-empty">ยังไม่มีเบอร์ · กด ＋ เพิ่มเบอร์</div>`;
-    // ชื่อเบอร์ที่แนะนำ: จากฟอร์มราคาล่าสุด + สวนอ้างอิง
-    try { const lf = (typeof pfFindForm === 'function') ? pfFindForm(g.fruit, (typeof todayISO === 'function') ? todayISO() : _fcISO(new Date())) : null; (lf && lf.rows || []).forEach(x => { if (x && x.name) sugg[String(x.name).trim()] = 1; }); } catch (e) {}
-    all.slice(0, 12).forEach(r => (r.g.collections || []).forEach(c => fcDayRows(c).forEach(x => { sugg[x.grade] = 1; })));
-    h += `<datalist id="fc-gdl">${Object.keys(sugg).filter(Boolean).map(s => `<option value="${_fcEsc(s)}">`).join('')}</datalist>`;
-    h += `<div class="fc-mxadd"><button type="button" onclick="fcMxAdd()">＋ เพิ่มเบอร์</button>`
-      + (m.mixMode !== 'manual' ? `<span class="lk" id="fc-lk-mix" hidden onclick="fcReset('mix')">กลับไปใช้สัดส่วนเดิม</span>` : '') + `</div>`;
-    h += `<div class="fc-msum" id="fc-msum"></div></div>`;
-    h += `<p class="fc-note">${m.mixMode === 'manual' ? 'ช่องที่ยังว่างขอบเส้นประสีส้ม · กรอกครบแล้วตัวเลขจะขึ้นเอง' : 'แก้ % ต่อได้ · ช่องที่แก้ขึ้นสีส้ม ใต้ กก. บอก % เดิม · สลับวิธีหรือเปลี่ยนสวน = ตั้ง % ใหม่ตามที่เลือก'}</p>`;
-
-    // ② ราคาขาย
-    h += `<div class="fc-sec"><span class="n">②</span> ราคาขาย · ตั้งเอง <small>${m.latest ? 'ตั้งต้นฟอร์มล่าสุด ' + _fcEsc(_fcDl(m.latest)) : 'ยังไม่มีฟอร์มราคา · กรอกเอง'}</small></div><div class="fc-box">`;
-    if (m.target > 0) {
-      h += `<div class="fc-ptop"><span class="t">ราคาที่คาดว่าจะขายได้</span><span class="fc-stp"><button type="button" onclick="fcRemAll(-1)" aria-label="ลดทุกเบอร์ 1 บาท">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcRemAll(1)" aria-label="เพิ่มทุกเบอร์ 1 บาท">+</button></span></div>`;
-      h += _fcBlockRows(m);
-      h += `<div class="fc-sub"><span id="fc-reml">รวม</span><span class="v" id="fc-remsum"></span></div>`;
-    } else h += `<div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div>`;
-    h += `</div>`;
-    if (m.latest) h += `<p class="fc-note" id="fc-lk-rem" hidden><span class="lk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</span></p>`;
+    b += `<div class="fc-lkrow" id="fc-lk-past" hidden><button type="button" class="fc-lnk" onclick="fcReset('past')">กลับไปใช้ราคาเดิมทั้งหมด</button></div>`;
+    h += _fcSecHtml('coll', `เก็บแล้ว ${_fcF0(m.collKg)} กก.<small>ราคาจริงที่ขาย · แตะวันเพื่อดู/แก้</small>`, 'fc-sv-coll', b);
   }
+  // ส่วนที่ยังไม่เก็บ
+  const remTitle = !(m.target > 0) ? 'ส่วนที่ยังไม่เก็บ<small>ยังไม่ได้ตั้งเป้า</small>'
+    : (m.hasColl ? `ยังไม่เก็บ ${_fcF0(m.remKg)} กก. <span class="fc-tag est">คาด</span><small>ตั้งราคาที่คิดว่าจะขายได้</small>`
+      : `คาดว่าจะเก็บ ${_fcF0(m.remKg)} กก. <span class="fc-tag est">คาด</span><small>ยังไม่ได้เก็บเลย · ตั้งสัดส่วนเบอร์และราคา</small>`);
+  h += _fcSecHtml('rem', remTitle, 'fc-sv-rem', _fcRemHtml(m, g));
+  h += _fcSecHtml('inc', 'รายได้อื่น<small>ขายลูกร่วง ตกเกรด ค่าตะกร้าคืน</small>', 'fc-hsinc', _fcHidHtml('inc'));
+  h += `</div>`;
 
-  // ③ รายได้แฝง
-  h += `<div class="fc-sec"><span class="n">③</span> รายได้แฝง <small>เช่น ขายลูกร่วง ตกเกรด ค่าตะกร้าคืน</small></div><div class="fc-box">${_fcHidHtml('inc')}</div>`;
-
-  // ④ ต้นทุน
+  // ══ เงินออก ══
   const dl = m.deal;
   let dsm = '';
-  if (dl.type === 'lump') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคาเหมาในสวนนี้' : 'เหมา · คงที่';
+  if (dl.type === 'lump') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคาเหมาในสวนนี้' : 'เหมา · ราคาคงที่';
   else if (dl.type === 'kg-all') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคารายโลในสวนนี้' : 'รายโล ' + _fcFp(dl.rate) + ' × <span id="fc-dkg">' + _fcF0(m.projKg) + '</span> กก.';
-  else if (dl.type === 'kg-grade') dsm = dl.miss ? 'ยังไม่มีราคาดีลของเบอร์ ' + _fcEsc((dl.missGrades || []).join(', ')) : 'รายโล แยกเบอร์ × กก. ครบเป้า';
+  else if (dl.type === 'kg-grade') dsm = dl.miss ? 'ยังไม่มีราคาดีลของเบอร์ ' + _fcEsc((dl.missGrades || []).join(', ')) : 'รายโล แยกเบอร์ × กก. ทั้งสวน';
   else dsm = 'ยังไม่ได้ตั้งแบบซื้อในสวนนี้';
-  h += `<div class="fc-sec"><span class="n">④</span> ต้นทุน <small>ค่าขนส่ง/อบ ใส่เองในค่าใช้จ่ายแฝง</small></div><div class="fc-box">
-    <div class="fc-cr"><span class="k">ค่าเปิดสวน<small class="${dl.miss ? 'warn' : ''}">${dsm}</small></span><span class="v" id="fc-deal"></span></div>`;
+  h += `<div class="fc-blk out" id="fc-blk-out"><div class="fc-blk-h"><span class="ic">${FC_SVG_OUT}</span><span class="nm">เงินออก<small>ทุนทั้งหมด</small></span><span class="tot" id="fc-tout">—</span></div>
+    <div class="fc-fix"><span class="t">ค่าเปิดสวน<small class="${dl.miss ? 'warn' : ''}">${dsm}</small></span><span class="v" id="fc-deal"></span></div>`;
+  let pb = `<div class="fc-hint">${m.procN > 0 ? 'ราคาตั้งต้น = <b>เฉลี่ยจาก ' + m.procN + ' บิลล่าสุด</b> (ไม่เกิน 2 เดือน)' : 'ยังไม่มีบิลใน 2 เดือน — ใช้ค่าที่จำไว้จากบิลล่าสุด หรือกรอกเอง'} · แก้ได้เฉพาะสวนนี้</div>`;
   if (rateKeys.length) {
-    h += `<div class="fc-chd"><span>เบอร์</span><span>กก. ครบเป้า</span><span>ค่าจัดทำ/โล</span><span>รวม</span></div>`;
-    rateKeys.forEach((k, j) => {
-      h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-ck${j}"></span><small>กก.</small></span>`
-        + _fcPin('c' + j, m.rate[k], '', `fcRateBump(${j},-0.5)`, `fcRateBump(${j},0.5)`, `fcRate(${j},this.value)`)
-        + `<span class="rv"><span id="fc-rv-c${j}"></span><span class="was" id="fc-was-c${j}"></span></span></div>`;
-    });
-  }
-  h += `<div class="fc-cr"><span class="k">ค่าจัดทำรวม<small id="fc-pkg"></small></span><span class="v" id="fc-proc"></span></div>`;
-  h += _fcHidHtml('exp');
-  h += `<div class="fc-cr tot"><span class="k">ทุนรวม</span><span class="v" id="fc-cost"></span></div></div>`;
-  h += `<p class="fc-note">${m.procN > 0 ? 'เรทตั้งต้น = <b>เฉลี่ยแยกเบอร์จาก ' + m.procN + ' บิลล่าสุดที่ปิดไม่เกิน 2 เดือน</b> ถ่วงตามน้ำหนัก' : 'ยังไม่มีบิลที่ปิดใน 2 เดือน — ใช้เรทที่จำไว้จากบิลล่าสุด หรือกรอกเอง'} · แก้ได้เฉพาะสวนนี้`
-    + `<span id="fc-lk-rate" hidden> · <span class="lk" onclick="fcReset('rate')">กลับไปใช้ค่าตั้งต้น</span></span></p>`;
+    pb += `<div class="fc-tb">${_fcTh('บาท/กก.')}`;
+    rateKeys.forEach((k, j) => { pb += _fcRow(m.names[k] || k, 'fc-ck' + j, _fcPin('c' + j, m.rate[k], { oninput: `fcRate(${j},this.value)` }), 'fc-rv-c' + j); });
+    pb += `</div>`;
+  } else pb += `<div class="fc-empty">ยังไม่มีเบอร์ · ใส่สัดส่วนเบอร์ก่อน</div>`;
+  pb += `<div class="fc-lkrow" id="fc-lk-rate" hidden><button type="button" class="fc-lnk" onclick="fcReset('rate')">กลับไปใช้ราคาตั้งต้น</button></div>`;
+  h += _fcSecHtml('proc', 'ค่าจัดทำ <span id="fc-pkg"></span> กก.<small>แยกราคาตามเบอร์ · ทั้งสวน</small>', 'fc-proc', pb);
+  h += _fcSecHtml('exp', 'ค่าใช้จ่ายอื่น<small>ค่าขนส่ง ค่าอบ ค่าน้ำมัน ค่าแรง</small>', 'fc-hsexp', _fcHidHtml('exp'));
+  h += `</div>`;
+
+  // ══ สรุปท้าย ══
+  h += `<div class="fc-end"><span>ขายได้</span><span class="v in" id="fc-esold"></span><span>ทุน</span><span class="v out" id="fc-ecost"></span>
+    <span class="r" id="fc-elbl">ผลลัพธ์</span><span class="v r" id="fc-eres"></span></div>`;
 
   document.getElementById('fc-body').innerHTML = `<div class="wrap">${h}</div>`;
-  const clr = document.getElementById('fc-clr'); if (clr) { clr.textContent = 'ล้างแผน'; clr.classList.remove('arm'); }
-  _fcClrArm = 0;
   _fcRefresh(true);
 }
-// ② แบบก้อนเดียว / ราคาขาย (ยังไม่เก็บ)
-function _fcBlockRows(m) {
-  let h = '';
-  m.mixOrder.forEach((k, j) => {
-    const id = 'r' + j;
-    h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-rk${j}"></span><small>กก.</small></span>`
-      + _fcPin(id, m.remP[k], '', `fcRemBump(${j},-0.5)`, `fcRemBump(${j},0.5)`, `fcRemP(${j},this.value)`)
-      + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
-  });
-  return h;
-}
-function _fcRemHtml(m) {
-  if (m.remMode !== 'days') {
-    return `<div class="fc-ptop"><span class="t">ราคาเดียวทั้งก้อน</span><span class="fc-stp"><button type="button" onclick="fcRemAll(-1)" aria-label="ลดทุกเบอร์ 1 บาท">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcRemAll(1)" aria-label="เพิ่มทุกเบอร์ 1 บาท">+</button></span></div>` + _fcBlockRows(m);
-  }
-  let h = '';
-  m.days.forEach((d, i) => {
-    h += `<div class="fc-pday"><div class="pdh"><span class="pdn">วันที่ ${i + 1}</span>
-      <input type="date" id="fcin-dd${i}" value="${_fcEsc(d.date)}" aria-label="วันที่ขาย" onchange="fcDayDate(${i},this.value)">
-      <button class="x" type="button" aria-label="ลบวัน" onclick="fcDayDel(${i})">×</button></div>
-      <div class="pdq"><span class="kgw">${_fcPin('dk' + i, d.kg, '', `fcDayKgBump(${i},-500)`, `fcDayKgBump(${i},500)`, `fcDayKg(${i},this.value)`, { step: 100, ph: '0', max: FC_MAX.kg })}<span>กก.</span></span>
-      <span class="fc-stp"><button type="button" onclick="fcDayAll(${i},-1)" aria-label="ลดทุกเบอร์">−</button><span class="lb">ทุกเบอร์</span><button type="button" onclick="fcDayAll(${i},1)" aria-label="เพิ่มทุกเบอร์">+</button></span></div>`;
-    m.mixOrder.forEach((k, j) => {
-      const id = `d${i}_${j}`;
-      h += `<div class="fc-pr"><span class="g">${_fcEsc(m.names[k] || k)}</span><span class="k"><span id="fc-pk-${id}"></span><small>กก.</small></span>`
-        + _fcPin(id, d.p[k], '', `fcDayBump(${i},${j},-0.5)`, `fcDayBump(${i},${j},0.5)`, `fcDayP(${i},${j},this.value)`)
-        + `<span class="rv"><span id="fc-rv-${id}"></span><span class="was" id="fc-was-${id}"></span></span></div>`;
+// ส่วนที่ยังไม่เก็บ: (ยังไม่เก็บเลย → สัดส่วนเบอร์ก่อน) + ราคา (ราคาเดียว / แบ่งหลายวัน)
+function _fcRemHtml(m, g) {
+  if (!(m.target > 0)) return `<div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div>`;
+  if (m.remKg <= 0) return `<div class="fc-emp ok">เก็บครบเป้าแล้ว — ตัวเลขด้านบนคิดจากที่เก็บจริงทั้งหมด</div>`;
+  let x = '';
+  if (!m.hasColl) {
+    const all = fcRefGardens(g), avgRefs = fcAvgRefs(g);
+    x += `<div class="fc-step">1. จะได้เบอร์ไหนเท่าไหร่</div>`;
+    if (m.mixMode === 'manual') {
+      x += `<div class="fc-emp">ยังไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดแล้ว — ใส่ชื่อเบอร์และสัดส่วนเอง</div>`;
+    } else {
+      x += `<div class="fc-seg" role="group" aria-label="ที่มาของสัดส่วนเบอร์"><button type="button" class="${m.mixMode === 'avg' ? 'on' : ''}" onclick="fcMixMode('avg')"${avgRefs.length ? '' : ' disabled'}>เฉลี่ยหลายสวน</button><button type="button" class="${m.mixMode === 'one' ? 'on' : ''}" onclick="fcMixMode('one')">เลือกสวนเดียว</button></div>`;
+      if (!avgRefs.length) x += `<div class="fc-hint">ไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดใน 2 เดือน · เลือกจากสวนเก่าได้</div>`;
+      x += `<div class="fc-refs">`;
+      if (m.mixMode === 'avg') {
+        x += _fcRefCard(fcMixOf(avgRefs), 'เฉลี่ย ' + avgRefs.length + ' สวน', (g.fruit || '') + 'ที่ปิดไม่เกิน 2 เดือน · ' + _fcF0(m.mixInfo ? m.mixInfo.kg : 0) + ' กก.', true, '');
+      } else if (_fcRefOpen) {
+        const lim = _fcRefAll ? all.length : Math.min(5, all.length);
+        all.slice(0, lim).forEach(r => { x += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', m.mixInfo && m.mixInfo.gid === r.g.id, `fcPickRef('${_fcEsc(r.g.id)}')`); });
+        if (all.length > lim) x += `<button type="button" class="fc-lnk end" onclick="fcRefAll()">ดูทั้งหมด (${all.length} สวน)</button>`;
+      } else if (m.mixInfo) {
+        const r = all.find(z => z.g.id === m.mixInfo.gid);
+        if (r) x += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', true, '');
+        x += `<button type="button" class="fc-lnk end" onclick="fcRefOpen()">เปลี่ยนสวน</button>`;
+      }
+      x += `</div>`;
+    }
+    const base = {}; Object.keys(m.mixPct0).forEach(k => { base[k] = 1; });
+    x += `<div class="fc-tb"><div class="fc-mx fc-th"><span>เบอร์</span><span class="p">สัดส่วน %</span><span class="m">กก.</span><span></span></div>`;
+    m.mixRows.forEach((r, i) => {
+      const nm = String(r.name || '').trim(), k = fcKey(nm), isBase = nm && (k in base) && m.mixMode !== 'manual';
+      x += `<div class="fc-mx">` + (isBase ? `<span class="g">${_fcEsc(nm)}</span>`
+        : `<input class="gn${nm ? '' : ' miss'}" id="fcin-gn${i}" placeholder="ชื่อเบอร์" value="${_fcEsc(nm)}" list="fc-gdl" onchange="fcMxName(${i},this.value)" aria-label="ชื่อเบอร์">`)
+        + _fcPin('mx' + i, r.pct, { max: 100, oninput: `fcMxPct(${i},this.value)` })
+        + `<span class="m" id="fc-mxk${i}"></span><button class="x" type="button" aria-label="ลบเบอร์" onclick="fcMxDel(${i})">×</button></div>`;
     });
-    h += `<div class="pdsum"><span>รวมวันนี้</span><span class="v" id="fc-pds${i}"></span></div></div>`;
-  });
-  h += `<div class="fc-pun" id="fc-pun"></div><div class="fc-mxadd"><button type="button" onclick="fcDayAdd()">＋ เพิ่มวัน</button></div>`;
-  return h;
+    if (!m.mixRows.length) x += `<div class="fc-empty">ยังไม่มีเบอร์ · กด + เพิ่มเบอร์</div>`;
+    x += `</div>`;
+    const sugg = {};
+    try { const lf = (typeof pfFindForm === 'function') ? pfFindForm(g.fruit, _fcISO(new Date())) : null; if (lf && fcSameFruit(lf.fruit, g.fruit)) (lf.rows || []).forEach(z => { if (z && z.name) sugg[String(z.name).trim()] = 1; }); } catch (e) {}
+    all.slice(0, 12).forEach(r => (r.g.collections || []).forEach(c => fcDayRows(c).forEach(z => { sugg[z.grade] = 1; })));
+    x += `<datalist id="fc-gdl">${Object.keys(sugg).filter(Boolean).map(s => `<option value="${_fcEsc(s)}">`).join('')}</datalist>`;
+    x += `<div class="fc-addrow"><button type="button" class="fc-add" onclick="fcMxAdd()">+ เพิ่มเบอร์</button>`
+      + (m.mixMode !== 'manual' ? `<button type="button" class="fc-lnk" id="fc-lk-mix" hidden onclick="fcReset('mix')">กลับไปใช้สัดส่วนเดิม</button>` : '') + `</div>`;
+    x += `<div class="fc-msum" id="fc-msum"></div>`;
+    x += `<div class="fc-step">2. ราคาที่คิดว่าจะขายได้</div>`;
+  } else {
+    x += `<div class="fc-hint">แบ่งเบอร์ตามที่เก็บจริง: <b>${_fcEsc(m.mixOrder.map(k => (m.names[k] || k) + ' ' + (m.mixPct[k] || 0) + '%').join(' · '))}</b></div>
+      <div class="fc-seg" role="group" aria-label="วิธีตั้งราคา"><button type="button" class="${m.remMode === 'block' ? 'on' : ''}" onclick="fcRemMode('block')">ขายราคาเดียว</button><button type="button" class="${m.remMode === 'days' ? 'on' : ''}" onclick="fcRemMode('days')">แบ่งขายหลายวัน</button></div>`;
+  }
+  if (m.remMode === 'days' && m.hasColl) {
+    m.days.forEach((d, i) => {
+      x += `<div class="fc-pday"><div class="fc-pday-h"><b>วันที่ ${i + 1}</b>${_fcPin('dk' + i, d.kg, { max: FC_MAX.kg, ph: '0', cls: 'kg', oninput: `fcDayKg(${i},this.value)` })}<span class="u">กก.</span>
+        ${_fcNudge(`fcDayAll(${i},-1)`, `fcDayAll(${i},1)`)}<button class="x" type="button" aria-label="ลบวัน" onclick="fcDayDel(${i})">×</button></div><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
+      m.mixOrder.forEach((k, j) => { const id = `d${i}_${j}`; x += _fcRow(m.names[k] || k, 'fc-pk-' + id, _fcPin(id, d.p[k], { oninput: `fcDayP(${i},${j},this.value)` }), 'fc-rv-' + id); });
+      x += `</div></div>`;
+    });
+    x += `<div class="fc-left" id="fc-pun"></div><div class="fc-addrow"><button type="button" class="fc-add" onclick="fcDayAdd()">+ เพิ่มวัน</button></div>`;
+  } else {
+    if (!m.mixOrder.length) return x + `<div class="fc-empty">ใส่ชื่อเบอร์ด้านบนก่อน แล้วช่องราคาจะขึ้นเอง</div>`;
+    x += `<div class="fc-tools"><span class="lb">${m.latest ? 'ตั้งต้นจากฟอร์ม ' + _fcEsc(_fcDl(m.latest)) : 'ยังไม่มีฟอร์มราคา · กรอกเอง'}</span>${_fcNudge('fcRemAll(-1)', 'fcRemAll(1)')}</div><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
+    m.mixOrder.forEach((k, j) => { x += _fcRow(m.names[k] || k, 'fc-rk' + j, _fcPin('r' + j, m.remP[k], { oninput: `fcRemP(${j},this.value)` }), 'fc-rv-r' + j); });
+    x += `</div>`;
+  }
+  x += `<div class="fc-lkrow" id="fc-lk-rem" hidden><button type="button" class="fc-lnk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</button></div>`;
+  return x;
 }
-// รายได้แฝง (inc) / ค่าใช้จ่ายแฝง (exp)
+// รายได้อื่น (inc) / ค่าใช้จ่ายอื่น (exp) — มีปุ่มลัดชื่อที่ใช้บ่อย
 function _fcHidHtml(t) {
   const list = (_fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []);
-  let h = t === 'exp' ? `<div class="fc-hxh"><span>ค่าใช้จ่ายแฝง</span><small>เช่น ค่าน้ำมัน ค่าเลี้ยงคนงาน ค่าขนส่ง</small></div>` : '';
+  const quick = t === 'inc' ? ['ขายลูกร่วง', 'ตกเกรด', 'ค่าตะกร้าคืน'] : ['ค่าขนส่ง', 'ค่าอบ', 'ค่าน้ำมัน', 'ค่าแรง'];
+  let h = `<div class="fc-quick">${quick.map(q => `<button type="button" onclick="fcHidAdd('${t}','${q}')">+ ${q}</button>`).join('')}<button type="button" onclick="fcHidAdd('${t}','')">+ อื่นๆ</button></div>`;
   list.forEach((it, i) => {
-    const id = 'h' + t + i, step = it.u === 'kg' ? 0.1 : 500;
-    h += `<div class="fc-hx ${t}"><div class="top"><input class="nm" id="fcin-hn${t}${i}" value="${_fcEsc(it.n || '')}" placeholder="ชื่อรายการ เช่น ${t === 'inc' ? 'ขายลูกร่วง' : 'ค่าน้ำมัน'}" oninput="fcHidName('${t}',${i},this.value)">
-      <button class="x" type="button" aria-label="ลบรายการ" onclick="fcHidDel('${t}',${i})">×</button></div>
-      <div class="bot">${_fcPin(id, Number(it.v) || 0, '', `fcHidBump('${t}',${i},-${step})`, `fcHidBump('${t}',${i},${step})`, `fcHidVal('${t}',${i},this.value)`, { step, ph: '0', max: it.u === 'kg' ? FC_MAX.p : FC_MAX.b })}
-      <span class="fc-seg sm" role="group" aria-label="หน่วย"><button type="button" class="${it.u !== 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'b')">บาท</button><button type="button" class="${it.u === 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'kg')">ต่อโล</button></span>
-      <span class="tt" id="fc-ht${t}${i}"></span></div></div>`;
+    h += `<div class="fc-item"><input class="n" id="fcin-hn${t}${i}" value="${_fcEsc(it.n || '')}" placeholder="ชื่อรายการ" aria-label="ชื่อรายการ" oninput="fcHidName('${t}',${i},this.value)">`
+      + _fcPin('h' + t + i, Number(it.v) || null, { max: it.u === 'kg' ? FC_MAX.p : FC_MAX.b, ph: '0', oninput: `fcHidVal('${t}',${i},this.value)` })
+      + `<span class="fc-unit" role="group" aria-label="หน่วย"><button type="button" class="${it.u !== 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'b')">บาท</button><button type="button" class="${it.u === 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'kg')">ต่อกก.</button></span>`
+      + `<button class="x" type="button" aria-label="ลบรายการ" onclick="fcHidDel('${t}',${i})">×</button><span class="calc" id="fc-ht${t}${i}"></span></div>`;
   });
-  if (t === 'inc' && !list.length) h += `<div class="fc-empty">ยังไม่มีรายการ</div>`;
-  h += `<div class="fc-mxadd"><button type="button" onclick="fcHidAdd('${t}')">＋ เพิ่ม${t === 'inc' ? 'รายได้แฝง' : 'ค่าใช้จ่ายแฝง'}</button></div>`
-    + `<div class="fc-hxsum ${t}"><span>รวม${t === 'inc' ? 'รายได้แฝง' : 'ค่าใช้จ่ายแฝง'}</span><span class="v" id="fc-hs${t}"></span></div>`;
   return h;
+}
+// ป้าย "ยังขาด" ที่หัว → แตะแล้วพาไปที่ช่องนั้น
+function _fcNeed(m) {
+  const out = [];
+  if (!(m.target > 0)) out.push({ t: 'เป้า', msg: 'ตั้งเป้าที่หน้าแก้ไขสวน' });
+  if (m.deal && m.deal.miss) out.push({ t: 'ราคาซื้อสวน', msg: 'ใส่ราคาดีลที่หน้าแก้ไขสวน' });
+  m.past.forEach((d, di) => d.rows.forEach((r, ri) => { if (r.p == null) out.push({ t: 'ราคา ' + r.grade + ' ' + _fcDl(d.date), id: `p${di}_${ri}`, sec: 'coll' }); }));
+  if (!m.hasColl && m.target > 0) m.mixRows.forEach((r, i) => {
+    if (!String(r.name || '').trim()) out.push({ t: 'ชื่อเบอร์ แถว ' + (i + 1), id: 'gn' + i, sec: 'rem' });
+    else if (r.pct == null) out.push({ t: 'สัดส่วน ' + String(r.name).trim(), id: 'mx' + i, sec: 'rem' });
+  });
+  if (!m.hasColl && m.target > 0 && !m.mixRows.length) out.push({ t: 'สัดส่วนเบอร์', id: null, sec: 'rem', go: 'fc-sec-rem' });
+  if (m.remMode === 'days' && m.hasColl) m.days.forEach((d, i) => m.mixOrder.forEach((k, j) => { if ((d.by[k] || 0) > 0 && d.p[k] == null) out.push({ t: 'ราคา ' + (m.names[k] || k) + ' วันที่ ' + (i + 1), id: `d${i}_${j}`, sec: 'rem' }); }));
+  m.mixOrder.forEach((k, j) => {
+    if ((m.unBy[k] || 0) > 0 && m.remP[k] == null) {
+      if (m.remMode === 'days' && m.hasColl) out.push({ t: 'ราคา ' + (m.names[k] || k) + ' ส่วนที่ยังไม่แบ่ง', go: 'fc-pun', sec: 'rem', msg: 'ไม่มีราคาฟอร์มของ ' + (m.names[k] || k) + ' — แบ่งวันให้ครบทุกกิโล' });
+      else out.push({ t: 'ราคา ' + (m.names[k] || k), id: 'r' + j, sec: 'rem' });
+    }
+  });
+  Object.keys(m.projBy).forEach((k, j) => { if ((m.projBy[k] || 0) > 0 && m.rate[k] == null) out.push({ t: 'ค่าจัดทำ ' + (m.names[k] || k), id: 'c' + j, sec: 'proc' }); });
+  return out;
+}
+let _fcNeedList = [];
+window.fcNeedGo = function (i) {
+  const n = _fcNeedList[i]; if (!n) return;
+  if (n.msg && typeof toast === 'function') toast(n.msg);
+  if (n.sec && !_fcSec[n.sec]) fcTogSec(n.sec);
+  const el = n.id ? document.getElementById('fcin-' + n.id) : (n.go ? document.getElementById(n.go) : null);
+  if (!el) return;
+  try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); }
+  const pin = el.closest('.fc-pin') || el;
+  pin.classList.remove('flash'); void pin.offsetWidth; pin.classList.add('flash');
+  if (n.id) setTimeout(() => { try { el.focus({ preventScroll: true }); } catch (e) {} }, 450);
+};
+window.fcGo = function (id) { const el = document.getElementById(id); if (el) { try { el.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); } } };
+window.fcTogSec = function (k) { _fcSec[k] = !_fcSec[k]; const el = document.getElementById('fc-sec-' + k); if (el) el.classList.toggle('open', _fcSec[k]); };
+window.fcMenu = function (ev) { if (ev) ev.stopPropagation(); const mn = document.getElementById('fc-menu'); if (mn) mn.hidden = !mn.hidden; };
+// ป้ายที่มาใต้ช่องราคา: แก้แล้ว → "เดิม X" (ส้ม) · ไม่แก้ → ที่มา
+function _fcWas(id, chg, p0, src) {
+  const e = document.getElementById('fc-was-' + id); if (!e) return;
+  const t = chg && p0 != null ? 'เดิม ' + _fcFp(p0) : src;
+  if (e.textContent !== t) e.textContent = t;
+  _fcCls('fcpin-' + id, 'chg', chg && p0 != null);
 }
 // อัปเดตเฉพาะตัวเลข · โครงเปลี่ยน (เบอร์/วัน/แถว) → วาดใหม่แบบคืนช่องที่พิมพ์
 function _fcRefresh(fromRender) {
@@ -23760,146 +23789,152 @@ function _fcRefresh(fromRender) {
   const rateKeys = Object.keys(m.projBy);
   if (!fromRender && _fcK && (_fcK.mix.join('\u0001') !== m.mixOrder.join('\u0001') || _fcK.rate.join('\u0001') !== rateKeys.join('\u0001')
       || _fcK.rows !== (m.hasColl ? -1 : m.mixRows.length) || _fcK.days !== m.days.length)) { _fcRerender(); return; }
-  // ① วันที่เก็บแล้ว
+  const ok = m.complete;
+  const money = (id, kg, p) => _fcTxt(id, p == null ? '—' : _fcF0(kg * p));
+  // เก็บแล้ว
   m.past.forEach((d, di) => {
     d.rows.forEach((r, ri) => {
-      const id = `p${di}_${ri}`, chg = r.p0 != null ? r.p !== r.p0 : r.p != null;
-      _fcTxt('fc-rv-' + id, r.p == null ? '—' : _fcF0(r.kg * r.p));
-      _fcTxt('fc-was-' + id, r.src === 'bill' ? 'บิล ' + _fcFp(r.p0) : (r.src === 'form' ? 'ฟอร์ม ' + _fcFp(r.p0) : 'ยังไม่มีราคา'));
-      _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', r.p == null);
+      const id = `p${di}_${ri}`, chg = r.p0 != null && r.p !== r.p0;
+      _fcTxt('fc-pk-' + id, _fcF0(r.kg)); money('fc-rv-' + id, r.kg, r.p);
+      _fcWas(id, chg, r.p0, r.src === 'bill' ? 'บิล' : (r.src === 'form' ? 'ฟอร์ม' : 'ยังไม่มีราคา'));
+      _fcCls('fcpin-' + id, 'miss', r.p == null);
     });
     _fcTxt('fc-drv-' + di, _fcF0(d.rev));
-    _fcTxt('fc-davg-' + di, d.kg > 0 ? 'เฉลี่ย ' + _fcF2(d.rev / d.kg) : '');
     const s = document.getElementById('fc-src-' + di);
     if (s) {
       const miss = d.rows.some(r => r.p == null);
       const c = d.edited ? 'edit' : (miss ? 'none' : (d.src === 'bill' ? 'bill' : 'form'));
-      s.className = 'fc-src ' + c;
-      s.textContent = d.edited ? 'แก้ในแผน' : (miss ? 'ยังไม่มีราคา' : (d.src === 'bill' ? 'ราคาในบิล' : (d.src === 'mix' ? 'บิล + ฟอร์ม' : 'ฟอร์ม ' + _fcDl(d.form))));
+      s.className = 'fc-tag ' + c;
+      s.textContent = d.edited ? 'แก้แล้ว' : (miss ? 'ยังไม่มีราคา' : (d.src === 'bill' ? 'บิล' : (d.src === 'mix' ? 'บิล+ฟอร์ม' : 'ฟอร์ม')));
     }
   });
-  _fcTxt('fc-pastsum', _fcF0(m.pastRev));
-  // ② ส่วนที่เหลือ
+  _fcTxt('fc-sv-coll', _fcF0(m.pastRev));
+  // ยังไม่เก็บ
   if (m.remMode === 'days' && m.hasColl) {
     m.days.forEach((d, i) => {
-      let tot = 0;
       m.mixOrder.forEach((k, j) => {
         const id = `d${i}_${j}`, kg = d.by[k] || 0, p = d.p[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
-        if (p != null) tot += kg * p;
-        _fcTxt('fc-pk-' + id, _fcF0(kg)); _fcTxt('fc-rv-' + id, p == null ? '—' : _fcF0(kg * p));
-        _fcTxt('fc-was-' + id, m.remP0[k] != null ? 'ฟอร์ม ' + _fcFp(m.remP0[k]) : 'ไม่มีในฟอร์ม');
-        _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
+        _fcTxt('fc-pk-' + id, _fcF0(kg)); money('fc-rv-' + id, kg, p);
+        _fcWas(id, chg, m.remP0[k], m.remP0[k] != null ? 'ฟอร์ม' : 'ไม่มีในฟอร์ม');
+        _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
       });
-      _fcTxt('fc-pds' + i, _fcF0(tot));
       const ki = document.getElementById('fcin-dk' + i);
       if (ki && document.activeElement !== ki && Number(ki.value) !== d.kg) ki.value = _fcFp(d.kg);
     });
     const pe = document.getElementById('fc-pun');
     if (pe) {
-      pe.className = 'fc-pun' + (m.unKg ? '' : ' ok');
-      pe.innerHTML = m.unKg ? `<span>ยังไม่ได้แบ่ง <b>${_fcF0(m.unKg)}</b> กก. · คิดราคาฟอร์มล่าสุดไปก่อน</span><span class="v">${_fcF0(m.unRev)}</span>`
-        : `<span>แบ่งครบ ${_fcF0(m.remKgEff)} กก. แล้ว</span><span class="v">ครบ</span>`;
+      pe.className = 'fc-left' + (m.unKg ? '' : ' ok');
+      pe.innerHTML = m.unKg ? `<span>ยังไม่ได้แบ่ง <b>${_fcF0(m.unKg)}</b> กก. · คิดราคาฟอร์มไปก่อน</span><b>${_fcF0(m.unRev)}</b>` : `<span>แบ่งครบทุกกิโลแล้ว</span><b></b>`;
     }
   } else {
     m.mixOrder.forEach((k, j) => {
       const id = 'r' + j, kg = m.remBy[k] || 0, p = m.remP[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
-      _fcTxt('fc-rk' + j, _fcF0(kg)); _fcTxt('fc-rv-' + id, p == null ? '—' : _fcF0(kg * p));
-      _fcTxt('fc-was-' + id, m.remP0[k] != null ? 'ฟอร์ม ' + _fcFp(m.remP0[k]) : 'ไม่มีในฟอร์ม');
-      _fcCls('fc-was-' + id, 'on', chg); _fcCls('fcpin-' + id, 'chg', chg); _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
+      _fcTxt('fc-rk' + j, _fcF0(kg)); money('fc-rv-' + id, kg, p);
+      _fcWas(id, chg, m.remP0[k], m.remP0[k] != null ? 'ฟอร์ม' : 'ไม่มีในฟอร์ม');
+      _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
     });
   }
-  _fcTxt('fc-reml', 'รวม ' + _fcF0(m.remKgEff) + ' กก.');
-  _fcTxt('fc-remsum', _fcF0(m.remRev));
-  // ① สัดส่วน (ยังไม่เก็บ)
+  _fcTxt('fc-sv-rem', m.target > 0 ? _fcF0(m.remRev) : '—');
+  // สัดส่วน (ยังไม่เก็บ)
   if (!m.hasColl) {
     m.mixRows.forEach((r, i) => {
       const nm = String(r.name || '').trim(), k = fcKey(nm);
-      const dup = m.mixRows.filter(x => fcKey(String(x.name || '').trim()) === k).length;
-      // ชื่อซ้ำ/ยังไม่มีชื่อ → โชว์ตาม % ของแถวนั้นเอง (ตัวคำนวณรวมเบอร์ชื่อเดียวกันเป็นก้อนเดียว)
+      const dup = m.mixRows.filter(z => fcKey(String(z.name || '').trim()) === k).length;
       _fcTxt('fc-mxk' + i, _fcF0((nm && dup === 1 && m.remBy[k] != null) ? m.remBy[k] : Math.round(m.remKg * (r.pct || 0) / 100)));
       const b0 = (k in m.mixPct0) && m.mixMode !== 'manual' ? m.mixPct0[k] : null;
-      const chg = b0 != null ? r.pct !== b0 : false;
-      const w = document.getElementById('fc-mxw' + i);
-      if (w) { w.textContent = m.mixMode === 'manual' ? 'กก.' : (b0 != null ? 'เดิม ' + b0 + '%' : 'เพิ่มเอง'); w.className = chg ? 'on' : ''; }
-      _fcCls('fcpin-mx' + i, 'chg', chg); _fcCls('fcpin-mx' + i, 'miss', r.pct == null);
+      _fcWas('mx' + i, b0 != null && r.pct !== b0, b0, '');
+      _fcCls('fcpin-mx' + i, 'miss', r.pct == null);
       _fcCls('fcin-gn' + i, 'miss', !nm);
     });
     const sm = document.getElementById('fc-msum');
     if (sm) {
-      const ok = Math.abs(m.mixSum - 100) < 0.001;
-      sm.className = 'fc-msum' + (ok ? '' : ' bad');
-      const seen = {}, dup = [];
+      const okS = Math.abs(m.mixSum - 100) < 0.001, seen = {}, dup = [];
       m.mixRows.forEach(r => { const nm = String(r.name || '').trim(), k = fcKey(nm); if (!nm) return; if (seen[k] && dup.indexOf(nm) < 0) dup.push(nm); seen[k] = 1; });
-      if (dup.length) { sm.className = 'fc-msum bad'; sm.innerHTML = `<span>ชื่อเบอร์ซ้ำ: ${_fcEsc(dup.join(', '))} — นับรวมเป็นเบอร์เดียว ลบแถวที่ซ้ำออก</span><span class="v">${_fcFp(m.mixSum)}%</span>`; }
-      else sm.innerHTML = ok ? '<span>รวม</span><span class="v">100%</span>'
-        : `<span>รวม ${_fcFp(m.mixSum)}% · ${m.mixSum < 100 ? 'ขาด ' + _fcFp(100 - m.mixSum) : 'เกิน ' + _fcFp(m.mixSum - 100)}%</span><span class="v">${_fcFp(m.mixSum)}%</span>`;
+      sm.className = 'fc-msum' + (okS && !dup.length ? '' : ' bad');
+      sm.innerHTML = dup.length ? `<span>ชื่อเบอร์ซ้ำ: ${_fcEsc(dup.join(', '))} — ลบแถวที่ซ้ำออก</span><span>${_fcFp(m.mixSum)}%</span>`
+        : `<span>${okS ? 'รวมครบ' : (m.mixSum < 100 ? 'ขาด ' + _fcFp(100 - m.mixSum) + '%' : 'เกิน ' + _fcFp(m.mixSum - 100) + '%')}</span><span>${_fcFp(m.mixSum)}%</span>`;
     }
   }
-  // ④ ต้นทุน
+  // ค่าจัดทำ
   rateKeys.forEach((k, j) => {
     const kg = m.projBy[k] || 0, r = m.rate[k], r0 = m.rate0[k], chg = r != null && r0 != null && r !== r0;
-    _fcTxt('fc-ck' + j, _fcF0(kg)); _fcTxt('fc-rv-c' + j, r == null ? '—' : _fcF0(kg * r));
-    _fcTxt('fc-was-c' + j, m.rateSrc[k] === 'avg' ? 'เฉลี่ย ' + _fcF2(r0) : (m.rateSrc[k] === 'mem' ? 'จำไว้ ' + _fcFp(r0) : 'ไม่มีบิลอ้างอิง'));
-    _fcCls('fc-was-c' + j, 'on', chg); _fcCls('fcpin-c' + j, 'chg', chg); _fcCls('fcpin-c' + j, 'miss', r == null && kg > 0);
+    _fcTxt('fc-ck' + j, _fcF0(kg)); money('fc-rv-c' + j, kg, r);
+    _fcWas('c' + j, chg, r0, m.rateSrc[k] === 'avg' ? 'เฉลี่ย' : (m.rateSrc[k] === 'mem' ? 'จำไว้' : 'ไม่มีบิลอ้างอิง'));
+    _fcCls('fcpin-c' + j, 'miss', r == null && kg > 0);
   });
-  _fcTxt('fc-dkg', _fcF0(m.projKg));
+  _fcTxt('fc-dkg', _fcF0(m.projKg)); _fcTxt('fc-pkg', _fcF0(m.projKg));
   _fcTxt('fc-deal', m.deal.miss && !m.deal.amt ? '—' : _fcF0(m.deal.amt));
-  _fcTxt('fc-pkg', _fcF0(m.projKg) + ' กก.');
   _fcTxt('fc-proc', _fcF0(m.proc));
   ['inc', 'exp'].forEach(t => {
     let tot = 0;
     (_fcD[t] || []).forEach((it, i) => {
-      const a = (it.u === 'kg' ? (Number(it.v) || 0) * m.projKg : (Number(it.v) || 0)); tot += a;
-      const el = document.getElementById('fc-ht' + t + i);
-      if (el) el.innerHTML = (t === 'inc' ? '+' : '−') + _fcF0(a) + (it.u === 'kg' ? `<small>${_fcFp(Number(it.v) || 0)} × ${_fcF0(m.projKg)} กก.</small>` : '');
+      const a = it.u === 'kg' ? (Number(it.v) || 0) * m.projKg : (Number(it.v) || 0); tot += a;
+      _fcTxt('fc-ht' + t + i, it.u === 'kg' ? _fcFp(Number(it.v) || 0) + ' × ' + _fcF0(m.projKg) + ' กก. = ' + _fcF0(a) : '');
     });
-    _fcTxt('fc-hs' + t, (t === 'inc' ? '+' : '−') + _fcF0(tot));
+    _fcTxt('fc-hs' + t, _fcF0(tot));
   });
-  _fcTxt('fc-cost', _fcF0(m.cost));
   const nz = o => !!(o && Object.keys(o).some(k => o[k] != null && (typeof o[k] !== 'object' || Object.keys(o[k]).length)));
   const lk = (id, on) => { const e = document.getElementById(id); if (e) e.hidden = !on; };
-  lk('fc-lk-past', nz(_fcD.past)); lk('fc-lk-rem', nz(_fcD.remPrice) || _fcD.remMode === 'days'); lk('fc-lk-rate', nz(_fcD.rate));
+  lk('fc-lk-past', nz(_fcD.past)); lk('fc-lk-rem', nz(_fcD.remPrice) || (_fcD.remMode === 'days' && m.hasColl)); lk('fc-lk-rate', nz(_fcD.rate));
   lk('fc-lk-mix', Array.isArray(_fcD.mixRows) && _fcD.mixMode === m.mixMode);
-  // หัว
-  const hero = document.getElementById('fc-hero'), ms = document.getElementById('fc-hmiss');
-  const tl = !(m.target > 0) ? 'ยังไม่ได้ตั้งเป้า'
-    : (m.collKg >= m.target ? 'เก็บครบเป้าแล้ว · ' + _fcF0(m.collKg) + ' กก.' : 'ถ้า' + (m.hasColl ? '' : 'เก็บ') + 'ครบเป้า ' + _fcF0(m.target) + ' กก.');
-  _fcTxt('fc-hl', tl);
-  if (hero) {
-    if (!m.complete) {
-      hero.className = 'fc-hero wait';
-      _fcTxt('fc-hamt', '—'); _fcTxt('fc-hpct', 'ยังไม่ครบ'); _fcTxt('fc-hcost', '—'); _fcTxt('fc-hsold', '—');
-      const n = _fcMissN(m);
-      if (ms) { ms.hidden = false; ms.textContent = 'ยังขาด: ' + m.missing.join(' · ') + (n ? ' (' + n + ' ช่อง)' : '') + ' — กรอกช่องที่ขอบเส้นประให้ครบ แล้วตัวเลขจะขึ้นเอง'; }
-    } else {
-      const gain = m.profit >= 0;
-      hero.className = 'fc-hero ' + (gain ? 'gain' : 'loss');
-      _fcTxt('fc-hamt', _fcSgn(m.profit));
-      _fcTxt('fc-hpct', (gain ? '▲ ' : '▼ ') + (m.pct == null ? '—' : Math.abs(m.pct).toFixed(1) + '%'));
-      _fcTxt('fc-hcost', _fcF0(m.cost)); _fcTxt('fc-hsold', _fcF0(m.sold));
-      const bad = !m.hasColl && Math.abs(m.mixSum - 100) >= 0.001;
-      if (ms) { ms.hidden = !bad; if (bad) ms.textContent = 'สัดส่วนรวมยังไม่ใช่ 100% — ตัวเลขคิดจาก ' + _fcF0(m.remKgEff) + ' กก.'; }
+  // หัว + ท้าย + แถบล่าง
+  const gain = m.profit >= 0, word = gain ? 'กำไร' : 'ขาดทุน';
+  const q = !(m.target > 0) ? 'ยังไม่ได้ตั้งเป้าในสวนนี้'
+    : (m.collKg >= m.target ? 'เก็บครบเป้าแล้ว ' + _fcF0(m.collKg) + ' กก. จะ' : 'ถ้าเก็บครบเป้า ' + _fcF0(m.target) + ' กก. จะ') + (ok ? word : '…');
+  _fcTxt('fc-hq', q);
+  const hero = document.getElementById('fc-hero');
+  if (hero) hero.className = 'fc-hero ' + (ok ? (gain ? 'gain' : 'loss') : 'wait');
+  const amt = document.getElementById('fc-hamt');
+  if (amt) amt.innerHTML = ok ? _fcSgn(m.profit) + '<small>บาท</small>' : 'ยังคิดไม่ได้';
+  const pill = document.getElementById('fc-hpct');
+  if (pill) { pill.hidden = !ok; pill.textContent = ok ? word + ' ' + (m.pct == null ? '—' : Math.abs(m.pct).toFixed(1) + '%') + ' ของทุน' : ''; }
+  _fcTxt('fc-hsold', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-hcost', ok ? _fcF0(m.cost) : '—');
+  _fcTxt('fc-tin', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-tout', ok ? _fcF0(m.cost) : '—');
+  const tg = m.target > 0 ? m.target : Math.max(1, m.collKg);
+  const wa = Math.max(0, Math.min(100, m.collKg / tg * 100));
+  const ba = document.getElementById('fc-hba'), bb = document.getElementById('fc-hbb');
+  if (ba) ba.style.width = wa + '%'; if (bb) bb.style.width = (100 - wa) + '%';
+  _fcTxt('fc-hla', 'เก็บแล้ว ' + _fcF0(m.collKg) + ' กก. (จริง)');
+  _fcTxt('fc-hlb', 'ยังไม่เก็บ ' + _fcF0(m.remKg) + ' กก. (คาด)');
+  const nd = document.getElementById('fc-hneed');
+  _fcNeedList = ok ? [] : _fcNeed(m);
+  if (nd) {
+    nd.hidden = ok;
+    if (!ok) {
+      const show = _fcNeedList.slice(0, 4);
+      nd.innerHTML = 'ยังขาด: ' + show.map((n, i) => `<button type="button" onclick="fcNeedGo(${i})">${_fcEsc(n.t)}</button>`).join('')
+        + (_fcNeedList.length > 4 ? `<span class="more">อีก ${_fcNeedList.length - 4} ช่อง</span>` : '')
+        + (!_fcNeedList.length ? `<span class="more">${_fcEsc(m.missing.join(' · '))}</span>` : '');
     }
   }
+  _fcTxt('fc-esold', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-ecost', ok ? '− ' + _fcF0(m.cost) : '—');
+  _fcTxt('fc-elbl', ok ? word : 'ผลลัพธ์');
+  const er = document.getElementById('fc-eres'); if (er) { er.textContent = ok ? _fcSgn(m.profit) : '—'; er.className = 'v r ' + (ok ? (gain ? 'in' : 'out') : ''); }
+  _fcTxt('fc-fl', ok ? 'คาดว่าจะ' + word : 'ยังขาด ' + Math.max(_fcNeedList.length, 1) + ' ช่อง');
+  const fr = document.getElementById('fc-fr'); if (fr) { fr.textContent = ok ? _fcSgn(m.profit) : '—'; fr.className = ok ? (gain ? 'in' : 'out') : ''; }
 }
 function _fcRerender() {
   const ae = document.activeElement, body = document.getElementById('fc-body');
   const id = (ae && ae.id && ae.closest && ae.closest('#fc-ov')) ? ae.id : null;
   let ss = null; try { ss = ae.selectionStart; } catch (e) {}
+  const raw = id ? ae.value : null;   // ช่องที่กำลังพิมพ์คงข้อความเดิม (ลบจนว่างแล้วไม่เด้งกลับค่าตั้งต้น)
   const st = body ? body.scrollTop : 0;
   _fcRender();
   if (body) body.scrollTop = st;
-  if (id) { const n = document.getElementById(id); if (n) { try { n.focus({ preventScroll: true }); if (ss != null) n.setSelectionRange(ss, ss); } catch (e) {} } }
+  if (id) { const n = document.getElementById(id); if (n) { try { if (raw != null && n.value !== raw) n.value = raw; n.focus({ preventScroll: true }); if (ss != null) n.setSelectionRange(ss, ss); } catch (e) {} } }
 }
 function _fcEnsureOv() {
   let ov = document.getElementById('fc-ov');
   if (ov) return ov;
   ov = document.createElement('div');
   ov.className = 'fc-ov'; ov.id = 'fc-ov';
-  ov.innerHTML = `<div class="fc-hd"><button class="bk" type="button" onclick="fcClose()">← กลับ</button>
-    <div class="ti"><div class="t1">วางแผนราคา</div><div class="t2" id="fc-t2">—</div></div><span class="badge" id="fc-badge">คาดการณ์</span></div>
+  ov.innerHTML = `<div class="fc-hd"><button class="bk" type="button" onclick="fcClose()" aria-label="กลับ">←</button>
+    <div class="ti"><div class="t1" id="fc-t1">วางแผน</div><div class="t2" id="fc-t2">—</div></div><span class="badge" id="fc-badge">คาดการณ์</span>
+    <button class="more" type="button" onclick="fcMenu(event)" aria-label="เมนู"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/></svg></button>
+    <div class="fc-menu" id="fc-menu" hidden><button type="button" onclick="fcClear(true)">ล้างแผน<small>กลับไปใช้ค่าตั้งต้นทั้งหมด</small></button></div></div>
     <div class="fc-body" id="fc-body"></div>
-    <div class="fc-foot"><button class="clr" id="fc-clr" type="button" onclick="fcClear()">ล้างแผน</button><button class="save" type="button" onclick="fcSave()">บันทึกแผน</button></div>`;
+    <div class="fc-foot"><div class="res"><small id="fc-fl">คาดการณ์</small><b id="fc-fr">—</b></div><button class="save" type="button" onclick="fcSave()">บันทึกแผน</button></div>`;
+  ov.addEventListener('click', e => { const mn = document.getElementById('fc-menu'); if (mn && !mn.hidden && !e.target.closest('#fc-menu') && !e.target.closest('.more')) mn.hidden = true; });
   document.body.appendChild(ov);
   return ov;
 }
@@ -23925,6 +23960,8 @@ window.fcOpen = function (gid) {
   }
 };
 window.fcClose = function (force) {
+  const mn = document.getElementById('fc-menu');
+  if (mn && !mn.hidden && force !== true) { mn.hidden = true; return; }   // เมนู ⋯ เปิดอยู่ → ปิดเมนูก่อน
   // แก้แล้วยังไม่บันทึก → กดกลับครั้งแรกเตือน · กดซ้ำภายใน 3 วิ = ออกโดยไม่บันทึก
   if (_fcDirty && force !== true && Date.now() - _fcBackArm > 3000) {
     _fcBackArm = Date.now();
@@ -23964,10 +24001,10 @@ window.fcSave = function () {
   if (typeof haptic === 'function') haptic(15);
   if (typeof toast === 'function') toast('บันทึกแผนแล้ว · กล่องบนการ์ดคิดตามแผนนี้');
 };
-window.fcClear = function () {
+window.fcClear = function (force) {
   if (!_fcG) return;
   const btn = document.getElementById('fc-clr');
-  if (Date.now() - _fcClrArm > 3000) {   // แตะครั้งแรก = เตือน (ไม่ใช้กล่องถามของเบราว์เซอร์)
+  if (force !== true && Date.now() - _fcClrArm > 3000) {   // ในเมนู ⋯ = ยืนยันแล้วในตัว (force)   // แตะครั้งแรก = เตือน (ไม่ใช้กล่องถามของเบราว์เซอร์)
     _fcClrArm = Date.now();
     if (btn) { btn.textContent = 'แตะอีกครั้งเพื่อล้าง'; btn.classList.add('arm'); }
     setTimeout(() => { if (_fcClrArm && Date.now() - _fcClrArm >= 2900 && btn) { btn.textContent = 'ล้างแผน'; btn.classList.remove('arm'); _fcClrArm = 0; } }, 3000);
@@ -24144,9 +24181,11 @@ window.fcRateBump = function (j, dl) {
   const n = _fcR2((m.rate[k] || 0) + dl); _fcRateSet(k, n, m); _fcSetIn('c' + j, n); _fcTouch(); _fcRefresh();
 };
 // ── รายได้แฝง / ค่าใช้จ่ายแฝง ──
-window.fcHidAdd = function (t) {
-  _fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []; _fcD[t].push({ n: '', v: 0, u: 'b' }); _fcTouch(); _fcRerender();
-  const e = document.getElementById('fcin-hn' + t + (_fcD[t].length - 1)); if (e) e.focus();
+window.fcHidAdd = function (t, name) {
+  _fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []; _fcD[t].push({ n: String(name || ''), v: 0, u: 'b' }); _fcTouch();
+  const sk = t === 'inc' ? 'inc' : 'exp'; _fcSec[sk] = true; _fcRerender();
+  // ปุ่มลัดมีชื่อแล้ว → ไปช่องตัวเลขเลย · "อื่นๆ" → ไปช่องชื่อ
+  const e = document.getElementById((name ? 'fcin-h' + t : 'fcin-hn' + t) + (_fcD[t].length - 1)); if (e) e.focus();
 };
 window.fcHidDel = function (t, i) { if (!Array.isArray(_fcD[t])) return; _fcD[t].splice(i, 1); _fcTouch(); _fcRerender(); };
 window.fcHidName = function (t, i, v) { const it = (_fcD[t] || [])[i]; if (it) { it.n = v; _fcTouch(); } };
