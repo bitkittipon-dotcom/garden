@@ -30,8 +30,29 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1149;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 15 ก.ค. 69 (149)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1153;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 14 พ.ย. 69 (153)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+
+// ═══ build 1152: Service Worker (ไฟล์ sw.js ต้องอยู่ข้าง index.html) ═══
+// หน้าแอปดึงจากเน็ตก่อนเสมอ (ได้เวอร์ชันล่าสุด) · เน็ตช้า/ไม่มีเน็ต → เปิดจากสำเนาในเครื่อง
+// ปิดฉุกเฉิน: เปลี่ยน SW_ON เป็น false แล้วส่งขึ้น → ทุกเครื่องถอด SW ออกเองตอนเปิดแอปครั้งถัดไป
+(function () {
+  var SW_ON = true;
+  try {
+    if (!('serviceWorker' in navigator)) return;
+    var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!(location.protocol === 'https:' || (local && window.__SW_TEST))) return;
+    window.addEventListener('load', function () {
+      if (!SW_ON) {
+        navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+        if (window.caches) caches.keys().then(function (ks) { ks.forEach(function (k) { if (k.indexOf('tsp-') === 0) caches.delete(k); }); });
+        return;
+      }
+      navigator.serviceWorker.register('sw.js', { scope: './', updateViaCache: 'none' })
+        .catch(function (e) { console.warn('[sw] ลงทะเบียนไม่ได้ (ยังไม่ได้อัป sw.js?)', e && e.message); });
+    });
+  } catch (e) {}
+})();
 
 
 // ═══════════ ตัววัดวินิจฉัย (ของเดิมจาก build 1064 — ใส่กลับตามที่ผู้ใช้ยืนยันว่าใส่แล้วจอไม่ค้าง) ═══════════
@@ -11568,14 +11589,16 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
              inset 0 1px 1px rgba(255,255,255,.55),
              inset 0 -1px 1px rgba(0,0,0,.18); }
 
-/* ═══════════ build 1149: หน้าวางแผน (คาดการณ์) ผังใหม่ — สมการ ขาย − ทุน · กล่องเงินเข้า/เงินออก ═══════════ */
-.fc-ov { --fc-ink:#2a1c0c; --fc-ink2:#5f4a2a; --fc-mute:#8a7350; --fc-line:#e3d8bd; --fc-line2:#d3c49d; --fc-card:#fffdf7; --fc-paper:#f6f0e0;
+/* ═══════════ build 1151: หน้าวางแผน (คาดการณ์) แบบคลีน — คำตอบตัวเดียว · ใบเสร็จ ขาย / ทุน · แตะแถวเพื่อกาง ═══════════ */
+.fc-ov { --fc-ink:#2a1c0c; --fc-ink2:#5f4a2a; --fc-mute:#9a8560; --fc-line:#ebe2c9; --fc-line2:#d8caa6; --fc-card:#fffdf7; --fc-paper:#f6f0e0;
   --fc-gold:#c9a24a; --fc-gold2:#e9cf86; --fc-in:#2f7d1f; --fc-in-bg:#eaf3e2; --fc-out:#b5281b; --fc-out-bg:#fbeceb;
-  --fc-edit:#c46a12; --fc-edit-bg:#fff3e2; --fc-miss:#c98a2a; --fc-miss-bg:#fff8ec; --fc-est:#9cc068;
+  --fc-edit:#c46a12; --fc-edit-bg:#fff3e2; --fc-miss:#c98a2a; --fc-miss-bg:#fff8ec; --fc-est:#a9c97a; --fc-pull:#2d6a8a; --fc-pull-bg:#e6f0f5;
+  --fc-sale:#1f5c2e; --fc-cost:#16437e;
   position:fixed; inset:0; z-index:9999; background:var(--fc-paper); display:none; flex-direction:column; overflow:hidden;
   font-family:'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink); }
 .fc-ov.open { display:flex; }
-.fc-ov .num, .fc-ov .k, .fc-ov .m, .fc-ov .v, .fc-ov .tot { font-variant-numeric:tabular-nums; }
+/* hidden ต้องชนะ display ของคลาส (เดิม .need / แถบฟ้า / จุดสี ยังโผล่ทั้งที่สั่งซ่อน) */
+.fc-ov [hidden], .fc-ov[hidden] { display:none !important; }
 .fc-hd { background:linear-gradient(135deg,#3a2f14,#5a4a24); color:#f3e8c8; padding:max(44px, calc(env(safe-area-inset-top, 0px) + 11px)) 12px 11px;
   display:flex; align-items:center; gap:9px; flex:0 0 auto; position:relative; }
 .fc-hd .bk { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#f3e8c8; border-radius:8px; width:36px; height:32px;
@@ -11583,18 +11606,19 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .fc-hd .ti { flex:1; min-width:0; }
 .fc-hd .t1 { font-weight:700; font-size:15.5px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .fc-hd .t2 { font-size:11px; color:#cdbd8f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.fc-hd .badge { font-size:10.5px; font-weight:700; border:1px dashed var(--fc-gold); color:#f0dca4; border-radius:999px; padding:1px 8px; white-space:nowrap; flex:0 0 auto; }
-.fc-hd .more { width:32px; height:32px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#f3e8c8; cursor:pointer;
+.fc-hd .more { width:34px; height:32px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:#f3e8c8; cursor:pointer;
   display:grid; place-items:center; padding:0; flex:0 0 auto; }
 .fc-menu { position:absolute; right:10px; top:calc(100% - 4px); background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:10px;
-  box-shadow:0 10px 24px -10px rgba(0,0,0,.35); padding:5px; z-index:5; min-width:200px; }
-.fc-menu button { display:block; width:100%; text-align:left; border:0; background:none; font:600 13.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-out);
+  box-shadow:0 10px 24px -10px rgba(0,0,0,.35); padding:5px; z-index:5; min-width:220px; }
+.fc-menu button { display:block; width:100%; text-align:left; border:0; background:none; font:600 13.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink);
   padding:9px 10px; border-radius:7px; cursor:pointer; }
-.fc-menu button:active { background:var(--fc-out-bg); }
+.fc-menu button.red { color:var(--fc-out); }
+.fc-menu button:active { background:#f4ecd6; }
 .fc-menu small { display:block; color:var(--fc-mute); font-weight:500; font-size:11px; }
 .fc-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:12px 11px 22px; }
 .fc-body .wrap { max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
 .fc-foot { display:flex; align-items:center; gap:10px; padding:9px 12px max(11px, env(safe-area-inset-bottom, 0px)); background:#efe6cf; border-top:1px solid var(--fc-line2); flex:0 0 auto; }
+.fc-ov.kb-on .fc-foot { display:none; }   /* build 1152: พิมพ์อยู่ → ซ่อนแถบบันทึกแผน ให้พื้นที่เหนือคีย์บอร์ดเป็นของเนื้อหา */
 .fc-foot .res { flex:1; min-width:0; line-height:1.15; }
 .fc-foot .res small { display:block; font-size:10.5px; color:var(--fc-mute); }
 .fc-foot .res b { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:800; color:var(--fc-mute); font-variant-numeric:tabular-nums; }
@@ -11602,136 +11626,129 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .fc-foot .save { border-radius:11px; border:1.5px solid #4e6b28; background:linear-gradient(180deg,#6b8e3d,#557030); color:#fff; font-weight:700; font-size:14px;
   padding:10px 18px; font-family:inherit; cursor:pointer; flex:0 0 auto; }
 
-/* หัว: คำตอบ + สมการ */
-.fc-hero { background:var(--fc-card); border:1.5px dashed var(--fc-gold); border-radius:14px; padding:12px 13px; }
-.fc-hero .q { font-size:12px; color:var(--fc-mute); font-weight:600; }
-.fc-hero .ans { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-top:1px; }
-.fc-hero .big { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:30px; line-height:1.1; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-.fc-hero .big small { font-size:13px; opacity:.6; margin-left:3px; font-family:'IBM Plex Sans Thai',sans-serif; }
-.fc-hero .pill { font-size:11.5px; font-weight:700; border-radius:999px; padding:1px 9px; }
+/* หัว */
+.fc-hero { background:var(--fc-card); border:1.5px dashed var(--fc-gold); border-radius:14px; padding:12px 14px; }
+.fc-hero .r1 { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--fc-mute); font-weight:600; }
+.fc-hero .pill { font-size:11.5px; font-weight:700; border-radius:999px; padding:1px 9px; white-space:nowrap; }
+.fc-hero .big { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:32px; line-height:1.15; margin-top:2px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.fc-hero .big small { font:600 13px 'IBM Plex Sans Thai',sans-serif; opacity:.55; margin-left:4px; }
 .fc-hero.gain .big { color:var(--fc-in); } .fc-hero.gain .pill { background:var(--fc-in-bg); color:var(--fc-in); }
 .fc-hero.loss .big { color:var(--fc-out); } .fc-hero.loss .pill { background:var(--fc-out-bg); color:var(--fc-out); }
-.fc-hero.wait { border-color:var(--fc-miss); } .fc-hero.wait .big { color:#c7b893; font-size:23px; font-family:'IBM Plex Sans Thai',sans-serif; }
-.fc-hero .eq { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:center; margin-top:10px; }
-.fc-hero .eq button { border:1px solid var(--fc-line); background:var(--fc-paper); border-radius:10px; padding:6px 9px; text-align:left; cursor:pointer; font:inherit; color:inherit; min-width:0; }
-.fc-hero .eq small { display:block; font-size:10.5px; color:var(--fc-mute); font-weight:600; }
-.fc-hero .eq b { font-family:'JetBrains Mono',monospace; font-size:14px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-.fc-hero .eq .in b { color:var(--fc-in); } .fc-hero .eq .out b { color:var(--fc-out); }
-.fc-hero .eq .op { font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--fc-mute); }
-.fc-hero .bar { margin-top:11px; }
-.fc-hero .bar .tr { display:flex; height:10px; border-radius:6px; overflow:hidden; background:#efe7d2; border:1px solid var(--fc-line); }
-.fc-hero .bar .a { background:var(--fc-in); }
-.fc-hero .bar .b { background:repeating-linear-gradient(135deg,var(--fc-est) 0 5px,#c7dca5 5px 10px); }
-.fc-hero .bar .lg { display:flex; justify-content:space-between; gap:4px 8px; margin-top:4px; font-size:10.5px; color:var(--fc-ink2); flex-wrap:wrap; }
-.fc-hero .bar .lg > span { display:inline-flex; align-items:center; gap:4px; }
-.fc-hero .dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
-.fc-hero .dot.a { background:var(--fc-in); } .fc-hero .dot.b { background:var(--fc-est); }
-.fc-hero .need { margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:11.5px; color:var(--fc-ink2); }
+.fc-hero.wait { border-color:var(--fc-miss); } .fc-hero.wait .big { color:#c7b893; font:700 22px 'IBM Plex Sans Thai',sans-serif; margin-top:4px; }
+.fc-hero .bar { display:flex; height:6px; border-radius:4px; overflow:hidden; background:#efe7d2; margin-top:10px; }
+.fc-hero .bar .a { background:var(--fc-in); } .fc-hero .bar .b { background:repeating-linear-gradient(135deg,var(--fc-est) 0 4px,#cfe0b0 4px 8px); }
+.fc-hero .bl { display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--fc-ink2); margin-top:4px; font-family:'JetBrains Mono',monospace; }
+.fc-hero .bl span:last-child { color:var(--fc-mute); }
+.fc-hero .need { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:9px; font-size:11.5px; color:var(--fc-ink2); }
 .fc-hero .need button { border:1.5px dashed var(--fc-miss); background:var(--fc-miss-bg); color:#8a4b08; border-radius:999px; font:700 11.5px 'IBM Plex Sans Thai',sans-serif; padding:2px 10px; cursor:pointer; }
 .fc-hero .need .more { color:var(--fc-mute); }
 
-/* กล่องใหญ่ เงินเข้า / เงินออก */
-.fc-blk { background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:13px; overflow:hidden; scroll-margin-top:8px; }
-.fc-blk-h { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--fc-line); }
-.fc-blk-h .ic { width:24px; height:24px; border-radius:7px; display:grid; place-items:center; flex:0 0 auto; }
-.fc-blk.in .ic { background:var(--fc-in-bg); color:var(--fc-in); } .fc-blk.out .ic { background:var(--fc-out-bg); color:var(--fc-out); }
-.fc-blk-h .nm { font-weight:700; font-size:14.5px; flex:1; min-width:0; }
-.fc-blk-h .nm small { font-weight:500; color:var(--fc-mute); font-size:11px; margin-left:5px; }
-.fc-blk-h .tot { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px; }
-.fc-blk.in .fc-blk-h .tot { color:var(--fc-in); } .fc-blk.out .fc-blk-h .tot { color:var(--fc-out); }
-.fc-sec { border-bottom:1px solid var(--fc-line); }
-.fc-sec:last-child { border-bottom:0; }
-.fc-sec-h { display:grid; grid-template-columns:minmax(0,1fr) auto 14px; gap:8px; align-items:center; padding:9px 12px; cursor:pointer; background:none; border:0; width:100%; text-align:left; font:inherit; color:inherit; }
-.fc-sec-h .t { font-weight:700; font-size:13px; line-height:1.35; }
-.fc-sec-h .t small { display:block; font-weight:500; color:var(--fc-mute); font-size:11px; }
-.fc-sec-h .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; }
-.fc-sec-h .ch, .fc-day-h .ch { color:var(--fc-mute); transition:transform .15s; display:grid; place-items:center; }
-.fc-sec.open > .fc-sec-h .ch, .fc-day.open .fc-day-h .ch { transform:rotate(180deg); }
-.fc-sec-b { display:none; padding:0 12px 11px; }
-.fc-sec.open > .fc-sec-b { display:block; }
-.fc-fix { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 12px; border-bottom:1px solid var(--fc-line); }
-.fc-fix .t { font-weight:700; font-size:13px; min-width:0; }
-.fc-fix .t small { display:block; font-weight:500; color:var(--fc-mute); font-size:11px; }
-.fc-fix .t small.warn { color:#8a4b08; font-weight:700; }
-.fc-fix .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; white-space:nowrap; }
-.fc-tag { display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:0 6px; line-height:17px; vertical-align:1px; white-space:nowrap; font-family:'IBM Plex Sans Thai',sans-serif; }
-.fc-tag.bill { background:#e3eedb; color:#2f6a1f; } .fc-tag.form { background:#efe6cc; color:#6b5320; }
-.fc-tag.edit { background:var(--fc-edit-bg); color:var(--fc-edit); } .fc-tag.none { background:var(--fc-miss-bg); color:#8a4b08; }
-.fc-tag.est { background:#eef3e2; color:#56702d; border:1px dashed var(--fc-est); line-height:15px; }
-.fc-hint { font-size:11.5px; color:var(--fc-mute); margin:0 0 8px; line-height:1.5; }
-.fc-hint b { color:var(--fc-ink2); }
-.fc-step { font-size:12px; font-weight:700; color:var(--fc-ink2); margin:10px 0 6px; }
-.fc-step:first-child { margin-top:0; }
-.fc-emp { padding:8px 10px; font-size:11.5px; color:#8a4b08; background:var(--fc-miss-bg); border-radius:9px; line-height:1.45; margin-bottom:6px; }
-.fc-emp.ok { color:var(--fc-in); background:var(--fc-in-bg); }
-.fc-empty { padding:8px 2px; font-size:11.5px; color:var(--fc-mute); }
-
-/* วันที่เก็บแล้ว */
-.fc-day { border:1px solid var(--fc-line); border-radius:10px; margin-top:8px; overflow:hidden; background:#fffefa; }
-.fc-day-h { display:flex; align-items:center; gap:7px; padding:7px 10px; background:#f7f0dd; font-size:12.5px; cursor:pointer; border:0; width:100%; font-family:inherit; color:inherit; text-align:left; }
-.fc-day-h .d { font-weight:700; }
-.fc-day-h .k { color:var(--fc-mute); font-family:'JetBrains Mono',monospace; font-size:11.5px; }
-.fc-day-h .v { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; }
-.fc-day .fc-tb { display:none; } .fc-day.open .fc-tb { display:block; }
-
-/* ตาราง: เบอร์ · กก. · ราคา · เป็นเงิน */
-.fc-tb { font-size:12.5px; }
-.fc-tr { display:grid; grid-template-columns:48px minmax(0,1fr) 84px minmax(0,1fr); gap:6px; align-items:center; padding:5px 10px; border-top:1px solid #efe6cf; }
-.fc-tr.fc-th, .fc-mx.fc-th { font-size:10px; font-weight:700; color:var(--fc-mute); padding-top:5px; padding-bottom:3px; border-top:0; }
-.fc-tr .g, .fc-mx .g { font-weight:700; overflow-wrap:anywhere; line-height:1.2; }
-.fc-tr .k, .fc-tr .m, .fc-mx .m { font-family:'JetBrains Mono',monospace; text-align:right; }
-.fc-tr .k { color:var(--fc-ink2); }
-.fc-tr .m, .fc-mx .m { font-weight:700; }
-.fc-th .k, .fc-th .m { font-family:'IBM Plex Sans Thai',sans-serif !important; }
-.fc-th .p { text-align:center; }
-.fc-sec-b > .fc-tb, .fc-pday .fc-tb { margin:0 -2px; }
-.fc-mx { display:grid; grid-template-columns:60px 84px minmax(0,1fr) 28px; gap:6px; align-items:center; padding:5px 2px; border-top:1px solid #efe6cf; }
-.fc-mx .gn { width:100%; min-width:0; height:30px; border:1.5px solid var(--fc-gold); border-radius:8px; background:#fffdf4; text-align:center; font:700 12.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink); padding:0 4px; }
-.fc-mx .gn:focus { outline:none; box-shadow:0 0 0 3px rgba(201,162,74,.3); }
-.fc-mx .gn.miss { border-style:dashed; border-color:var(--fc-miss); background:var(--fc-miss-bg); }
-.fc-pin { display:flex; flex-direction:column; align-items:center; min-width:0; }
-.fc-pin input { width:100%; height:30px; border:1.5px solid var(--fc-gold); border-radius:8px; background:#fffdf4; text-align:center;
-  font:800 13.5px 'JetBrains Mono',monospace; color:var(--fc-ink); padding:0 4px; -moz-appearance:textfield; appearance:textfield; }
-.fc-pin input::-webkit-outer-spin-button, .fc-pin input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-.fc-pin input:focus { outline:none; box-shadow:0 0 0 3px rgba(201,162,74,.3); }
-.fc-pin input::placeholder { color:#c2b08a; font-weight:500; font-family:'IBM Plex Sans Thai',sans-serif; font-size:12px; }
-.fc-pin .was { font-size:9.5px; color:var(--fc-mute); line-height:1.15; margin-top:1px; white-space:nowrap; }
-.fc-pin .was:empty { display:none; }
-.fc-pin.chg input { border-color:var(--fc-edit); background:var(--fc-edit-bg); color:#7a3e05; }
-.fc-pin.chg .was { color:var(--fc-edit); font-weight:700; }
-.fc-pin.miss input { border-style:dashed; border-color:var(--fc-miss); background:var(--fc-miss-bg); }
-.fc-pin.bad input { border-style:solid; border-color:#c0392b; background:#fdecec; }
-.fc-pin.flash input, .fc-left.flash { animation:fcFlash 1.1s ease 2; }
-@keyframes fcFlash { 50% { box-shadow:0 0 0 5px rgba(201,138,42,.45); } }
-.fc-pin.kg { width:84px; }
-.fc-seg { display:flex; border:1.5px solid var(--fc-gold); border-radius:10px; overflow:hidden; background:#fff; margin:0 0 9px; }
-.fc-seg button { flex:1; border:0; background:#fff; color:var(--fc-ink2); font:700 12.5px 'IBM Plex Sans Thai',sans-serif; padding:7px 6px; cursor:pointer; }
-.fc-seg button + button { border-left:1.5px solid var(--fc-gold); }
+/* ใบเสร็จ: หมวดหลัก ขาย / ทุน + แถวย่อยเยื้องเข้า */
+.fc-grp { background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:13px; overflow:hidden; scroll-margin-top:8px; }
+.fc-grp.in { --fc-c:var(--fc-sale); --fc-rail:rgba(31,92,46,.22); } .fc-grp.out { --fc-c:var(--fc-cost); --fc-rail:rgba(22,67,126,.22); }
+.fc-grp-h { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 12px 10px; }
+.fc-grp-h b { font-size:15.5px; font-weight:700; display:flex; align-items:center; gap:8px; color:var(--fc-c); }
+.fc-grp-h b::before { content:""; width:4px; height:18px; border-radius:2px; background:currentColor; }
+.fc-grp-h span { font-family:'JetBrains Mono',monospace; font-weight:800; font-size:17px; color:var(--fc-c); font-variant-numeric:tabular-nums; }
+.fc-rows { margin:0 12px 10px 13px; border-left:2px solid var(--fc-rail); }
+.fc-row { border-bottom:1px solid var(--fc-line); scroll-margin-top:8px; }
+.fc-row:last-child { border-bottom:0; }
+.fc-row-h { display:grid; grid-template-columns:minmax(0,1fr) auto 14px; gap:8px; align-items:center; width:100%; padding:9px 4px 9px 14px;
+  border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+.fc-row.flat .fc-row-h { grid-template-columns:minmax(0,1fr) auto; cursor:default; }
+.fc-row-h .l { font-weight:600; font-size:13px; line-height:1.3; color:var(--fc-ink2); min-width:0; }
+.fc-row.open > .fc-row-h .l { color:var(--fc-ink); }
+.fc-row-h .l small { display:block; font-weight:500; font-size:11px; color:var(--fc-mute); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fc-row-h .l small .nm { font-family:'JetBrains Mono',monospace; }
+.fc-row-h .l small.warn { color:#8a4b08; font-weight:700; }
+.fc-row-h .l small:empty { display:none; }
+.fc-row-h .v { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13.5px; color:#3a2a14; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.fc-row-h .v.add { font:700 12px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink2); border:1.3px dashed var(--fc-line2); border-radius:8px; padding:2px 9px; }
+.fc-row-h .ch { color:var(--fc-mute); display:grid; place-items:center; transition:transform .15s; }
+.fc-row.open > .fc-row-h .ch { transform:rotate(180deg); }
+.fc-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-left:5px; vertical-align:2px; }
+.fc-dot.d-e { background:var(--fc-edit); } .fc-dot.d-x { background:var(--fc-miss); } .fc-dot.d-p { background:var(--fc-pull); }
+.fc-row-b { display:none; padding:2px 4px 12px 14px; }
+.fc-row.open > .fc-row-b { display:block; }
+.fc-tools { display:flex; align-items:center; justify-content:space-between; gap:6px 8px; flex-wrap:wrap; margin:2px 0 8px; }
+.fc-tools.end { margin:8px 0 0; }
+.fc-tools .note { font-size:11px; color:var(--fc-mute); }
+.fc-tools .note.warn { color:#8a4b08; font-weight:700; }
+.fc-tools .lk { display:inline-flex; gap:12px; margin-left:auto; }
+.fc-lnk { border:0; background:none; color:var(--fc-ink2); font:700 11.5px 'IBM Plex Sans Thai',sans-serif; text-decoration:underline; cursor:pointer; padding:0; }
+.fc-lnk.pull { color:var(--fc-pull); }
+.fc-lnk.end { align-self:flex-end; }
+.fc-warnbar { display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--fc-pull-bg); border-radius:9px; padding:6px 6px 6px 10px; margin:2px 0 8px; font-size:11.5px; color:#28485a; }
+.fc-warnbar button { border:0; background:var(--fc-pull); color:#fff; font:700 12px 'IBM Plex Sans Thai',sans-serif; border-radius:8px; padding:5px 10px; cursor:pointer; white-space:nowrap; flex:0 0 auto; }
+.fc-seg { display:inline-flex; border:1.3px solid var(--fc-gold); border-radius:9px; overflow:hidden; background:#fff; }
+.fc-seg button { border:0; background:#fff; color:var(--fc-ink2); font:700 12px 'IBM Plex Sans Thai',sans-serif; padding:5px 10px; cursor:pointer; }
+.fc-seg button + button { border-left:1.3px solid var(--fc-gold); }
 .fc-seg button.on { background:linear-gradient(180deg,#f2d78c,#e2bd5c); color:#3e2a04; }
 .fc-seg button:disabled { color:#b9ab8c; cursor:default; }
-.fc-tools { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 4px; flex-wrap:wrap; }
-.fc-tools .lb { font-size:11.5px; color:var(--fc-mute); }
-.fc-nudge { display:inline-flex; border:1.3px solid var(--fc-line2); border-radius:9px; overflow:hidden; background:#fff; flex:0 0 auto; }
+.fc-nudge { display:inline-flex; align-items:center; border:1.3px solid var(--fc-line2); border-radius:9px; overflow:hidden; background:#fff; }
 .fc-nudge button { border:0; background:#f7efdc; font:700 12px 'JetBrains Mono',monospace; color:var(--fc-ink2); padding:5px 9px; cursor:pointer; }
-.fc-nudge > span { font-size:11px; font-weight:700; color:var(--fc-ink2); padding:0 7px; display:grid; place-items:center; border-left:1px solid var(--fc-line2); border-right:1px solid var(--fc-line2); }
-.fc-lnk { border:0; background:none; color:var(--fc-ink2); font:700 11.5px 'IBM Plex Sans Thai',sans-serif; text-decoration:underline; cursor:pointer; padding:0; }
-.fc-lnk.end { align-self:flex-end; }
-.fc-lkrow { margin-top:8px; }
-.fc-pday { border:1px solid var(--fc-line); border-radius:10px; margin-top:8px; overflow:hidden; background:#fffefa; }
-.fc-pday-h { display:flex; align-items:center; gap:6px; padding:7px 9px; background:#f7f0dd; flex-wrap:wrap; }
+.fc-nudge > span { font-size:11px; font-weight:700; color:var(--fc-ink2); padding:0 7px; }
+.fc-emp { padding:7px 10px; font-size:11.5px; color:#8a4b08; background:var(--fc-miss-bg); border-radius:9px; line-height:1.45; }
+.fc-emp.ok { color:var(--fc-in); background:var(--fc-in-bg); }
+.fc-empty { padding:6px 0; font-size:11.5px; color:var(--fc-mute); }
+
+/* ตาราง 3 ช่อง: เบอร์ (กก. ใต้ชื่อ) · ราคา · เป็นเงิน */
+.fc-tb { background:#fff; border:1px solid var(--fc-line); border-radius:10px; overflow:hidden; }
+.fc-t3 { display:grid; grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr); gap:8px; align-items:center; padding:6px 10px; border-top:1px solid #f1e9d4; }
+.fc-t3:first-child { border-top:0; }
+.fc-t3.mx { grid-template-columns:minmax(0,1fr) 54px 70px minmax(0,1fr) 24px; gap:5px; padding-left:8px; padding-right:6px; }
+.fc-t3 .g { font-weight:700; font-size:13px; line-height:1.2; min-width:0; overflow-wrap:anywhere; }
+.fc-t3 .g small { display:block; font:500 10.5px 'JetBrains Mono',monospace; color:var(--fc-mute); }
+.fc-t3 .m { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:12.5px; text-align:right; color:var(--fc-ink2); font-variant-numeric:tabular-nums; }
+.fc-t3.fc-th { font-size:10px; font-weight:700; color:var(--fc-mute); padding-top:5px; padding-bottom:3px; background:#fdfaf1; }
+.fc-t3.fc-th span:not(:first-child) { text-align:center; } .fc-t3.fc-th span:last-child { text-align:right; }
+.fc-t3.mx.fc-th span:nth-child(4) { text-align:right; }
+.fc-t3.sub { background:#fdfaf1; padding-top:5px; padding-bottom:5px; }
+.fc-t3.sub .sl { font-size:11px; color:var(--fc-mute); text-align:center; }
+.fc-t3.sub .m { color:var(--fc-mute); font-size:12px; }
+.fc-t3 .gn { width:100%; min-width:0; height:30px; border:1.3px solid var(--fc-line2); border-radius:8px; background:#fffdf6; text-align:center; font:700 12.5px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink); padding:0 4px; }
+.fc-t3 .gn:focus { outline:none; border-color:var(--fc-gold); box-shadow:0 0 0 3px rgba(201,162,74,.28); }
+.fc-t3 .gn.miss { border:1.5px dashed var(--fc-miss); background:var(--fc-miss-bg); }
+.fc-dash { text-align:center; color:var(--fc-mute); font-size:11px; }
+.fc-t3 .x { width:24px; height:24px; }
+.fc-pin { display:flex; flex-direction:column; align-items:center; min-width:0; }
+.fc-pin input { width:100%; height:30px; border:1.3px solid var(--fc-line2); border-radius:8px; background:#fffdf6; text-align:center;
+  font:800 13.5px 'JetBrains Mono',monospace; color:var(--fc-ink); padding:0 4px; -moz-appearance:textfield; appearance:textfield; }
+.fc-pin input::-webkit-outer-spin-button, .fc-pin input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.fc-pin input:focus { outline:none; border-color:var(--fc-gold); box-shadow:0 0 0 3px rgba(201,162,74,.28); }
+.fc-pin input::placeholder { color:#c2b08a; font:500 11.5px 'IBM Plex Sans Thai',sans-serif; }
+.fc-pin .was { font-size:9.5px; line-height:1.1; margin-top:1px; white-space:nowrap; color:var(--fc-edit); font-weight:700; }
+.fc-pin .was:empty { display:none; }
+.fc-pin.chg input { border-color:var(--fc-edit); background:var(--fc-edit-bg); color:#7a3e05; }
+.fc-pin.miss input { border:1.5px dashed var(--fc-miss); background:var(--fc-miss-bg); }
+.fc-pin.pull input { border-color:var(--fc-pull); background:#f3f8fb; color:#123447; }
+.fc-pin.bad input { border:1.5px solid #c0392b; background:#fdecec; }
+.fc-pin.flash input, .fc-tools .note.flash { animation:fcFlash 1.1s ease 2; }
+@keyframes fcFlash { 50% { box-shadow:0 0 0 5px rgba(201,138,42,.45); } }
+.fc-pin.kg { width:76px; }
+.fc-pday { margin-top:12px; }
+.fc-pday:first-of-type, .fc-tools + .fc-pday { margin-top:2px; }
+.fc-dd { display:flex; align-items:center; gap:8px; margin:0 0 6px; }
+.fc-dd::before, .fc-dd::after { content:""; flex:1; height:1px; background:var(--fc-line2); }
+.fc-dd .dt { font-weight:700; font-size:13px; color:var(--fc-ink); white-space:nowrap; }
+.fc-tag { display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:0 6px; line-height:17px; white-space:nowrap; font-family:'IBM Plex Sans Thai',sans-serif; }
+.fc-tag.bill { background:#e3eedb; color:#2f6a1f; } .fc-tag.form { background:#efe6cc; color:#6b5320; }
+.fc-tag.edit { background:var(--fc-edit-bg); color:var(--fc-edit); } .fc-tag.none { background:var(--fc-miss-bg); color:#8a4b08; }
+.fc-tag.pull { background:var(--fc-pull-bg); color:var(--fc-pull); }
+.fc-pday.plan { border:1px solid var(--fc-line); border-radius:10px; overflow:hidden; background:#fffefa; }
+.fc-pday.plan .fc-tb { border:0; border-top:1px solid var(--fc-line); border-radius:0; }
+.fc-pday-h { display:flex; align-items:center; gap:6px; padding:6px 8px; background:#f7f0dd; flex-wrap:wrap; }
 .fc-pday-h b { font-size:12.5px; }
 .fc-pday-h .u { font-size:11.5px; color:var(--fc-mute); }
 .fc-pday-h .x { margin-left:auto; }
-.fc-ov .x { width:28px; height:28px; border-radius:7px; border:1px solid #e3c4b8; background:#f8ebe5; color:#a94f30; font-weight:700; cursor:pointer; font-size:13px; padding:0; font-family:inherit; flex:0 0 auto; }
-.fc-left { display:flex; justify-content:space-between; gap:8px; margin-top:8px; font-size:11.5px; border-radius:9px; padding:7px 10px; background:var(--fc-miss-bg); color:#8a4b08; }
-.fc-left.ok { background:var(--fc-in-bg); color:var(--fc-in); }
-.fc-left b { font-family:'JetBrains Mono',monospace; }
-.fc-addrow { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
-.fc-add { border:1.3px dashed var(--fc-line2); background:#fff; border-radius:9px; color:var(--fc-ink2); font:700 12px 'IBM Plex Sans Thai',sans-serif; padding:6px 10px; cursor:pointer; }
-.fc-msum { display:flex; justify-content:space-between; gap:8px; font-size:11.5px; font-weight:700; margin-top:8px; padding:6px 10px; border-radius:8px; background:var(--fc-in-bg); color:var(--fc-in); }
-.fc-msum.bad { background:var(--fc-miss-bg); color:#8a4b08; }
-.fc-msum span:last-child { font-family:'JetBrains Mono',monospace; }
+.fc-ov .x { width:26px; height:26px; border-radius:7px; border:1px solid #e3c4b8; background:#f8ebe5; color:#a94f30; font-weight:700; cursor:pointer; font-size:13px; padding:0; font-family:inherit; flex:0 0 auto; }
+.fc-mixbar { display:flex; height:8px; border-radius:5px; overflow:hidden; margin:2px 0 4px; background:#efe7d2; }
+.fc-mixbar span { height:100%; }
+.fc-mixl { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:11.5px; color:var(--fc-ink2); margin-bottom:8px; }
+.fc-msum { font:700 11px 'JetBrains Mono',monospace; color:var(--fc-in); }
+.fc-msum.bad { color:#8a4b08; font-family:'IBM Plex Sans Thai',sans-serif; }
 .fc-refs { display:flex; flex-direction:column; gap:6px; margin-bottom:8px; }
+.fc-refs:empty { display:none; }
 .fc-ref { display:grid; grid-template-columns:18px minmax(0,1fr); gap:3px 8px; align-items:center; border:1.5px solid var(--fc-line); border-radius:10px; padding:7px 9px;
   background:#fffefa; cursor:pointer; text-align:left; font:inherit; color:inherit; width:100%; }
 .fc-ref.static { cursor:default; }
@@ -11740,30 +11757,94 @@ button, a, [onclick], [role="button"], input[type="button"], input[type="submit"
 .fc-ref.sel .rd { border-color:var(--fc-in); background:radial-gradient(circle,var(--fc-in) 40%,transparent 45%); }
 .fc-ref .rn { font-weight:700; font-size:12.5px; min-width:0; }
 .fc-ref .rn small { font-weight:500; color:var(--fc-mute); font-size:10.5px; margin-left:5px; }
-.fc-ref .sb { grid-column:2; display:flex; height:9px; border-radius:5px; overflow:hidden; border:1px solid rgba(107,68,35,.15); }
+.fc-ref .sb { grid-column:2; display:flex; height:8px; border-radius:5px; overflow:hidden; }
 .fc-ref .sb span { height:100%; }
 .fc-ref .rl { grid-column:2; font-size:10.5px; color:var(--fc-ink2); font-family:'JetBrains Mono',monospace; }
-.fc-quick { display:flex; flex-wrap:wrap; gap:6px; }
+.fc-quick { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.fc-quick:first-child { margin-top:2px; }
 .fc-quick button { border:1px solid var(--fc-line2); background:#fff; border-radius:999px; font:600 12px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink2); padding:3px 10px; cursor:pointer; }
-.fc-item { display:grid; grid-template-columns:minmax(0,1fr) 84px auto 28px; gap:6px; align-items:center; margin-top:8px; }
-.fc-item input.n { height:30px; border:1px solid var(--fc-line2); border-radius:8px; padding:0 8px; font:600 12.5px 'IBM Plex Sans Thai',sans-serif; min-width:0; background:#fffefa; color:var(--fc-ink); }
-.fc-item input.n:focus { outline:none; border-color:var(--fc-gold); box-shadow:0 0 0 3px rgba(201,162,74,.3); }
-.fc-item .calc { grid-column:1/-1; text-align:right; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fc-mute); margin-top:-3px; }
+.fc-item { display:grid; grid-template-columns:minmax(0,1fr) 80px auto 26px; gap:5px; align-items:center; margin-top:6px; }
+.fc-item input.n { height:30px; border:1.3px solid var(--fc-line2); border-radius:8px; padding:0 8px; font:600 12.5px 'IBM Plex Sans Thai',sans-serif; min-width:0; background:#fffefa; color:var(--fc-ink); }
+.fc-item input.n:focus { outline:none; border-color:var(--fc-gold); box-shadow:0 0 0 3px rgba(201,162,74,.28); }
+.fc-item .calc { grid-column:1/-1; text-align:right; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fc-mute); margin-top:-2px; }
 .fc-item .calc:empty { display:none; }
 .fc-unit { display:flex; border:1.3px solid var(--fc-line2); border-radius:8px; overflow:hidden; }
 .fc-unit button { border:0; background:#fff; font:700 11px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-mute); padding:6px 6px; cursor:pointer; }
 .fc-unit button.on { background:var(--fc-gold2); color:#3e2a04; }
-.fc-end { background:var(--fc-card); border:1px solid var(--fc-line2); border-radius:13px; padding:10px 12px; display:grid; grid-template-columns:1fr auto; gap:3px 10px; font-size:13px; }
-.fc-end .v { font-family:'JetBrains Mono',monospace; font-weight:700; text-align:right; }
-.fc-end .v.in { color:var(--fc-in); } .fc-end .v.out { color:var(--fc-out); }
-.fc-end .r { border-top:1.5px solid var(--fc-ink); padding-top:4px; font-weight:700; }
+/* วิธีคิดตัวเลข */
+.fc-how ul { margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--fc-ink2); line-height:1.5; }
+.fc-how ul b { color:var(--fc-ink); }
+.fc-how .lg { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--fc-ink2); margin-top:4px; }
+.fc-how .lg .fc-dot { margin:0 5px 0 0; }
 @media (max-width:370px) {
-  .fc-tr { grid-template-columns:42px minmax(0,1fr) 78px minmax(0,1fr); gap:5px; padding-left:8px; padding-right:8px; }
-  .fc-mx { grid-template-columns:54px 78px minmax(0,1fr) 28px; gap:5px; }
-  .fc-item { grid-template-columns:minmax(0,1fr) 76px auto 28px; gap:5px; }
-  .fc-hero .big { font-size:27px; }
+  .fc-t3 { grid-template-columns:minmax(0,1fr) 76px minmax(0,1fr); gap:6px; }
+  .fc-t3.mx { grid-template-columns:minmax(0,1fr) 48px 64px minmax(0,1fr) 24px; gap:4px; }
+  .fc-item { grid-template-columns:minmax(0,1fr) 70px auto 26px; }
+  .fc-hero .big { font-size:28px; }
 }
-@media (prefers-reduced-motion:reduce) { .fc-pin.flash input, .fc-left.flash { animation:none; } }
+/* build 1150: ดึงราคาจากคลัง */
+.fc-tag.pull { background:var(--fc-pull-bg); color:var(--fc-pull); }
+.fc-pin.pull input { border-color:var(--fc-pull); background:#f3f8fb; color:#123447; }
+.fc-pin.pull .was { color:var(--fc-pull); font-weight:700; }
+.fc-pullbar { display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--fc-pull-bg); border:1px solid #bcd3df; border-radius:10px; padding:7px 8px 7px 10px; margin-bottom:8px; }
+.fc-pullbar .tx { font-size:11.5px; color:#28485a; line-height:1.4; min-width:0; }
+.fc-pullbar .tx b { color:#123447; }
+.fc-pullbtn { display:inline-flex; align-items:center; gap:5px; border:1.5px solid var(--fc-pull); background:#fff; color:var(--fc-pull); border-radius:9px; font:700 12.5px 'IBM Plex Sans Thai',sans-serif; padding:6px 10px; cursor:pointer; white-space:nowrap; flex:0 0 auto; }
+.fc-pullbtn.big { background:var(--fc-pull); color:#fff; }
+.fc-pp-wrap { position:absolute; inset:0; z-index:20; }
+.fc-pp-dim { position:absolute; inset:0; background:rgba(30,22,8,.45); }
+.fc-pp { position:absolute; left:0; right:0; bottom:0; max-height:90%; background:var(--fc-paper); border-radius:18px 18px 0 0; display:flex; flex-direction:column; box-shadow:0 -10px 30px -12px rgba(0,0,0,.4); max-width:560px; margin:0 auto; }
+.fc-pp-h { padding:10px 14px 8px; border-bottom:1px solid var(--fc-line); position:relative; flex:0 0 auto; }
+.fc-pp-h .grab { width:40px; height:4px; border-radius:3px; background:#cbbd98; margin:0 auto 8px; }
+.fc-pp-h .t { font-weight:700; font-size:15.5px; }
+.fc-pp-h .s { font-size:11.5px; color:var(--fc-mute); padding-right:36px; }
+.fc-pp-h .cl { position:absolute; right:12px; top:16px; width:32px; height:32px; border-radius:8px; border:1px solid var(--fc-line2); background:#fff; color:var(--fc-ink2); font-weight:700; cursor:pointer; font-size:16px; padding:0; }
+.fc-pp-b { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:10px 12px 14px; display:flex; flex-direction:column; gap:10px; }
+.fc-pp-b > * { flex:0 0 auto; }
+.fc-pp-lbl { font-size:11.5px; font-weight:700; color:var(--fc-ink2); margin-bottom:5px; }
+.fc-pp-lbl small { font-weight:500; color:var(--fc-mute); }
+.fc-pp-sub { font-size:11px; color:var(--fc-mute); margin-top:4px; }
+.fc-pp-warn { font-size:11.5px; color:#8a4b08; background:var(--fc-miss-bg); border:1px dashed var(--fc-miss); border-radius:9px; padding:6px 9px; line-height:1.45; margin-bottom:6px; }
+.fc-pp-chips { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.fc-pp-b .fc-seg + .fc-pp-chips { margin-top:6px; }
+.fc-pp-b .fc-seg { margin:0; }
+.fc-pp-chip { border:1.5px solid var(--fc-line2); background:#fff; border-radius:999px; font:700 12px 'IBM Plex Sans Thai',sans-serif; color:var(--fc-ink2); padding:4px 11px; cursor:pointer; }
+.fc-pp-chip small { font-weight:500; color:var(--fc-mute); margin-left:4px; }
+.fc-pp-chip.on { border-color:var(--fc-pull); background:var(--fc-pull-bg); color:#123447; }
+.fc-pp-day { border:1.5px solid var(--fc-line); border-radius:11px; background:#fffefa; overflow:hidden; }
+.fc-pp-day.on { border-color:#9fbfd0; }
+.fc-pp-dh { display:flex; align-items:center; gap:8px; padding:8px 10px; background:#f7f0dd; cursor:pointer; border:0; width:100%; text-align:left; font:inherit; color:inherit; }
+.fc-pp-dh:disabled { cursor:default; }
+.fc-pp-day.on .fc-pp-dh { background:#edf4f8; }
+.fc-pp-dh .cb { width:20px; height:20px; border-radius:6px; border:2px solid #b6a582; background:#fff; display:grid; place-items:center; flex:0 0 auto; }
+.fc-pp-dh .cb svg { display:none; }
+.fc-pp-day.on .cb { border-color:var(--fc-pull); background:var(--fc-pull); }
+.fc-pp-day.on .cb svg { display:block; }
+.fc-pp-day.off .cb { opacity:.4; }
+.fc-pp-dh .dt { font-size:12.5px; min-width:0; line-height:1.35; }
+.fc-pp-dh .dt .f { font-size:11px; color:var(--fc-mute); }
+.fc-pp-dh .dt .late { font-size:11px; color:#8a4b08; font-weight:700; }
+.fc-pp-dh .dt .bl { display:block; font-size:10.5px; color:#2f6a1f; font-weight:700; }
+.fc-pp-dh .dv { margin-left:auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:var(--fc-mute); white-space:nowrap; }
+.fc-pp-dh .dv.up, .fc-pp-f b.up, .fc-pp-tr .c.up { color:var(--fc-in); }
+.fc-pp-dh .dv.dn, .fc-pp-f b.dn, .fc-pp-tr .c.dn { color:var(--fc-out); }
+.fc-pp-tr { display:grid; grid-template-columns:48px 1fr 16px 1fr 1fr; gap:4px; align-items:center; padding:4px 10px; border-top:1px solid #efe6cf; font-size:12.5px; }
+.fc-pp-th { font-size:10px; font-weight:700; color:var(--fc-mute); border-top:0; }
+.fc-pp-tr .g { font-weight:700; overflow-wrap:anywhere; }
+.fc-pp-tr .a, .fc-pp-tr .b, .fc-pp-tr .c { font-family:'JetBrains Mono',monospace; text-align:right; font-variant-numeric:tabular-nums; }
+.fc-pp-th .a, .fc-pp-th .b, .fc-pp-th .c { font-family:'IBM Plex Sans Thai',sans-serif; }
+.fc-pp-tr .a { color:var(--fc-mute); }
+.fc-pp-tr .ar { color:var(--fc-mute); text-align:center; }
+.fc-pp-tr .b { font-weight:800; color:#123447; }
+.fc-pp-tr .c { font-size:11.5px; }
+.fc-pp-tr .nt { grid-column:1/-1; font-size:10px; color:#8a4b08; margin-top:-2px; }
+.fc-pp-day:not(.on) .fc-pp-tr { opacity:.45; }
+.fc-pp-f { border-top:1px solid var(--fc-line2); background:#efe6cf; padding:9px 12px max(11px, env(safe-area-inset-bottom, 0px)); display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+.fc-pp-f .sm { flex:1; font-size:11.5px; color:var(--fc-ink2); line-height:1.3; min-width:0; }
+.fc-pp-f .sm b { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--fc-ink); }
+.fc-pp-f .ok { border:1.5px solid #234f68; background:linear-gradient(180deg,#3a7ea3,#2d6a8a); color:#fff; font:700 13.5px 'IBM Plex Sans Thai',sans-serif; padding:10px 14px; border-radius:11px; cursor:pointer; flex:0 0 auto; }
+.fc-pp-f .ok:disabled { opacity:.45; cursor:default; }
+@media (prefers-reduced-motion:reduce) { .fc-pin.flash input, .fc-tools .note.flash { animation:none; } }
 
 /* ═══════════ หน้าสรุปสวนเต็มจอ (garden summary overlay) ═══════════ */
 .gsum-ov { position:fixed; inset:0; z-index:9999; background:#f3ecd9; display:none; flex-direction:column;
@@ -12191,6 +12272,57 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; box-shadow:none 
 .section-h.pf-sold-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pf-pull-btn { font-size: 12px; font-weight: 800; color: #3a2410; background: linear-gradient(180deg,#e0a93a,#b8860b); border: 1px solid #8a6410; border-radius: 9px; padding: 6px 12px; font-family: 'Sarabun',sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
 .pf-pull-btn:active { transform: scale(.96); }
+/* ═══ build 1152: หน้าดึงราคาในบิล แบบ A ═══ */
+#pf-pull { --pp-ink:#2a1c0c; --pp-ink2:#5f4a2a; --pp-mute:#9a8560; --pp-line:#ebe2c9; --pp-line2:#d8caa6; --pp-card:#fffdf7;
+  --pp-pull:#2d6a8a; --pp-pull-bg:#e6f0f5; --pp-edit:#c46a12; --pp-edit-bg:#fff3e2; --pp-miss:#b07a22; --pp-miss-bg:#fff8ec; --pp-red:#b5281b; --pp-green:#1f5c2e; }
+#pf-pull .pfp-ttl { display:flex; align-items:center; gap:6px; }
+#pf-pull .pfp-body { display:flex; flex-direction:column; gap:10px; padding:10px 10px 18px; }
+#pf-pull .pfp-body > * { flex:0 0 auto; }
+#pf-pull .pfp-fruit, #pf-pull .pfp-day { background:var(--pp-card); border:1px solid var(--pp-line2); border-radius:12px; padding:8px 10px 10px; }
+#pf-pull .pfp-fruit .k, #pf-pull .pfp-from { font-size:11.5px; color:var(--pp-mute); margin-bottom:5px; }
+#pf-pull .pfp-chips { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:1px; }
+#pf-pull .pfp-chips::-webkit-scrollbar { display:none; }
+#pf-pull .pfp-chip { flex:0 0 auto; border:1px solid var(--pp-line2); background:#fff; border-radius:999px; padding:5px 11px; font:600 12.5px 'Sarabun',sans-serif;
+  color:var(--pp-ink2); cursor:pointer; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+#pf-pull .pfp-chip.on { background:var(--pp-pull); border-color:var(--pp-pull); color:#fff; }
+#pf-pull .pfp-chip .af { font-size:10.5px; font-weight:700; color:var(--pp-red); }
+#pf-pull .pfp-chip.on .af { color:#ffd9d4; }
+#pf-pull .pfp-none { font-size:12.5px; color:var(--pp-miss); }
+#pf-pull .pfp-dd { display:flex; align-items:center; gap:8px; color:var(--pp-ink); font-weight:800; font-size:14.5px; margin:2px 0 6px; }
+#pf-pull .pfp-dd::before, #pf-pull .pfp-dd::after { content:""; flex:1; height:1px; background:var(--pp-line2); }
+#pf-pull .pfp-warn { margin-top:7px; font-size:12px; color:#8a4b0c; background:#fff3e2; border:1px solid #f0d2a8; border-radius:8px; padding:6px 8px; line-height:1.4; }
+#pf-pull .pfp-t { width:100%; border-collapse:collapse; margin-top:8px; }
+#pf-pull .pfp-t th { font-size:11px; color:var(--pp-mute); font-weight:600; text-align:right; padding:2px 4px 4px; border-bottom:1px solid var(--pp-line); }
+#pf-pull .pfp-t th:first-child { text-align:left; }
+#pf-pull .pfp-t td { padding:5px 4px; border-bottom:1px dashed var(--pp-line); font-size:14px; vertical-align:middle; }
+#pf-pull .pfp-t td.g b { font-weight:800; color:var(--pp-ink); }
+#pf-pull .pfp-t td.g small { display:block; font-size:11px; color:var(--pp-mute); line-height:1.2; }
+#pf-pull .pfp-t tr.ms td.g small span { color:var(--pp-miss); }
+#pf-pull .pfp-t td.o { text-align:right; color:var(--pp-mute); font:500 13px 'JetBrains Mono',monospace; width:58px; }
+#pf-pull .pfp-t td.n { text-align:right; width:96px; }
+#pf-pull .pfp-t td.n input { width:88px; text-align:right; font:700 16px 'JetBrains Mono',monospace; border-radius:8px; border:1.5px solid var(--pp-line2);
+  padding:6px 8px; background:#fff; color:var(--pp-ink); box-sizing:border-box; -moz-appearance:textfield; }
+#pf-pull .pfp-t td.n input::-webkit-outer-spin-button, #pf-pull .pfp-t td.n input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+#pf-pull .pfp-t td.n input.pull { border-color:#9cc0d3; background:var(--pp-pull-bg); color:var(--pp-pull); }
+#pf-pull .pfp-t td.n input.ed { border-color:#e3b57a; background:var(--pp-edit-bg); color:var(--pp-edit); }
+#pf-pull .pfp-t td.n input.miss { border-style:dashed; border-color:#e0c08a; background:var(--pp-miss-bg); font-size:13px; }
+#pf-pull .pfp-tot { display:flex; justify-content:space-between; font-size:12px; color:var(--pp-mute); padding-top:6px; }
+#pf-pull .pfp-tot b { font:600 12.5px 'JetBrains Mono',monospace; }
+#pf-pull .pfp-leg { display:flex; gap:10px; flex-wrap:wrap; font-size:11.5px; color:var(--pp-ink2); padding:0 2px; }
+#pf-pull .pfp-leg i { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-2px; margin-right:3px; border:1.5px solid; }
+#pf-pull .pfp-leg .l-pull { background:var(--pp-pull-bg); border-color:#9cc0d3; }
+#pf-pull .pfp-leg .l-ed { background:var(--pp-edit-bg); border-color:#e3b57a; }
+#pf-pull .pfp-leg .l-miss { background:var(--pp-miss-bg); border-color:#e0c08a; border-style:dashed; }
+#pf-pull .pfp-note { font-size:11.5px; color:var(--pp-mute); padding:0 2px; }
+#pf-pull .pfp-ft { display:flex; align-items:center; gap:10px; padding:9px 12px max(12px, env(safe-area-inset-bottom, 0px)); background:#efe6cf; border-top:1px solid var(--pp-line2); flex:0 0 auto; }
+#pf-pull .pfp-ft .s { flex:1; min-width:0; line-height:1.2; }
+#pf-pull .pfp-ft .s small { display:block; font-size:11px; color:var(--pp-mute); }
+#pf-pull .pfp-ft .s b { font:700 16px 'JetBrains Mono',monospace; color:var(--pp-green); }
+#pf-pull .pfp-ft .s b.neg { color:var(--pp-red); }
+#pf-pull .pfp-go { border:1.5px solid #4e6b28; background:linear-gradient(180deg,#6b8e3d,#557030); color:#fff; font:700 14.5px 'Sarabun',sans-serif;
+  border-radius:11px; padding:10px 16px; display:inline-flex; gap:6px; align-items:center; cursor:pointer; }
+#pf-pull .pfp-go:disabled { opacity:.45; cursor:default; }
+#pf-pull.kb-on .pfp-ft { display:none; }
 .pf-pl-grp { background: #fdfaf0; border: 1px solid #e0d3ad; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
 .pf-pl-ghd { font-size: 13px; font-weight: 800; color: #5a3a1c; margin-bottom: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .pf-pl-fmto { font-size: 11px; font-weight: 600; color: #8a7a55; }
@@ -16241,6 +16373,9 @@ window.pfCloseEdit = function () {
   if (s) { s.style.display = 'none'; s.style.zIndex = ''; }   // คืน z-index ที่ยกไว้ตอนเปิดจากจอดึงราคา
   window._pfFromPull = false;
   window._pfPrefillFruit = '';
+  // build 1152: จอดึงราคาค้างอยู่ข้างหลัง → วาดชิปใหม่ให้ใบที่เพิ่งเพิ่มโผล่ (ไม่สลับใบให้เอง · ราคาที่พิมพ์ยังอยู่)
+  const pp = document.getElementById('pf-pull');
+  if (pp && pp.style.display !== 'none' && window._pfPullPlan && typeof pfPullRender === 'function') pfPullRender();
 };
 
 function pfRowInputsHtml() {
@@ -16544,102 +16679,111 @@ function pfFindForm(fruit, dateISO) {
   return after[0] || null;   // ไม่มีใบก่อนหน้าเลย → จำใจใช้วันหลัง + เตือนในหน้าดึงราคา
 }
 
-// ── สร้างข้อมูล 1 กลุ่ม (แยกออกมาเพื่อให้ปุ่ม "เลือก" สร้างใหม่เฉพาะกลุ่มนั้นได้) ──
-// forcedForm = ฟอร์มที่ผู้ใช้เลือกเอง (null = ให้ระบบหาให้)
-function pfBuildGroup(g, fruit, bd, forcedForm) {
-  const tgt = g.date || bd;
-  {
-    const form = forcedForm || pfFindForm(fruit, tgt);
-    // ⚠ formRow ชี้เข้า priceForms "ตัวจริง" ไม่ใช่สำเนา → ห้ามเขียนทับเด็ดขาด (คลังราคาจะเพี้ยน)
-    //    ราคาที่ผู้ใช้แก้เองเก็บใน editPrice แยกต่างหาก · formRow ใช้อ่านอย่างเดียว
-    const matches = g.rows.map((r, i) => ({ row: r, formRow: (form && form.rows[i]) ? form.rows[i] : null, idx: i, editPrice: null }));
-    const billN = g.rows.length, formN = form ? form.rows.length : 0;
-    let warn = '';
-    if (!form) warn = '⚠ ไม่พบฟอร์มของผลไม้/วันนี้';
-    else if (billN > formN) warn = `⚠ บิลมี ${billN} เบอร์ · ฟอร์มมี ${formN} → ${billN - formN} เบอร์ท้ายไม่มีราคา (กรอกเอง)`;
-    else if (formN > billN) warn = `ℹ ฟอร์มมี ${formN} เบอร์ · ใช้ ${billN} อันแรก`;
-    // ── เตือนเมื่อชื่อเบอร์ในบิลไม่ตรงกับชื่อในฟอร์มที่จะจับคู่ ──
-    // การจับคู่ยังใช้ "ตำแหน่งแถว" เหมือนเดิมทุกอย่าง — เพิ่มแค่คำเตือนให้เห็นก่อนกดยืนยัน
-    // (บิลรวมมีวันที่ต่อท้ายชื่อเบอร์ เช่น "ยัก · 1 ก.ค." → เทียบจาก _grade ที่เก็บชื่อเดิมไว้)
-    const _gnorm = s => String(s == null ? '' : s).normalize('NFC').trim();
-    const _mism = matches.filter(m => {
-      if (!m.formRow) return false;
-      const bg = _gnorm(m.row._grade != null ? m.row._grade : m.row.grade);
-      const fg = _gnorm(m.formRow.name);
-      return bg && fg && bg !== fg;
-    });
-    if (_mism.length) {
-      const _ex = _mism.slice(0, 2).map(m =>
-        `${_gnorm(m.row._grade != null ? m.row._grade : m.row.grade)}←${_gnorm(m.formRow.name)}`).join(' · ');
-      warn = (warn ? warn + ' · ' : '') + `⚠ ชื่อเบอร์ไม่ตรง ${_mism.length} แถว (${_ex}) — ดึงตามลำดับแถว ตรวจก่อนยืนยัน`;
-    }
-    // เตือนเมื่อจำใจใช้ฟอร์มที่ออก "หลัง" วันขาย (ไม่มีใบก่อนหน้าเลย) = ราคาที่ยังไม่เกิดตอนขาย
-    if (form && tgt && (form.date || '') > tgt) {
-      warn = (warn ? warn + ' · ' : '') + '⚠ ใช้ฟอร์มวันหลัง (' + pfDateLabel(form.date) + ') เพราะไม่มีใบก่อนหน้า — ตรวจราคาก่อนยืนยัน';
-    }
-    return { group: g, form, matches, warn, fruit: fruit, targetDate: tgt, picked: !!forcedForm };
-  }
+// ═══ build 1152: หน้าดึงราคาในบิล แบบ A (ตารางต่อวัน) + จับคู่ "ตามชื่อเบอร์" ═══
+// · เลือกผลไม้ในคลังได้ที่หัวจอ (บิล "ลำไย" ↔ ฟอร์ม "ลำไย อีดอ")  · เลือกใบฟอร์มของแต่ละวันจากชิป
+// · จับคู่ตามชื่อเบอร์ (ไม่สนช่องว่าง/ตัวพิมพ์) · ถ้าในวันนั้นไม่มีชื่อตรงกันเลยสักแถว → จับตามลำดับแถวแบบเดิม + เตือน
+// · ราคาที่พิมพ์เองจำตามแถวบิล (เปลี่ยนใบฟอร์ม/ผลไม้แล้วไม่หาย) · ไม่แตะคลังราคา (formRow อ่านอย่างเดียว)
+const _pfGK = s => String(s == null ? '' : s).normalize('NFC').replace(/\s+/g, '').toLowerCase();
+const _pfFrN = s => String(s == null ? '' : s).normalize('NFC').trim();
+function _pfRowGrade(r) { return r._grade != null ? r._grade : (r.grade || ''); }
+function _pfRowKey(r, gi, mi) { return r && r.id ? r.id : ('g' + gi + '_' + mi); }
+function _pfFullDate(iso) {
+  const M = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? (+m[3] + ' ' + M[+m[2]]) : '';
 }
+function _pfShortDate(iso) {
+  const M = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? (+m[3] + ' ' + M[+m[2]]) : '—';
+}
+// รายชื่อผลไม้ในคลัง: ชื่อตรงบิล → ชื่อคล้าย → ที่เหลือ (ใบใหม่ก่อน)
+function pfPullFruits(billFruit) {
+  const bf = _pfFrN(billFruit), last = {};
+  priceForms.forEach(f => { const n = _pfFrN(f.fruit); if (!n) return; if (!last[n] || (f.date || '') > last[n]) last[n] = f.date || ''; });
+  const rank = n => n === bf ? 0 : ((bf && (n.includes(bf) || bf.includes(n))) ? 1 : 2);
+  return Object.keys(last).sort((a, b) => rank(a) - rank(b) || last[b].localeCompare(last[a]) || a.localeCompare(b));
+}
+function pfPullPool(fruit) {
+  const n = _pfFrN(fruit); return priceForms.filter(f => _pfFrN(f.fruit) === n);
+}
+// ใบอัตโนมัติ: ออกก่อน/ตรงวันที่ใกล้สุด · ไม่มี → ใบแรกหลังวันนั้น (เตือน "วันหลัง")
+function pfPullAutoForm(fruit, d) {
+  const pool = pfPullPool(fruit); if (!pool.length) return null;
+  if (!d) return pool.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+  const bef = pool.filter(f => (f.date || '') <= d).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (bef.length) return bef[0];
+  return pool.filter(f => (f.date || '') > d).sort((a, b) => (a.date || '').localeCompare(b.date || ''))[0] || null;
+}
+// จับคู่ 1 วัน: ตามชื่อก่อน · ไม่มีชื่อตรงสักแถว → ตามลำดับ (ของเดิม)
+function pfBuildGroup(g, form, targetDate, picked) {
+  let byOrder = false, matches;
+  if (!form) matches = g.rows.map((r, i) => ({ row: r, formRow: null, idx: i }));
+  else {
+    const byName = new Map();
+    (form.rows || []).forEach(fr => { const k = _pfGK(fr && fr.name); if (k && !byName.has(k)) byName.set(k, fr); });
+    const any = g.rows.some(r => byName.has(_pfGK(_pfRowGrade(r))));
+    byOrder = !any;
+    matches = g.rows.map((r, i) => ({ row: r, idx: i,
+      formRow: byOrder ? ((form.rows || [])[i] || null) : (byName.get(_pfGK(_pfRowGrade(r))) || null) }));
+  }
+  return { group: g, form, matches, byOrder, targetDate, picked: !!picked };
+}
+function _pfPriceOk(fr) { return !!(fr && fr.price !== '' && fr.price != null && isFinite(Number(fr.price))); }
+// ค่าที่จะลงบิลของ 1 แถว: null = ไม่แตะ
+function _pfPullVal(m, k) {
+  const E = window._pfPullEdits || {};
+  if (Object.prototype.hasOwnProperty.call(E, k)) {
+    const t = String(E[k]).trim(); if (t === '') return null;
+    const n = Number(t); return isFinite(n) ? n : null;     // 0 = ราคา 0 จริง
+  }
+  return _pfPriceOk(m.formRow) ? Number(m.formRow.price) : null;
+}
+function _pfOld(r) { const v = r.soldPrice; return (v === '' || v == null || !isFinite(Number(v))) ? null : Number(v); }
 
 window.pfPullStart = function () {
   pfLoad();
   const grps = pfGroupBillRows();
   if (!grps.length) { if (typeof toast === 'function') toast('ยังไม่มีเบอร์ในบิล'); return; }
   if (!priceForms.length) { if (typeof toast === 'function') toast('ยังไม่มีฟอร์มในคลังราคา'); return; }
-  const fruit = pfBillFruit();
-  const bd = pfBillDate();
-  const plan = grps.map(g => pfBuildGroup(g, fruit, bd, null));
-  window._pfPullPlan = plan;
-  window._pfPullFruit = fruit;
+  const billFruit = pfBillFruit(), bd = pfBillDate();
+  const first = grps[0].date || bd;
+  const guess = pfFindForm(billFruit, first);                 // ใช้ตรรกะเดิมเดาผลไม้ตั้งต้น
+  const fruit = guess ? _pfFrN(guess.fruit) : (pfPullFruits(billFruit)[0] || '');
+  window._pfPullEdits = {};
   window._pfPullBillDate = bd;
-  pfPullRender(plan, fruit);
+  window._pfPullLibFruit = fruit;
+  window._pfPullFruit = billFruit;                         // ผลไม้ของบิล (ใช้เติมให้ตอนกด + เพิ่มราคา เหมือนเดิม)
+  window._pfPullPlan = grps.map(g => { const d = g.date || bd; return pfBuildGroup(g, pfPullAutoForm(fruit, d), d, false); });
+  pfPullRender();
   const scr = document.getElementById('pf-pull');
-  if (scr) scr.style.display = '';
+  if (scr) { scr.style.display = ''; const b = scr.querySelector('.pf-body'); if (b) b.scrollTop = 0; }
 };
 
-// ── ผู้ใช้แก้ราคาเอง — ห้ามวาดใหม่ (แป้นพิมพ์จะเด้งปิด/เสีย focus) แค่จำค่า + เปลี่ยนสี ──
-// เก็บเป็น "ข้อความ": '' = ไม่ดึงแถวนี้ (คงราคาเดิมในบิล) · '0' = ราคา 0 จริง
+// พิมพ์ราคาเอง → จำ + เปลี่ยนสี + อัปเดตยอด (ไม่วาดใหม่ ไม่งั้นแป้นพิมพ์หลุด)
 window.pfPullEdit = function (gi, mi, el) {
   const p = (window._pfPullPlan || [])[gi]; if (!p) return;
   const m = p.matches[mi]; if (!m) return;
-  m.editPrice = el.value;
-  el.classList.remove('empty');
-  el.classList.add('edited');
-  const row = el.closest('.pf-pl-row');
-  const tag = row ? row.querySelector('.pf-pl-edited-tag') : null;
-  if (tag) tag.style.display = '';
+  (window._pfPullEdits = window._pfPullEdits || {})[_pfRowKey(m.row, gi, mi)] = el.value;
+  el.classList.remove('pull', 'miss'); el.classList.add('ed');
+  const tag = document.getElementById('pfp-tag-' + gi + '_' + mi); if (tag) tag.textContent = ' · แก้เอง';
+  _pfPullTotals();
 };
-
-// ── ปุ่ม "เลือก" → กาง/พับ รายการฟอร์มที่มีจริง ──
-window.pfPullPick = function (gi) {
-  const host = document.getElementById('pf-dp-' + gi); if (!host) return;
-  if (host.innerHTML.trim()) { host.innerHTML = ''; return; }   // กดซ้ำ = ปิด
-  const p = (window._pfPullPlan || [])[gi]; if (!p) return;
-  const pool = pfFormPool(p.fruit).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const tgt = p.targetDate || '';
-  const rowsH = pool.map(f => {
-    const isBefore = !tgt || (f.date || '') <= tgt;
-    const on = (p.form && p.form.id === f.id) ? ' on' : '';
-    const prices = (f.rows || []).slice(0, 4).map(r => pfFmt(r.price)).join(' · ');
-    return '<div class="dp-row' + on + '" onclick="pfPullSetForm(' + gi + ',\'' + f.id + '\')">'
-      + '<span class="dp-d">' + pfDateLabel(f.date) + '</span>'
-      + '<span class="dp-p">' + pfEsc(prices) + '</span>'
-      + '<span class="dp-tag ' + (isBefore ? 'before' : 'after') + '">' + (isBefore ? 'ก่อนหน้า' : 'วันหลัง') + '</span></div>';
-  }).join('');
-  host.innerHTML = '<div class="dp"><div class="dp-h">เลือกฟอร์มราคาที่จะดึง — ' + pfEsc(p.fruit || '') + '</div>'
-    + (rowsH || '<div class="pf-empty">ไม่มีฟอร์ม</div>')
-    + '<button class="dp-cancel" onclick="pfPullPick(' + gi + ')">ยกเลิก</button></div>';
-};
-
-// ── เลือกฟอร์มเอง → สร้างกลุ่มนั้นใหม่ (กลุ่มอื่นไม่แตะ · ราคาที่แก้ของกลุ่มอื่นยังอยู่ใน plan) ──
+// แตะชิปใบฟอร์มของวันนั้น
 window.pfPullSetForm = function (gi, id) {
-  const plan = window._pfPullPlan || [];
-  const p = plan[gi]; if (!p) return;
+  const plan = window._pfPullPlan || []; const p = plan[gi]; if (!p) return;
   const f = priceForms.find(x => x.id === id); if (!f) return;
-  plan[gi] = pfBuildGroup(p.group, p.fruit, window._pfPullBillDate, f);
-  pfPullRender(plan, window._pfPullFruit);
+  plan[gi] = pfBuildGroup(p.group, f, p.targetDate, true);
+  pfPullRender();
   if (typeof haptic === 'function') haptic(8);
 };
+// แตะชิปผลไม้ → ทุกวันเลือกใบอัตโนมัติของผลไม้นั้นใหม่ (ราคาที่พิมพ์เองยังอยู่)
+window.pfPullSetFruit = function (i) {
+  const name = (window._pfPullFruitList || [])[i]; if (name == null) return;
+  window._pfPullLibFruit = name;
+  window._pfPullPlan = (window._pfPullPlan || []).map(p => pfBuildGroup(p.group, pfPullAutoForm(name, p.targetDate), p.targetDate, false));
+  pfPullRender();
+  if (typeof haptic === 'function') haptic(8);
+};
+
 window.pfPullClose = function () { const s = document.getElementById('pf-pull'); if (s) s.style.display = 'none'; };
 
 // ── ชื่อสวนที่ผูกกับบิลที่กำลังตีอยู่ (ใช้เป็นป้ายปุ่ม "กลับที่เดิม") ──
@@ -16688,80 +16832,93 @@ window.pfBackToPull = function () {
   if (typeof haptic === 'function') haptic(8);
 };
 
-function pfPullRender(plan, fruit) {
-  const scr = document.getElementById('pf-pull');
-  if (!scr) return;
-  const multi = plan.length > 1;
-  const body = plan.map((p, gi) => {
-    const g = p.group;
-    const dLbl = g.date ? pfDateLabel(g.date) : 'บิลนี้';
-    const formLbl = p.form ? (pfEsc(p.form.fruit || '') + ' · ' + pfDateLabel(p.form.date)) : '—';
-    // ป้าย: ก่อนวันขาย = "ใกล้สุด" (ปกติ) · หลังวันขาย = "วันหลัง" (ผิดธรรมชาติ เตือนสีแดง)
-    let near = '';
-    if (p.form && p.targetDate && p.form.date !== p.targetDate) {
-      near = ((p.form.date || '') > p.targetDate)
-        ? '<span class="pf-pl-after">วันหลัง</span>'
-        : '<span class="pf-pl-near">ใกล้สุด</span>';
-    }
-    if (p.picked) near += '<span class="pf-pl-picked">เลือกเอง</span>';
-    const rowsHtml = p.matches.map((m, mi) => {
-      const bg = pfEsc(m.row._grade || m.row.grade || '—');
-      const hasForm = !!(m.formRow && m.formRow.price != null && !isNaN(m.formRow.price));
-      const edited = m.editPrice != null;
-      const val = edited ? pfEsc(m.editPrice) : (hasForm ? pfEsc(String(m.formRow.price)) : '');
-      const nm = hasForm
-        ? ('<span class="o">' + (m.idx + 1) + '</span>' + pfEsc(m.formRow.name || ''))
-        : '— ไม่มี —';
-      const cls = 'pf-pl-inp' + (edited ? ' edited' : (hasForm ? '' : ' empty'));
-      return '<div class="pf-pl-row' + (hasForm ? '' : ' miss') + '">'
-        + '<span class="pf-pl-bill">' + bg + '</span><span class="pf-pl-arr">⟵</span>'
-        + '<span class="pf-pl-nm">' + nm + '</span>'
-        + '<input class="' + cls + '" type="number" inputmode="decimal" placeholder="' + (hasForm ? '0' : 'กรอกเอง') + '"'
-        + ' value="' + val + '" oninput="pfPullEdit(' + gi + ',' + mi + ',this)">'
-        + '<span class="pf-pl-edited-tag"' + (edited ? '' : ' style="display:none"') + '>✎ แก้เอง</span>'
-        + '</div>';
-    }).join('');
-    return '<div class="pf-pl-grp">'
-      + '<div class="pf-pl-ghd">' + (multi ? ('📅 ' + dLbl) : 'จับคู่ราคา')
-      + ' <span class="pf-pl-fmto">' + (p.form ? ('⟵ ฟอร์ม ' + formLbl) : '') + '</span> ' + near
-      + ' <button class="pf-pl-pick" onclick="pfPullPick(' + gi + ')">เลือก</button></div>'
-      + '<div id="pf-dp-' + gi + '"></div>'
-      + rowsHtml
-      + (p.warn ? '<div class="pf-pl-warn">' + p.warn + '</div>' : '')
-      + '</div>';
-  }).join('');
-  const anyForm = plan.some(p => p.form);
+function _pfPullSum() {
+  let n = 0, dv = 0; const day = [];
+  (window._pfPullPlan || []).forEach((p, gi) => {
+    let t = 0;
+    p.matches.forEach((m, mi) => {
+      const kg = totalKgOf(m.row), o = _pfOld(m.row), v = _pfPullVal(m, _pfRowKey(m.row, gi, mi));
+      if (v != null && v !== o) { n++; dv += (v - (o || 0)) * kg; }
+      t += (v != null ? v : (o || 0)) * kg;
+    });
+    day.push(t);
+  });
+  return { n, dv, day };
+}
+function _pfPullTotals() {
+  const S = _pfPullSum();
+  S.day.forEach((t, gi) => { const e = document.getElementById('pfp-dt-' + gi); if (e) e.textContent = pfFmt(Math.round(t)); });
+  const a = document.getElementById('pfp-fn'), b = document.getElementById('pfp-fv'), go = document.getElementById('pfp-go');
+  if (a) a.textContent = 'เปลี่ยน ' + S.n + ' ช่อง · ยอดขาย';
+  if (b) { b.textContent = (S.dv < 0 ? '−' : '+') + pfFmt(Math.round(Math.abs(S.dv))); b.className = S.dv < 0 ? 'neg' : ''; }
+  if (go) go.disabled = !S.n;
+}
+const _PFP_ICO = {
+  dl: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>',
+  ck: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>'
+};
+function pfPullRender() {
+  const scr = document.getElementById('pf-pull'); if (!scr) return;
+  const plan = window._pfPullPlan || [];
+  const bodyOld = scr.querySelector('.pf-body'), keepTop = bodyOld ? bodyOld.scrollTop : 0;
+  const E = window._pfPullEdits || {};
+  const fr = pfPullFruits(pfBillFruit()); window._pfPullFruitList = fr;
+  const cur = window._pfPullLibFruit || '';
+  let x = '<div class="pfp-fruit"><div class="k">ใช้ราคาของ (ในคลัง)</div><div class="pfp-chips">'
+    + fr.map((n, i) => '<button type="button" class="pfp-chip' + (n === cur ? ' on' : '') + '" onclick="pfPullSetFruit(' + i + ')">'
+      + (n === cur ? _PFP_ICO.ck : '') + pfEsc(n) + '</button>').join('') + '</div></div>';
+  plan.forEach((p, gi) => {
+    const g = p.group, d = p.targetDate;
+    const pool = pfPullPool(cur);
+    const chips = pool.filter(f => !d || (f.date || '') <= d).sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+      .concat(pool.filter(f => d && (f.date || '') > d).sort((a, b) => (a.date || '').localeCompare(b.date || '')));
+    x += '<div class="pfp-day" id="pfp-day-' + gi + '"><div class="pfp-dd">' + (g.date ? _pfFullDate(g.date) : (plan.length > 1 ? 'บิลนี้' : (d ? _pfFullDate(d) : 'บิลนี้'))) + '</div>';
+    x += '<div class="pfp-from">ราคาจาก</div><div class="pfp-chips">' + (chips.length ? chips.map(f => {
+      const on = p.form && p.form.id === f.id, after = d && (f.date || '') > d;
+      return '<button type="button" class="pfp-chip pfp-fchip' + (on ? ' on' : '') + '" data-d="' + pfEsc(f.date || '') + '" onclick="pfPullSetForm(' + gi + ',\'' + pfEsc(f.id) + '\')">'
+        + (on ? _PFP_ICO.ck : '') + 'ฟอร์ม ' + _pfShortDate(f.date) + (after ? ' <span class="af">วันหลัง</span>' : '') + '</button>';
+    }).join('') : '<span class="pfp-none">ไม่มีฟอร์มของ “' + pfEsc(cur) + '”</span>') + '</div>';
+    if (p.form && d && (p.form.date || '') > d) x += '<div class="pfp-warn">ใบนี้ออกหลังวันขาย (ไม่มีใบก่อนหน้า) — ตรวจราคาก่อนยืนยัน</div>';
+    if (p.byOrder) x += '<div class="pfp-warn">ชื่อเบอร์ในบิลไม่ตรงกับฟอร์มเลย — จับคู่ตามลำดับแถวแทน ตรวจก่อนยืนยัน</div>';
+    x += '<table class="pfp-t"><tr><th>เบอร์ · กก.</th><th>เดิม</th><th>ใหม่ บ./กก.</th></tr>';
+    p.matches.forEach((m, mi) => {
+      const k = _pfRowKey(m.row, gi, mi), ed = Object.prototype.hasOwnProperty.call(E, k), ok = _pfPriceOk(m.formRow);
+      const val = ed ? E[k] : (ok ? String(m.formRow.price) : '');
+      const cls = ed ? 'ed' : (ok ? 'pull' : 'miss');
+      let tag = ed ? ' · แก้เอง' : (ok ? '' : (p.form ? ' · ไม่มีในฟอร์มนี้ คงราคาเดิม' : ''));
+      if (!ed && ok && p.byOrder) tag = ' · จากแถว ' + (mi + 1) + ' (' + pfEsc(m.formRow.name || '') + ')';
+      x += '<tr class="' + (cls === 'miss' ? 'ms' : '') + '"><td class="g"><b>' + pfEsc(_pfRowGrade(m.row) || '—') + '</b><small>'
+        + pfFmt(Math.round(totalKgOf(m.row) * 100) / 100) + ' กก.<span id="pfp-tag-' + gi + '_' + mi + '">' + tag + '</span></small></td>'
+        + '<td class="o">' + (_pfOld(m.row) == null ? '—' : pfFmt(_pfOld(m.row))) + '</td>'
+        + '<td class="n"><input id="pfp-in-' + gi + '_' + mi + '" class="' + cls + '" type="number" inputmode="decimal" placeholder="กรอกเอง" value="' + pfEsc(val) + '" oninput="pfPullEdit(' + gi + ',' + mi + ',this)"></td></tr>';
+    });
+    x += '</table><div class="pfp-tot"><span>รวมวันนี้</span><b id="pfp-dt-' + gi + '">0</b></div></div>';
+  });
+  x += '<div class="pfp-leg"><span><i class="l-pull"></i>ดึงจากฟอร์ม</span><span><i class="l-ed"></i>แก้เอง</span><span><i class="l-miss"></i>ไม่มีในฟอร์ม · คงราคาเดิม</span></div>'
+    + '<div class="pfp-note">ไม่กระทบคลังราคา · ลบเลขในช่องให้ว่าง = ไม่แตะแถวนั้น</div>';
   scr.innerHTML =
     '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfPullClose()">← <span class="pf-bk-t">ยกเลิก</span></button></div>'
-    + '<div class="pf-ttl">⬇ ดึงราคา</div>'
+    + '<div class="pf-ttl pfp-ttl">' + _PFP_ICO.dl + 'ดึงราคา</div>'
     + '<div class="pf-hd-r">' + (pfIsAdmin() ? '<button class="pf-hd-add" onclick="pfPullAddForm()">+ เพิ่มราคา</button>' : '') + '</div></div>'
-    + '<div class="pf-body"><div class="pf-sub">จับคู่ <b>ตามลำดับ</b> (ไม่สนชื่อ) — แก้ราคาได้ทุกช่อง · <b>ไม่กระทบคลังราคา</b> · ช่องว่าง = ไม่ดึงแถวนั้น</div>'
-    + body
-    + (anyForm ? '<button class="pf-save" onclick="pfPullConfirm()">✓ ยืนยัน ดึงราคาลงบิล</button>' : '<div class="pf-empty">ไม่มีฟอร์มที่ใช้ได้</div>')
-    + '</div>';
+    + '<div class="pf-body pfp-body">' + x + '</div>'
+    + '<div class="pfp-ft"><div class="s"><small id="pfp-fn"></small><b id="pfp-fv"></b></div>'
+    + '<button type="button" id="pfp-go" class="pfp-go" onclick="pfPullConfirm()">' + _PFP_ICO.ck + 'ดึงลงบิล</button></div>';
+  const nb = scr.querySelector('.pf-body'); if (nb) nb.scrollTop = keepTop;
+  _pfPullTotals();
 }
 
 window.pfPullConfirm = function () {
   const plan = window._pfPullPlan || [];
   let filled = 0;
-  plan.forEach(p => p.matches.forEach(m => {
-    let v = null;
-    if (m.editPrice != null) {
-      const t = String(m.editPrice).trim();
-      if (t === '') return;                 // ว่าง = ไม่แตะแถวนี้ (คงราคาเดิมในบิล)
-      const n = Number(t);
-      if (!isFinite(n)) return;
-      v = n;                                // พิมพ์ 0 = ใส่ 0 จริง (ห้ามใช้ || จะกิน 0 — บทเรียนจากบั๊ก perKg||12)
-    } else if (m.formRow && m.formRow.price != null && !isNaN(m.formRow.price)) {
-      v = m.formRow.price;                  // อ่านอย่างเดียว — ไม่เคยเขียนกลับเข้า formRow = คลังราคาปลอดภัย
-    }
+  plan.forEach((p, gi) => p.matches.forEach((m, mi) => {
+    const v = _pfPullVal(m, _pfRowKey(m.row, gi, mi));
     if (v == null) return;
     m.row.soldPrice = v; filled++;
   }));
   pfPullClose();
   if (typeof renderRows === 'function') renderRows();
   if (typeof renderSold === 'function') renderSold();
-  if (typeof toast === 'function') toast('ดึงราคาลงบิลแล้ว ' + filled + ' แถว ✓');
+  if (typeof toast === 'function') toast('ดึงราคาลงบิลแล้ว ' + filled + ' แถว');
 };
 // ═══════════════════ /ดึงราคา ═══════════════════
 // ═══════════════════ /คลังราคา ═══════════════════
@@ -20818,7 +20975,7 @@ function saveGardens(g) {
     } catch (e2) {}
     return false;
   }
-  // Mark all current gardens as dirty (sync engine จะตัดสินเองว่า push อันไหน ตาม updated_at)
+  // ส่งให้ sync engine — build 1152: ติดป้าย/ส่งเฉพาะสวนที่เปลี่ยนจริง (เทียบลายนิ้วมือ)
   if (typeof cloudOnLocalChange === 'function') cloudOnLocalChange('gardens');
   return true;
 }
@@ -20968,16 +21125,45 @@ function _ensurePrev() {
   }
 }
 
+// ── build 1152: ลายนิ้วมือต่อสวน → ส่งขึ้นคลาวด์เฉพาะสวนที่ "เปลี่ยนจริง" ──
+// เดิม: บันทึกสวนไหนก็ตาม → ทุกสวนถูกติดป้ายแก้ใหม่ + ส่งขึ้นทั้งหมด
+//   (เปลืองเน็ต และถ้าเครื่องนี้ถือสวนอื่นฉบับเก่าอยู่ จะส่งทับของที่เครื่องอื่นเพิ่งแก้)
+// ใหม่: เก็บลายนิ้วมือของแต่ละสวน "ณ ครั้งล่าสุดที่ตรงกับคลาวด์/เข้าคิวแล้ว" ไว้ในเครื่อง (อยู่ข้ามการปิดแอป)
+//   → แก้ตอนคลาวด์ยังไม่พร้อม (เปิดแอปตอนไม่มีเน็ต) ก็ยังจับได้ในการบันทึกครั้งถัดไป
+//   ยังไม่เคยมีลายนิ้วมือ (เพิ่งอัปเดตมา build นี้) → ทำแบบเดิม 1 ครั้ง (ส่งทุกสวน) แล้วจำไว้
+const CLOUD_GSIG_KEY = 'thodsapon_cloud_gsig_v1';
+function _cloudGSigOf(g) {
+  let t;
+  try { t = JSON.stringify(g, (k, v) => (k === '_localUpdatedAt' ? undefined : v)); } catch (e) { return 'x' + Date.now() + Math.random(); }
+  let h1 = 2166136261, h2 = 5381;
+  for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619) >>> 0; h2 = (Math.imul(h2, 33) + c) >>> 0; }
+  return t.length.toString(36) + '.' + h1.toString(36) + '.' + h2.toString(36);
+}
+function _cloudGSigLoad() {
+  try { const o = JSON.parse(localStorage.getItem(CLOUD_GSIG_KEY) || 'null'); return (o && typeof o === 'object') ? o : null; } catch (e) { return null; }
+}
+function _cloudGSigSave(m) { try { localStorage.setItem(CLOUD_GSIG_KEY, JSON.stringify(m)); } catch (e) {} }
+// ดึงจากคลาวด์มาทับ → จำลายนิ้วมือของฉบับคลาวด์ (กันส่งกลับขึ้นไปซ้ำ) · สวนที่ถูกเอาออก → ลืม
+function _cloudGSigApplied(ids) {
+  const m = _cloudGSigLoad(); if (!m) return;
+  ids.forEach(id => { const g = gardens.find(x => x.id === id); if (g) m[id] = _cloudGSigOf(g); else delete m[id]; });
+  _cloudGSigSave(m);
+}
+
 // เรียกจาก saveGardens / saveNotes / persist (quotes)
 function cloudOnLocalChange(kind) {
   if (!window.SUPA_CONFIG.enabled || !window.supaReady) return;
   _ensurePrev();
   if (kind === 'gardens') {
     const cur = new Set(gardens.map(g => g.id));
+    const old = _cloudGSigLoad(), sig = {};
     gardens.forEach(g => {
+      const sg = _cloudGSigOf(g); sig[g.id] = sg;
+      if (old && old[g.id] === sg) return;            // ไม่ได้เปลี่ยน → ไม่แตะ ไม่ส่ง
       g._localUpdatedAt = Date.now();
       if (!_cloudDeleted.gardens.has(g.id)) _cloudDirty.gardens.add(g.id);
     });
+    _cloudGSigSave(sig);
     [..._cloudPrevGardenIds].forEach(id => {
       if (!cur.has(id)) {
         _cloudDirty.deleted_gardens.add(id);
@@ -21545,6 +21731,7 @@ async function cloudPullUpdates() {
   if (gErr) throw new Error('pull gardens: ' + gErr.message);
 
   let gardensChanged = false;
+  const _gApplied = [];
   (gData || []).forEach(row => {
     if (row.updated_at > serverNow) serverNow = row.updated_at;
     // ตรวจว่า local มีแก้ไขใหม่กว่า cloud หรือไม่ (ป้องกันทับการแก้ไขที่ยังไม่ push)
@@ -21561,7 +21748,7 @@ async function cloudPullUpdates() {
       const idx = gardens.findIndex(x => x.id === row.id);
       if (idx >= 0) {
         gardens.splice(idx, 1);
-        gardensChanged = true;
+        gardensChanged = true; _gApplied.push(row.id);
       }
     } else if (_cloudDeleted.gardens.has(row.id)) {
       // เคยลบถาวรแล้ว แต่ cloud กลับมา deleted:false (มีเครื่องอื่น push คืนชีพ)
@@ -21569,7 +21756,7 @@ async function cloudPullUpdates() {
       _cloudDirty.deleted_gardens.add(row.id);
       _cloudDirty.gardens.delete(row.id);
       const idx = gardens.findIndex(x => x.id === row.id);
-      if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; }
+      if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; _gApplied.push(row.id); }
     } else {
       const incoming = migrateGarden({ ...(row.data || {}), id: row.id });
       const idx = gardens.findIndex(x => x.id === row.id);
@@ -21577,13 +21764,13 @@ async function cloudPullUpdates() {
         // เก็บเข้าคลังแล้ว → อยู่บน cloud อย่างเดียว ไม่ดึงลงเครื่อง
         // (กัน localStorage บวม + กันสวนที่ archive โผล่กลับตอน full-pull)
         try { if (typeof archStubPut === 'function') archStubPut(incoming); } catch (e) {}   // เก็บตอก่อนลบ → กำไรปีเก่ายังครบ
-        if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; }
+        if (idx >= 0) { gardens.splice(idx, 1); gardensChanged = true; _gApplied.push(row.id); }
       } else if (idx >= 0) {
         gardens[idx] = incoming;
-        gardensChanged = true;
+        gardensChanged = true; _gApplied.push(row.id);
       } else {
         gardens.push(incoming);
-        gardensChanged = true;
+        gardensChanged = true; _gApplied.push(row.id);
       }
     }
   });
@@ -21664,6 +21851,7 @@ async function cloudPullUpdates() {
   if (gardensChanged) {
     localStorage.setItem(KEY_GARDENS, JSON.stringify(gardens));
     _cloudPrevGardenIds = new Set(gardens.map(g => g.id));
+    _cloudGSigApplied(_gApplied);
   }
   if (notesChanged) {
     localStorage.setItem(KEY_NOTES, JSON.stringify(notes));
@@ -23156,6 +23344,21 @@ function fcSameFruit(a, b) {
   const k = v => (typeof fruitCleanName === 'function') ? fruitCleanName(v) : String(v || '').trim();
   return !!a && !!b && k(a) === k(b);
 }
+// หาฟอร์มของผลไม้ "เดียวกัน" (เทียบแบบจัดรูป: "ลำไย" ำ = "ลําไย" ํา) · กฎวันเหมือน pfFindForm: ก่อน/ตรงวันที่ใกล้สุด ไม่มีค่อยใช้วันหลัง
+// build 1150: เดิมพึ่ง pfFindForm ที่เทียบชื่อตรงตัว → สะกดคนละรหัสหาไม่เจอ แล้วถอยไปหยิบฟอร์มผลไม้อื่น (ซึ่งตัวกันของคาดการณ์ปัดทิ้ง) = "ยังไม่มีราคา" เงียบๆ
+function fcFormsOf(fruit) {
+  if (!fruit || typeof priceForms === 'undefined' || !Array.isArray(priceForms)) return [];
+  return priceForms.filter(f => f && f.date && fcSameFruit(f.fruit, fruit));
+}
+function fcPickForm(pool, dateISO) {
+  if (!pool.length) return null;
+  if (!dateISO) return pool.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0] || null;
+  const before = pool.filter(f => (f.date || '') <= dateISO).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (before.length) return before[0];
+  return pool.filter(f => (f.date || '') > dateISO).sort((a, b) => (a.date || '').localeCompare(b.date || ''))[0] || null;
+}
+function fcFindForm(fruit, dateISO) { try { return fcPickForm(fcFormsOf(fruit), dateISO); } catch (e) { return null; } }
+window.fcFindForm = fcFindForm;
 function fcISO(d) { const z = n => (n < 10 ? '0' : '') + n; return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()); }
 // ── บิลอ่านจากเครื่องตรงๆ · แคชสั้นๆ (การ์ดวาดทีละหลายใบ ไม่ต้อง parse ซ้ำทุกใบ) ──
 let _fcQCache = null, _fcQAt = 0;
@@ -23301,7 +23504,7 @@ function fcModel(g, planIn) {
   const today = (typeof todayISO === 'function') ? todayISO() : fcISO(new Date());
   // ฟอร์มราคาต้องเป็นผลไม้เดียวกันเท่านั้น — pfFindForm ไม่เจอจะถอยไปใช้ฟอร์มผลไม้อื่น (หน้าดึงราคาให้คนเลือกเอง)
   // แต่คาดการณ์คิดเงียบๆ → ห้ามเอาราคาผลไม้อื่นมาเดา (เบอร์ชื่อเดียวกันจะได้ราคาผิดโดยไม่มีใครเห็น)
-  const pf = (fr, d) => { try { const f = (typeof pfFindForm === 'function' && fr) ? pfFindForm(fr, d) : null; return (f && fcSameFruit(f.fruit, fr)) ? f : null; } catch (e) { return null; } };
+  const pf = (fr, d) => fcFindForm(fr, d);
 
   // ① เก็บแล้ว — ราคาในบิล > ฟอร์มของวันนั้น · ผู้ใช้แก้ในแผนได้ (ไม่แตะบิล)
   const bill = fcBillOf(g), billBy = {};
@@ -23313,7 +23516,8 @@ function fcModel(g, planIn) {
     const rows = fcDayRows(c); if (!rows.length) return null;
     const form = pf(fruit, c.date), bp = billBy[c.date] || [];
     const pid = c.id || c.date, ov = (plan && plan.past && plan.past[pid]) || {};
-    let kg = 0, rev = 0, nb = 0, nf = 0, edited = false;
+    const ps = (plan && plan.pastSrc && plan.pastSrc[pid]) || {};
+    let kg = 0, rev = 0, nb = 0, nf = 0, edited = false, hand = false, pulled = false;
     const out = rows.map((r, i) => {
       if (!(r.key in collBy)) { collBy[r.key] = 0; names[r.key] = r.grade; order.push(r.key); }
       collBy[r.key] += r.kg; kg += r.kg;
@@ -23322,12 +23526,13 @@ function fcModel(g, planIn) {
       else if (form && Array.isArray(form.rows) && form.rows[i] && fcNum(form.rows[i].price) != null) { p0 = Number(form.rows[i].price); src = 'form'; nf++; }
       const pv = fcNum(ov[r.key]);
       const p = pv != null ? pv : p0;
-      if (pv != null && pv !== p0) edited = true;
+      const pull = (pv != null && ps[r.key]) ? String(ps[r.key]) : null;   // ดึงจากฟอร์มในคลัง (วันที่ของฟอร์ม)
+      if (pv != null && pv !== p0) { edited = true; if (pull) pulled = true; else hand = true; }
       if (p == null) pastMiss++; else rev += r.kg * p;
-      return { grade: r.grade, key: r.key, kg: r.kg, p0, p, src };
+      return { grade: r.grade, key: r.key, kg: r.kg, p0, p, src, pull };
     });
     collKg += kg; pastRev += rev;
-    return { pid, date: c.date, rows: out, kg, rev, form: form ? form.date : null, edited,
+    return { pid, date: c.date, rows: out, kg, rev, form: form ? form.date : null, edited, hand, pulled,
       src: (nb && !nf) ? 'bill' : ((nf && !nb) ? 'form' : ((nb || nf) ? 'mix' : 'none')) };
   }).filter(Boolean);
   const hasColl = collKg > 0;
@@ -23380,7 +23585,10 @@ function fcModel(g, planIn) {
   let remKgEff = 0; mixOrder.forEach(k => { remKgEff += remBy[k] || 0; });
 
   // ราคาตั้งต้นส่วนที่เหลือ = ฟอร์มล่าสุด · ชื่อเบอร์ตรงก่อน → ไม่เจอใช้ลำดับแถวของเที่ยวเก็บล่าสุด
-  const latest = pf(fruit, today);
+  // ราคาที่เหลือ: ฟอร์มผลไม้เดียวกันก่อน · ไม่มี → ใช้ผลไม้ที่เลือกไว้ตอน "ดึงราคาจากคลัง" (plan.pullFruit) ของสวนนี้
+  const own = pf(fruit, today);
+  const alt = (!own && plan && plan.pullFruit && !fcSameFruit(plan.pullFruit, fruit)) ? fcFindForm(plan.pullFruit, today) : null;
+  const latest = own || alt;
   const lastRows = past.length ? past[past.length - 1].rows : [];
   const remP0 = {}, remP = {};
   mixOrder.forEach(k => {
@@ -23447,7 +23655,7 @@ function fcModel(g, planIn) {
   return {
     target, collKg, hasColl, past, order, names, collBy,
     mixMode, mixInfo, mixOrder, mixPct, mixPct0, mixRows, mixSum,
-    remKg, remKgEff, remBy, remMode, remP, remP0, latest: latest ? latest.date : null, days, unBy, unKg, unRev,
+    remKg, remKgEff, remBy, remMode, remP, remP0, latest: latest ? latest.date : null, latestFruit: alt ? String(alt.fruit || '') : null, days, unBy, unKg, unRev,
     projBy, projKg, rate, rate0, rateSrc, procN: avg.n, proc, deal,
     inc, exp, hInc, hExp, pastRev, remRev, goods, sold, cost, profit,
     pct: cost > 0 ? profit / cost * 100 : null,
@@ -23555,30 +23763,39 @@ function _fcMissN(m) {
 function _fcPin(id, val, opt) {
   opt = opt || {};
   return `<span class="fc-pin${opt.cls ? ' ' + opt.cls : ''}" id="fcpin-${id}"><input id="fcin-${id}" type="number" min="0" max="${opt.max || FC_MAX.p}" step="any" inputmode="decimal"`
-    + ` placeholder="${opt.ph || 'กรอก'}" value="${_fcFp(val)}" oninput="${opt.oninput || ''};_fcVal(this)" onchange="_fcFix(this)"><span class="was" id="fc-was-${id}"></span></span>`;
+    + ` placeholder="${opt.ph || 'กรอก'}" aria-label="${opt.lbl || 'ราคา'}" value="${_fcFp(val)}" oninput="${opt.oninput || ''};_fcVal(this)" onchange="_fcFix(this)"><span class="was" id="fc-was-${id}"></span></span>`;
 }
-// ═══ build 1149: ผังใหม่ — สมการ ขายได้ − ทุน = ผลลัพธ์ · กล่องเงินเข้า / เงินออก · ตารางมีหัวคอลัมน์ ═══
-let _fcSec = { coll: true, rem: true, inc: true, proc: true, exp: true };
-const FC_SVG_IN = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>';
-const FC_SVG_OUT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>';
+// ═══ build 1151: แบบคลีน — คำตอบตัวเดียว + ใบเสร็จ 2 หมวด (ขาย / ทุน) แถวละบรรทัด · แตะแถวเพื่อกาง ═══
+// กติกา: ช่องค่าเริ่มต้นไม่มีป้าย · ขึ้นป้ายเฉพาะช่องที่แก้ (เดิม X) · จุดสีท้ายชื่อแถว = ข้างในมีของต้องดู · คำอธิบายยาวอยู่ใน ⋯ วิธีคิดตัวเลข
+let _fcSec = {};
 const FC_SVG_CH = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>';
-// สัดส่วนของสวนอ้างอิงเป็นแถบสี (การ์ดเลือกได้)
+const FC_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+function _fcDFull(iso) {   // "22 ตุลาคม" (ปีอื่นต่อท้ายปี พ.ศ.)
+  const a = String(iso || '').split('-').map(Number);
+  if (a.length < 3 || !a[1]) return _fcDl(iso);
+  const y = new Date().getFullYear();
+  return a[2] + ' ' + FC_MONTHS[a[1] - 1] + (a[0] !== y ? ' ' + (a[0] + 543) : '');
+}
 function _fcRefCard(mix, title, meta, sel, click) {
   const rows = mix.rows.filter(r => r.pct > 0);
   const bar = rows.map((r, i) => `<span style="width:${r.pct}%;background:${FC_BAR[i % FC_BAR.length]}"></span>`).join('');
-  const leg = rows.map(r => `${_fcEsc(r.name)} ${r.pct}%`).join(' · ');
   const tag = click ? 'button' : 'div';
   return `<${tag}${click ? ` type="button" onclick="${click}"` : ''} class="fc-ref${sel ? ' sel' : ''}${click ? '' : ' static'}">`
     + `<span class="rd"></span><span class="rn">${_fcEsc(title)}<small>${_fcEsc(meta)}</small></span>`
-    + `<span class="sb">${bar}</span><span class="rl">${leg}</span></${tag}>`;
+    + `<span class="sb">${bar}</span><span class="rl">${rows.map(r => `${_fcEsc(r.name)} ${r.pct}%`).join(' · ')}</span></${tag}>`;
 }
-function _fcSecHtml(key, title, valId, body) {
-  return `<div class="fc-sec${_fcSec[key] ? ' open' : ''}" id="fc-sec-${key}"><button type="button" class="fc-sec-h" onclick="fcTogSec('${key}')">`
-    + `<span class="t">${title}</span><span class="v" id="${valId}"></span><span class="ch">${FC_SVG_CH}</span></button><div class="fc-sec-b">${body}</div></div>`;
+// แถวในใบเสร็จ: ชื่อ (+จุดสี) / บรรทัดรอง · ยอด · ลูกศร · เนื้อหาตอนกาง
+function _fcRowHtml(key, label, subHtml, body) {
+  return `<div class="fc-row${_fcSec[key] ? ' open' : ''}" id="fc-sec-${key}"><button type="button" class="fc-row-h" onclick="fcTogSec('${key}')">`
+    + `<span class="l">${label}<i class="fc-dot" id="fc-dot-${key}" hidden></i><small id="fc-sub-${key}">${subHtml || ''}</small></span>`
+    + `<span class="v" id="fc-v-${key}"></span><span class="ch">${FC_SVG_CH}</span></button><div class="fc-row-b">${body}</div></div>`;
 }
-function _fcTh(c3, c4) { return `<div class="fc-tr fc-th"><span>เบอร์</span><span class="k">กก.</span><span class="p">${c3}</span><span class="m">${c4 || 'เป็นเงิน'}</span></div>`; }
-function _fcRow(name, kgId, pinHtml, mId) {
-  return `<div class="fc-tr"><span class="g">${_fcEsc(name)}</span><span class="k" id="${kgId}"></span>${pinHtml}<span class="m" id="${mId}"></span></div>`;
+function _fcT3h(c2, mx) {
+  return mx ? `<div class="fc-t3 mx fc-th"><span>เบอร์</span><span>%</span><span>ราคา/กก.</span><span>เป็นเงิน</span><span></span></div>`
+    : `<div class="fc-t3 fc-th"><span>เบอร์</span><span>${c2}</span><span>เป็นเงิน</span></div>`;
+}
+function _fcT3(name, kgId, pinHtml, mId) {
+  return `<div class="fc-t3"><span class="g">${_fcEsc(name)}<small id="${kgId}"></small></span>${pinHtml}<span class="m" id="${mId}"></span></div>`;
 }
 function _fcNudge(fnDn, fnUp) {
   return `<span class="fc-nudge"><button type="button" onclick="${fnDn}" aria-label="ลดทุกเบอร์ 1 บาท">−1</button><span>ทุกเบอร์</span><button type="button" onclick="${fnUp}" aria-label="เพิ่มทุกเบอร์ 1 บาท">+1</button></span>`;
@@ -23592,154 +23809,141 @@ function _fcRender() {
   if (!m.hasColl && m.mixMode === 'manual' && !Array.isArray(_fcD.mixRows)) {
     _fcD.mixMode = 'manual'; _fcD.mixRows = [{ name: '', pct: null }, { name: '', pct: null }]; m = _fcM();
   }
-  const planned = !!(g.forecastPlan && g.forecastPlan.updatedAt);
   document.getElementById('fc-t1').textContent = 'วางแผน · ' + (g.name || '');
   document.getElementById('fc-t2').textContent = (g.fruit || '—') + ' · ' + _fcDeal(g) + (m.target > 0 ? ' · เป้า ' + _fcF0(m.target) + ' กก.' : '');
-  document.getElementById('fc-badge').textContent = planned ? 'ตามแผน' : 'คาดการณ์';
   const menu = document.getElementById('fc-menu'); if (menu) menu.hidden = true;
   const rateKeys = Object.keys(m.projBy);
   _fcK = { mix: m.mixOrder.slice(), rate: rateKeys, rows: m.hasColl ? -1 : m.mixRows.length, days: m.days.length };
   let h = '';
-
-  // ── หัว: คำตอบ + สมการ + แถบของจริง/ตัวคาด ──
-  h += `<div class="fc-hero" id="fc-hero"><div class="q" id="fc-hq"></div>
-    <div class="ans"><span class="big" id="fc-hamt">—</span><span class="pill" id="fc-hpct"></span></div>
-    <div class="eq"><button type="button" class="in" onclick="fcGo('fc-blk-in')"><small>ขายได้</small><b id="fc-hsold">—</b></button><span class="op">−</span>
-      <button type="button" class="out" onclick="fcGo('fc-blk-out')"><small>ทุน</small><b id="fc-hcost">—</b></button></div>
-    <div class="bar"><div class="tr"><span class="a" id="fc-hba"></span><span class="b" id="fc-hbb"></span></div>
-      <div class="lg"><span><i class="dot a"></i><span id="fc-hla"></span></span><span><i class="dot b"></i><span id="fc-hlb"></span></span></div></div>
+  // ── หัว: คำตอบตัวเดียว + แถบของจริง/ตัวคาด ──
+  h += `<div class="fc-hero" id="fc-hero"><div class="r1"><span id="fc-hq"></span><span class="pill" id="fc-hpct" hidden></span></div>
+    <div class="big" id="fc-hamt">—</div>
+    <div class="bar"><span class="a" id="fc-hba"></span><span class="b" id="fc-hbb"></span></div>
+    <div class="bl"><span id="fc-hla"></span><span id="fc-hlb"></span></div>
     <div class="need" id="fc-hneed" hidden></div></div>`;
 
-  // ══ เงินเข้า ══
-  h += `<div class="fc-blk in" id="fc-blk-in"><div class="fc-blk-h"><span class="ic">${FC_SVG_IN}</span><span class="nm">เงินเข้า<small>ขาย + รายได้อื่น</small></span><span class="tot" id="fc-tin">—</span></div>`;
+  // ══ ขาย ══
+  h += `<div class="fc-grp in" id="fc-blk-in"><div class="fc-grp-h"><b>ขาย</b><span id="fc-tin">—</span></div><div class="fc-rows">`;
   if (m.hasColl) {
-    let b = `<div class="fc-hint"><span class="fc-tag bill">บิล</span> ราคาในบิลที่ส่งแล้ว · <span class="fc-tag form">ฟอร์ม</span> ยังไม่ส่งบิล ใช้ฟอร์มวันนั้น</div>`;
+    let b = `<div class="fc-warnbar" id="fc-pullwarn" hidden><span id="fc-pulltx"></span><button type="button" id="fc-pullbtn" onclick="fcPullOpen()">ดึงราคา</button></div>`
+      + `<div class="fc-tools"><span class="note">ราคาในบิล หรือฟอร์มของวันนั้น</span><span class="lk"><button type="button" class="fc-lnk" id="fc-lk-past" hidden onclick="fcReset('past')">คืนค่าเดิม</button>`
+      + `<button type="button" class="fc-lnk pull" onclick="fcPullOpen()">ดึงราคาจากคลัง</button></span></div>`;
     m.past.forEach((d, di) => {
-      const open = (d.pid in _fcOpenDays) ? _fcOpenDays[d.pid] : (m.past.length <= 3 || di === m.past.length - 1);
-      b += `<div class="fc-day${open ? ' open' : ''}"><button type="button" class="fc-day-h" onclick="fcTogDay(${di})"><span class="d">${_fcEsc(_fcDl(d.date))}</span><span class="k">${_fcF0(d.kg)} กก.</span>
-        <span class="fc-tag" id="fc-src-${di}"></span><span class="v" id="fc-drv-${di}"></span><span class="ch">${FC_SVG_CH}</span></button><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
-      d.rows.forEach((r, ri) => { const id = `p${di}_${ri}`; b += _fcRow(r.grade, 'fc-pk-' + id, _fcPin(id, r.p, { oninput: `fcPastP(${di},${ri},this.value)` }), 'fc-rv-' + id); });
-      b += `</div></div>`;
+      b += `<div class="fc-pday"><div class="fc-dd"><span class="dt">${_fcEsc(_fcDFull(d.date))}</span><span class="fc-tag" id="fc-src-${di}"></span></div><div class="fc-tb">${_fcT3h('ราคา/กก.')}`;
+      d.rows.forEach((r, ri) => { const id = `p${di}_${ri}`; b += _fcT3(r.grade, 'fc-pk-' + id, _fcPin(id, r.p, { oninput: `fcPastP(${di},${ri},this.value)` }), 'fc-rv-' + id); });
+      b += `<div class="fc-t3 sub"><span></span><span class="sl">รวมวันนี้</span><span class="m" id="fc-drv-${di}"></span></div></div></div>`;
     });
-    b += `<div class="fc-lkrow" id="fc-lk-past" hidden><button type="button" class="fc-lnk" onclick="fcReset('past')">กลับไปใช้ราคาเดิมทั้งหมด</button></div>`;
-    h += _fcSecHtml('coll', `เก็บแล้ว ${_fcF0(m.collKg)} กก.<small>ราคาจริงที่ขาย · แตะวันเพื่อดู/แก้</small>`, 'fc-sv-coll', b);
+    h += _fcRowHtml('coll', 'เก็บแล้ว', `<span class="nm">${_fcF0(m.collKg)} กก. · ${m.past.length} วัน</span>`, b);
   }
-  // ส่วนที่ยังไม่เก็บ
-  const remTitle = !(m.target > 0) ? 'ส่วนที่ยังไม่เก็บ<small>ยังไม่ได้ตั้งเป้า</small>'
-    : (m.hasColl ? `ยังไม่เก็บ ${_fcF0(m.remKg)} กก. <span class="fc-tag est">คาด</span><small>ตั้งราคาที่คิดว่าจะขายได้</small>`
-      : `คาดว่าจะเก็บ ${_fcF0(m.remKg)} กก. <span class="fc-tag est">คาด</span><small>ยังไม่ได้เก็บเลย · ตั้งสัดส่วนเบอร์และราคา</small>`);
-  h += _fcSecHtml('rem', remTitle, 'fc-sv-rem', _fcRemHtml(m, g));
-  h += _fcSecHtml('inc', 'รายได้อื่น<small>ขายลูกร่วง ตกเกรด ค่าตะกร้าคืน</small>', 'fc-hsinc', _fcHidHtml('inc'));
-  h += `</div>`;
+  h += _fcRowHtml('rem', m.hasColl ? 'ที่เหลือ (คาด)' : 'คาดว่าจะเก็บ', `<span class="nm">${_fcF0(m.remKg)} กก.</span>`, _fcRemHtml(m, g));
+  h += _fcRowHtml('inc', 'รายได้อื่น', '', _fcHidHtml('inc'));
+  h += `</div></div>`;
 
-  // ══ เงินออก ══
+  // ══ ทุน ══
   const dl = m.deal;
   let dsm = '';
-  if (dl.type === 'lump') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคาเหมาในสวนนี้' : 'เหมา · ราคาคงที่';
-  else if (dl.type === 'kg-all') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคารายโลในสวนนี้' : 'รายโล ' + _fcFp(dl.rate) + ' × <span id="fc-dkg">' + _fcF0(m.projKg) + '</span> กก.';
-  else if (dl.type === 'kg-grade') dsm = dl.miss ? 'ยังไม่มีราคาดีลของเบอร์ ' + _fcEsc((dl.missGrades || []).join(', ')) : 'รายโล แยกเบอร์ × กก. ทั้งสวน';
-  else dsm = 'ยังไม่ได้ตั้งแบบซื้อในสวนนี้';
-  h += `<div class="fc-blk out" id="fc-blk-out"><div class="fc-blk-h"><span class="ic">${FC_SVG_OUT}</span><span class="nm">เงินออก<small>ทุนทั้งหมด</small></span><span class="tot" id="fc-tout">—</span></div>
-    <div class="fc-fix"><span class="t">ค่าเปิดสวน<small class="${dl.miss ? 'warn' : ''}">${dsm}</small></span><span class="v" id="fc-deal"></span></div>`;
-  let pb = `<div class="fc-hint">${m.procN > 0 ? 'ราคาตั้งต้น = <b>เฉลี่ยจาก ' + m.procN + ' บิลล่าสุด</b> (ไม่เกิน 2 เดือน)' : 'ยังไม่มีบิลใน 2 เดือน — ใช้ค่าที่จำไว้จากบิลล่าสุด หรือกรอกเอง'} · แก้ได้เฉพาะสวนนี้</div>`;
+  if (dl.type === 'lump') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคาเหมา' : 'เหมา';
+  else if (dl.type === 'kg-all') dsm = dl.miss ? 'ยังไม่ได้ใส่ราคารายโล' : '<span class="nm">รายโล ' + _fcFp(dl.rate) + ' × <span id="fc-dkg">' + _fcF0(m.projKg) + '</span> กก.</span>';
+  else if (dl.type === 'kg-grade') dsm = dl.miss ? 'ยังไม่มีราคาดีลของเบอร์ ' + _fcEsc((dl.missGrades || []).join(', ')) : 'รายโล แยกเบอร์';
+  else dsm = 'ยังไม่ได้ตั้งแบบซื้อ';
+  h += `<div class="fc-grp out" id="fc-blk-out"><div class="fc-grp-h"><b>ทุน</b><span id="fc-tout">—</span></div><div class="fc-rows">
+    <div class="fc-row flat"><div class="fc-row-h"><span class="l">ค่าเปิดสวน<small class="${dl.miss ? 'warn' : ''}">${dsm}</small></span><span class="v" id="fc-deal"></span></div></div>`;
+  let pb = '';
   if (rateKeys.length) {
-    pb += `<div class="fc-tb">${_fcTh('บาท/กก.')}`;
-    rateKeys.forEach((k, j) => { pb += _fcRow(m.names[k] || k, 'fc-ck' + j, _fcPin('c' + j, m.rate[k], { oninput: `fcRate(${j},this.value)` }), 'fc-rv-c' + j); });
+    pb += `<div class="fc-tb">${_fcT3h('บาท/กก.')}`;
+    rateKeys.forEach((k, j) => { pb += _fcT3(m.names[k] || k, 'fc-ck' + j, _fcPin('c' + j, m.rate[k], { oninput: `fcRate(${j},this.value)`, lbl: 'ค่าจัดทำต่อกิโล' }), 'fc-rv-c' + j); });
     pb += `</div>`;
-  } else pb += `<div class="fc-empty">ยังไม่มีเบอร์ · ใส่สัดส่วนเบอร์ก่อน</div>`;
-  pb += `<div class="fc-lkrow" id="fc-lk-rate" hidden><button type="button" class="fc-lnk" onclick="fcReset('rate')">กลับไปใช้ราคาตั้งต้น</button></div>`;
-  h += _fcSecHtml('proc', 'ค่าจัดทำ <span id="fc-pkg"></span> กก.<small>แยกราคาตามเบอร์ · ทั้งสวน</small>', 'fc-proc', pb);
-  h += _fcSecHtml('exp', 'ค่าใช้จ่ายอื่น<small>ค่าขนส่ง ค่าอบ ค่าน้ำมัน ค่าแรง</small>', 'fc-hsexp', _fcHidHtml('exp'));
-  h += `</div>`;
-
-  // ══ สรุปท้าย ══
-  h += `<div class="fc-end"><span>ขายได้</span><span class="v in" id="fc-esold"></span><span>ทุน</span><span class="v out" id="fc-ecost"></span>
-    <span class="r" id="fc-elbl">ผลลัพธ์</span><span class="v r" id="fc-eres"></span></div>`;
+  } else pb += `<div class="fc-empty">ใส่สัดส่วนเบอร์ก่อน</div>`;
+  pb += `<div class="fc-tools end"><span></span><button type="button" class="fc-lnk" id="fc-lk-rate" hidden onclick="fcReset('rate')">คืนค่าเดิม</button></div>`;
+  h += _fcRowHtml('proc', 'ค่าจัดทำ', `<span class="nm"><span id="fc-pkg"></span> กก.</span> · ${m.procN > 0 ? 'เฉลี่ย ' + m.procN + ' บิล' : 'ไม่มีบิลอ้างอิง'}`, pb);
+  h += _fcRowHtml('exp', 'ค่าใช้จ่ายอื่น', '', _fcHidHtml('exp'));
+  h += `</div></div>`;
 
   document.getElementById('fc-body').innerHTML = `<div class="wrap">${h}</div>`;
   _fcRefresh(true);
 }
-// ส่วนที่ยังไม่เก็บ: (ยังไม่เก็บเลย → สัดส่วนเบอร์ก่อน) + ราคา (ราคาเดียว / แบ่งหลายวัน)
+// ที่เหลือ / คาดว่าจะเก็บ
 function _fcRemHtml(m, g) {
-  if (!(m.target > 0)) return `<div class="fc-emp">ยังไม่ได้ตั้งเป้าในสวนนี้ — ไปตั้งเป้าที่หน้าแก้ไขสวน แล้วส่วนนี้จะขึ้นเอง</div>`;
-  if (m.remKg <= 0) return `<div class="fc-emp ok">เก็บครบเป้าแล้ว — ตัวเลขด้านบนคิดจากที่เก็บจริงทั้งหมด</div>`;
+  if (!(m.target > 0)) return `<div class="fc-emp">ยังไม่ได้ตั้งเป้า — ตั้งเป้าที่หน้าแก้ไขสวนก่อน</div>`;
+  if (m.remKg <= 0) return `<div class="fc-emp ok">เก็บครบเป้าแล้ว</div>`;
   let x = '';
+  const tail = `<div class="fc-tools end"><span></span><button type="button" class="fc-lnk" id="fc-lk-rem" hidden onclick="fcReset('rem')">คืนค่าเดิม</button></div>`;
   if (!m.hasColl) {
     const all = fcRefGardens(g), avgRefs = fcAvgRefs(g);
-    x += `<div class="fc-step">1. จะได้เบอร์ไหนเท่าไหร่</div>`;
     if (m.mixMode === 'manual') {
-      x += `<div class="fc-emp">ยังไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดแล้ว — ใส่ชื่อเบอร์และสัดส่วนเอง</div>`;
+      x += `<div class="fc-tools"><span class="note">ยังไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดแล้ว · ใส่เบอร์เอง</span>${m.mixOrder.length ? _fcNudge('fcRemAll(-1)', 'fcRemAll(1)') : ''}</div>`;
     } else {
-      x += `<div class="fc-seg" role="group" aria-label="ที่มาของสัดส่วนเบอร์"><button type="button" class="${m.mixMode === 'avg' ? 'on' : ''}" onclick="fcMixMode('avg')"${avgRefs.length ? '' : ' disabled'}>เฉลี่ยหลายสวน</button><button type="button" class="${m.mixMode === 'one' ? 'on' : ''}" onclick="fcMixMode('one')">เลือกสวนเดียว</button></div>`;
-      if (!avgRefs.length) x += `<div class="fc-hint">ไม่มีสวน${_fcEsc(g.fruit || '')}ที่ปิดใน 2 เดือน · เลือกจากสวนเก่าได้</div>`;
-      x += `<div class="fc-refs">`;
-      if (m.mixMode === 'avg') {
-        x += _fcRefCard(fcMixOf(avgRefs), 'เฉลี่ย ' + avgRefs.length + ' สวน', (g.fruit || '') + 'ที่ปิดไม่เกิน 2 เดือน · ' + _fcF0(m.mixInfo ? m.mixInfo.kg : 0) + ' กก.', true, '');
-      } else if (_fcRefOpen) {
-        const lim = _fcRefAll ? all.length : Math.min(5, all.length);
-        all.slice(0, lim).forEach(r => { x += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', m.mixInfo && m.mixInfo.gid === r.g.id, `fcPickRef('${_fcEsc(r.g.id)}')`); });
-        if (all.length > lim) x += `<button type="button" class="fc-lnk end" onclick="fcRefAll()">ดูทั้งหมด (${all.length} สวน)</button>`;
-      } else if (m.mixInfo) {
-        const r = all.find(z => z.g.id === m.mixInfo.gid);
-        if (r) x += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', true, '');
-        x += `<button type="button" class="fc-lnk end" onclick="fcRefOpen()">เปลี่ยนสวน</button>`;
+      x += `<div class="fc-tools"><span class="fc-seg" role="group" aria-label="ที่มาของสัดส่วนเบอร์"><button type="button" class="${m.mixMode === 'avg' ? 'on' : ''}" onclick="fcMixMode('avg')"${avgRefs.length ? '' : ' disabled'}>เฉลี่ย ${avgRefs.length} สวน</button><button type="button" class="${m.mixMode === 'one' ? 'on' : ''}" onclick="fcMixMode('one')">เลือกสวน</button></span>${_fcNudge('fcRemAll(-1)', 'fcRemAll(1)')}</div>`;
+      if (m.mixMode === 'one') {
+        x += `<div class="fc-refs">`;
+        if (_fcRefOpen) {
+          const lim = _fcRefAll ? all.length : Math.min(5, all.length);
+          all.slice(0, lim).forEach(r => { x += _fcRefCard(fcMixOf([r]), r.g.name || '—', 'ปิด ' + _fcDl(r.on) + ' · ' + _fcF0(r.kg) + ' กก.', m.mixInfo && m.mixInfo.gid === r.g.id, `fcPickRef('${_fcEsc(r.g.id)}')`); });
+          if (all.length > lim) x += `<button type="button" class="fc-lnk end" onclick="fcRefAll()">ดูทั้งหมด (${all.length} สวน)</button>`;
+        } else if (m.mixInfo) {
+          const r = all.find(z => z.g.id === m.mixInfo.gid);
+          if (r) x += `<div class="fc-tools"><span class="note">จากสวน${_fcEsc(r.g.name || '')} · ปิด ${_fcEsc(_fcDl(r.on))}</span><button type="button" class="fc-lnk" onclick="fcRefOpen()">เปลี่ยนสวน</button></div>`;
+        }
+        x += `</div>`;
       }
-      x += `</div>`;
     }
+    const tot = Math.max(100, m.mixSum || 0);
+    x += `<div class="fc-mixbar">${m.mixRows.map((r, i) => `<span style="width:${(Number(r.pct) || 0) / tot * 100}%;background:${FC_BAR[i % FC_BAR.length]}"></span>`).join('')}</div>`
+      + `<div class="fc-mixl"><span>สัดส่วนเบอร์</span><span class="fc-msum" id="fc-msum"></span></div>`;
     const base = {}; Object.keys(m.mixPct0).forEach(k => { base[k] = 1; });
-    x += `<div class="fc-tb"><div class="fc-mx fc-th"><span>เบอร์</span><span class="p">สัดส่วน %</span><span class="m">กก.</span><span></span></div>`;
+    x += `<div class="fc-tb">${_fcT3h('', true)}`;
     m.mixRows.forEach((r, i) => {
       const nm = String(r.name || '').trim(), k = fcKey(nm), isBase = nm && (k in base) && m.mixMode !== 'manual';
-      x += `<div class="fc-mx">` + (isBase ? `<span class="g">${_fcEsc(nm)}</span>`
-        : `<input class="gn${nm ? '' : ' miss'}" id="fcin-gn${i}" placeholder="ชื่อเบอร์" value="${_fcEsc(nm)}" list="fc-gdl" onchange="fcMxName(${i},this.value)" aria-label="ชื่อเบอร์">`)
-        + _fcPin('mx' + i, r.pct, { max: 100, oninput: `fcMxPct(${i},this.value)` })
-        + `<span class="m" id="fc-mxk${i}"></span><button class="x" type="button" aria-label="ลบเบอร์" onclick="fcMxDel(${i})">×</button></div>`;
+      const j = nm ? m.mixOrder.indexOf(k) : -1, first = j >= 0 && m.mixRows.findIndex(z => fcKey(String(z.name || '').trim()) === k) === i;
+      x += `<div class="fc-t3 mx"><span class="g">` + (isBase ? _fcEsc(nm) : `<input class="gn${nm ? '' : ' miss'}" id="fcin-gn${i}" placeholder="เบอร์" value="${_fcEsc(nm)}" list="fc-gdl" onchange="fcMxName(${i},this.value)" aria-label="ชื่อเบอร์">`)
+        + `<small id="fc-mxk${i}"></small></span>`
+        + _fcPin('mx' + i, r.pct, { max: 100, oninput: `fcMxPct(${i},this.value)`, lbl: 'สัดส่วน %' })
+        + (first ? _fcPin('r' + j, m.remP[k], { oninput: `fcRemP(${j},this.value)` }) : `<span class="fc-dash">${nm ? 'ซ้ำ' : '—'}</span>`)
+        + `<span class="m" id="${first ? 'fc-rv-r' + j : 'fc-rvx' + i}"></span><button class="x" type="button" aria-label="ลบเบอร์" onclick="fcMxDel(${i})">×</button></div>`;
     });
-    if (!m.mixRows.length) x += `<div class="fc-empty">ยังไม่มีเบอร์ · กด + เพิ่มเบอร์</div>`;
     x += `</div>`;
     const sugg = {};
-    try { const lf = (typeof pfFindForm === 'function') ? pfFindForm(g.fruit, _fcISO(new Date())) : null; if (lf && fcSameFruit(lf.fruit, g.fruit)) (lf.rows || []).forEach(z => { if (z && z.name) sugg[String(z.name).trim()] = 1; }); } catch (e) {}
+    try { const lf = fcFindForm(g.fruit, _fcISO(new Date())); if (lf) (lf.rows || []).forEach(z => { if (z && z.name) sugg[String(z.name).trim()] = 1; }); } catch (e) {}
     all.slice(0, 12).forEach(r => (r.g.collections || []).forEach(c => fcDayRows(c).forEach(z => { sugg[z.grade] = 1; })));
     x += `<datalist id="fc-gdl">${Object.keys(sugg).filter(Boolean).map(s => `<option value="${_fcEsc(s)}">`).join('')}</datalist>`;
-    x += `<div class="fc-addrow"><button type="button" class="fc-add" onclick="fcMxAdd()">+ เพิ่มเบอร์</button>`
-      + (m.mixMode !== 'manual' ? `<button type="button" class="fc-lnk" id="fc-lk-mix" hidden onclick="fcReset('mix')">กลับไปใช้สัดส่วนเดิม</button>` : '') + `</div>`;
-    x += `<div class="fc-msum" id="fc-msum"></div>`;
-    x += `<div class="fc-step">2. ราคาที่คิดว่าจะขายได้</div>`;
-  } else {
-    x += `<div class="fc-hint">แบ่งเบอร์ตามที่เก็บจริง: <b>${_fcEsc(m.mixOrder.map(k => (m.names[k] || k) + ' ' + (m.mixPct[k] || 0) + '%').join(' · '))}</b></div>
-      <div class="fc-seg" role="group" aria-label="วิธีตั้งราคา"><button type="button" class="${m.remMode === 'block' ? 'on' : ''}" onclick="fcRemMode('block')">ขายราคาเดียว</button><button type="button" class="${m.remMode === 'days' ? 'on' : ''}" onclick="fcRemMode('days')">แบ่งขายหลายวัน</button></div>`;
+    x += `<div class="fc-tools end"><button type="button" class="fc-lnk" onclick="fcMxAdd()">+ เพิ่มเบอร์</button><span class="lk">`
+      + (m.mixMode !== 'manual' ? `<button type="button" class="fc-lnk" id="fc-lk-mix" hidden onclick="fcReset('mix')">คืนสัดส่วนเดิม</button>` : '')
+      + `<button type="button" class="fc-lnk" id="fc-lk-rem" hidden onclick="fcReset('rem')">คืนราคาเดิม</button></span></div>`;
+    return x;
   }
-  if (m.remMode === 'days' && m.hasColl) {
+  if (m.latestFruit) x += `<div class="fc-tools"><span class="note" id="fc-remsrc">ราคาตั้งต้นจากฟอร์ม “${_fcEsc(m.latestFruit)}” (ที่เลือกไว้ตอนดึงราคา)</span></div>`;
+  x += `<div class="fc-tools"><span class="fc-seg" role="group" aria-label="วิธีตั้งราคา"><button type="button" class="${m.remMode === 'block' ? 'on' : ''}" onclick="fcRemMode('block')">ราคาเดียว</button><button type="button" class="${m.remMode === 'days' ? 'on' : ''}" onclick="fcRemMode('days')">หลายวัน</button></span>`
+    + (m.remMode !== 'days' ? _fcNudge('fcRemAll(-1)', 'fcRemAll(1)') : '') + `</div>`;
+  if (m.remMode === 'days') {
     m.days.forEach((d, i) => {
-      x += `<div class="fc-pday"><div class="fc-pday-h"><b>วันที่ ${i + 1}</b>${_fcPin('dk' + i, d.kg, { max: FC_MAX.kg, ph: '0', cls: 'kg', oninput: `fcDayKg(${i},this.value)` })}<span class="u">กก.</span>
-        ${_fcNudge(`fcDayAll(${i},-1)`, `fcDayAll(${i},1)`)}<button class="x" type="button" aria-label="ลบวัน" onclick="fcDayDel(${i})">×</button></div><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
-      m.mixOrder.forEach((k, j) => { const id = `d${i}_${j}`; x += _fcRow(m.names[k] || k, 'fc-pk-' + id, _fcPin(id, d.p[k], { oninput: `fcDayP(${i},${j},this.value)` }), 'fc-rv-' + id); });
-      x += `</div></div>`;
+      x += `<div class="fc-pday plan"><div class="fc-pday-h"><b>วันที่ ${i + 1}</b>${_fcPin('dk' + i, d.kg, { max: FC_MAX.kg, ph: '0', cls: 'kg', lbl: 'กิโลวันนี้', oninput: `fcDayKg(${i},this.value)` })}<span class="u">กก.</span>
+        ${_fcNudge(`fcDayAll(${i},-1)`, `fcDayAll(${i},1)`)}<button class="x" type="button" aria-label="ลบวัน" onclick="fcDayDel(${i})">×</button></div><div class="fc-tb">${_fcT3h('ราคา/กก.')}`;
+      m.mixOrder.forEach((k, j) => { const id = `d${i}_${j}`; x += _fcT3(m.names[k] || k, 'fc-pk-' + id, _fcPin(id, d.p[k], { oninput: `fcDayP(${i},${j},this.value)` }), 'fc-rv-' + id); });
+      x += `<div class="fc-t3 sub"><span></span><span class="sl">รวมวันนี้</span><span class="m" id="fc-pds${i}"></span></div></div></div>`;
     });
-    x += `<div class="fc-left" id="fc-pun"></div><div class="fc-addrow"><button type="button" class="fc-add" onclick="fcDayAdd()">+ เพิ่มวัน</button></div>`;
+    x += `<div class="fc-tools end"><span class="note" id="fc-pun"></span><button type="button" class="fc-lnk" onclick="fcDayAdd()">+ เพิ่มวัน</button></div>`;
   } else {
-    if (!m.mixOrder.length) return x + `<div class="fc-empty">ใส่ชื่อเบอร์ด้านบนก่อน แล้วช่องราคาจะขึ้นเอง</div>`;
-    x += `<div class="fc-tools"><span class="lb">${m.latest ? 'ตั้งต้นจากฟอร์ม ' + _fcEsc(_fcDl(m.latest)) : 'ยังไม่มีฟอร์มราคา · กรอกเอง'}</span>${_fcNudge('fcRemAll(-1)', 'fcRemAll(1)')}</div><div class="fc-tb">${_fcTh('ราคา/กก.')}`;
-    m.mixOrder.forEach((k, j) => { x += _fcRow(m.names[k] || k, 'fc-rk' + j, _fcPin('r' + j, m.remP[k], { oninput: `fcRemP(${j},this.value)` }), 'fc-rv-r' + j); });
+    x += `<div class="fc-tb">${_fcT3h('ราคา/กก.')}`;
+    m.mixOrder.forEach((k, j) => { x += _fcT3(m.names[k] || k, 'fc-rk' + j, _fcPin('r' + j, m.remP[k], { oninput: `fcRemP(${j},this.value)` }), 'fc-rv-r' + j); });
     x += `</div>`;
   }
-  x += `<div class="fc-lkrow" id="fc-lk-rem" hidden><button type="button" class="fc-lnk" onclick="fcReset('rem')">กลับไปใช้ราคาฟอร์ม</button></div>`;
-  return x;
+  return x + tail;
 }
-// รายได้อื่น (inc) / ค่าใช้จ่ายอื่น (exp) — มีปุ่มลัดชื่อที่ใช้บ่อย
+// รายได้อื่น (inc) / ค่าใช้จ่ายอื่น (exp)
 function _fcHidHtml(t) {
   const list = (_fcD[t] = Array.isArray(_fcD[t]) ? _fcD[t] : []);
   const quick = t === 'inc' ? ['ขายลูกร่วง', 'ตกเกรด', 'ค่าตะกร้าคืน'] : ['ค่าขนส่ง', 'ค่าอบ', 'ค่าน้ำมัน', 'ค่าแรง'];
-  let h = `<div class="fc-quick">${quick.map(q => `<button type="button" onclick="fcHidAdd('${t}','${q}')">+ ${q}</button>`).join('')}<button type="button" onclick="fcHidAdd('${t}','')">+ อื่นๆ</button></div>`;
+  let h = '';
   list.forEach((it, i) => {
     h += `<div class="fc-item"><input class="n" id="fcin-hn${t}${i}" value="${_fcEsc(it.n || '')}" placeholder="ชื่อรายการ" aria-label="ชื่อรายการ" oninput="fcHidName('${t}',${i},this.value)">`
-      + _fcPin('h' + t + i, Number(it.v) || null, { max: it.u === 'kg' ? FC_MAX.p : FC_MAX.b, ph: '0', oninput: `fcHidVal('${t}',${i},this.value)` })
-      + `<span class="fc-unit" role="group" aria-label="หน่วย"><button type="button" class="${it.u !== 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'b')">บาท</button><button type="button" class="${it.u === 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'kg')">ต่อกก.</button></span>`
+      + _fcPin('h' + t + i, Number(it.v) || null, { max: it.u === 'kg' ? FC_MAX.p : FC_MAX.b, ph: '0', lbl: 'จำนวนเงิน', oninput: `fcHidVal('${t}',${i},this.value)` })
+      + `<span class="fc-unit" role="group" aria-label="หน่วย"><button type="button" class="${it.u !== 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'b')">บาท</button><button type="button" class="${it.u === 'kg' ? 'on' : ''}" onclick="fcHidUnit('${t}',${i},'kg')">/กก.</button></span>`
       + `<button class="x" type="button" aria-label="ลบรายการ" onclick="fcHidDel('${t}',${i})">×</button><span class="calc" id="fc-ht${t}${i}"></span></div>`;
   });
+  h += `<div class="fc-quick">${quick.map(q => `<button type="button" onclick="fcHidAdd('${t}','${q}')">+ ${q}</button>`).join('')}<button type="button" onclick="fcHidAdd('${t}','')">+ อื่นๆ</button></div>`;
   return h;
 }
-// ป้าย "ยังขาด" ที่หัว → แตะแล้วพาไปที่ช่องนั้น
+// ป้าย "ยังขาด" ที่หัว → แตะแล้วกางแถว + พาไปที่ช่อง
 function _fcNeed(m) {
   const out = [];
   if (!(m.target > 0)) out.push({ t: 'เป้า', msg: 'ตั้งเป้าที่หน้าแก้ไขสวน' });
@@ -23749,7 +23953,7 @@ function _fcNeed(m) {
     if (!String(r.name || '').trim()) out.push({ t: 'ชื่อเบอร์ แถว ' + (i + 1), id: 'gn' + i, sec: 'rem' });
     else if (r.pct == null) out.push({ t: 'สัดส่วน ' + String(r.name).trim(), id: 'mx' + i, sec: 'rem' });
   });
-  if (!m.hasColl && m.target > 0 && !m.mixRows.length) out.push({ t: 'สัดส่วนเบอร์', id: null, sec: 'rem', go: 'fc-sec-rem' });
+  if (!m.hasColl && m.target > 0 && !m.mixRows.length) out.push({ t: 'สัดส่วนเบอร์', sec: 'rem', go: 'fc-sec-rem' });
   if (m.remMode === 'days' && m.hasColl) m.days.forEach((d, i) => m.mixOrder.forEach((k, j) => { if ((d.by[k] || 0) > 0 && d.p[k] == null) out.push({ t: 'ราคา ' + (m.names[k] || k) + ' วันที่ ' + (i + 1), id: `d${i}_${j}`, sec: 'rem' }); }));
   m.mixOrder.forEach((k, j) => {
     if ((m.unBy[k] || 0) > 0 && m.remP[k] == null) {
@@ -23775,12 +23979,17 @@ window.fcNeedGo = function (i) {
 window.fcGo = function (id) { const el = document.getElementById(id); if (el) { try { el.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); } } };
 window.fcTogSec = function (k) { _fcSec[k] = !_fcSec[k]; const el = document.getElementById('fc-sec-' + k); if (el) el.classList.toggle('open', _fcSec[k]); };
 window.fcMenu = function (ev) { if (ev) ev.stopPropagation(); const mn = document.getElementById('fc-menu'); if (mn) mn.hidden = !mn.hidden; };
-// ป้ายที่มาใต้ช่องราคา: แก้แล้ว → "เดิม X" (ส้ม) · ไม่แก้ → ที่มา
-function _fcWas(id, chg, p0, src) {
+// ป้ายใต้ช่อง: แก้แล้วเท่านั้น → "เดิม X" (ส้ม) · ค่าเริ่มต้นไม่มีป้าย
+function _fcWas(id, chg, p0) {
   const e = document.getElementById('fc-was-' + id); if (!e) return;
-  const t = chg && p0 != null ? 'เดิม ' + _fcFp(p0) : src;
+  const t = chg && p0 != null ? 'เดิม ' + _fcFp(p0) : '';
   if (e.textContent !== t) e.textContent = t;
   _fcCls('fcpin-' + id, 'chg', chg && p0 != null);
+}
+function _fcDot(key, kind) {   // e = แก้แล้ว · x = ยังขาด · p = ดึงจากคลัง
+  const d = document.getElementById('fc-dot-' + key); if (!d) return;
+  d.hidden = !kind; d.className = 'fc-dot' + (kind ? ' d-' + kind : '');
+  d.title = kind === 'x' ? 'ยังขาดข้อมูล' : (kind === 'e' ? 'แก้แล้ว' : (kind === 'p' ? 'ดึงจากคลัง' : ''));
 }
 // อัปเดตเฉพาะตัวเลข · โครงเปลี่ยน (เบอร์/วัน/แถว) → วาดใหม่แบบคืนช่องที่พิมพ์
 function _fcRefresh(fromRender) {
@@ -23791,58 +24000,70 @@ function _fcRefresh(fromRender) {
       || _fcK.rows !== (m.hasColl ? -1 : m.mixRows.length) || _fcK.days !== m.days.length)) { _fcRerender(); return; }
   const ok = m.complete;
   const money = (id, kg, p) => _fcTxt(id, p == null ? '—' : _fcF0(kg * p));
+  const need = ok ? [] : _fcNeed(m);
+  const needIn = sec => need.some(n => n.sec === sec);
   // เก็บแล้ว
   m.past.forEach((d, di) => {
     d.rows.forEach((r, ri) => {
-      const id = `p${di}_${ri}`, chg = r.p0 != null && r.p !== r.p0;
-      _fcTxt('fc-pk-' + id, _fcF0(r.kg)); money('fc-rv-' + id, r.kg, r.p);
-      _fcWas(id, chg, r.p0, r.src === 'bill' ? 'บิล' : (r.src === 'form' ? 'ฟอร์ม' : 'ยังไม่มีราคา'));
+      const id = `p${di}_${ri}`, chg = r.p0 != null && r.p !== r.p0 && !r.pull;
+      _fcTxt('fc-pk-' + id, _fcF0(r.kg) + ' กก.'); money('fc-rv-' + id, r.kg, r.p);
+      _fcWas(id, chg, r.p0);
+      _fcCls('fcpin-' + id, 'pull', !!r.pull);
       _fcCls('fcpin-' + id, 'miss', r.p == null);
     });
     _fcTxt('fc-drv-' + di, _fcF0(d.rev));
     const s = document.getElementById('fc-src-' + di);
     if (s) {
-      const miss = d.rows.some(r => r.p == null);
-      const c = d.edited ? 'edit' : (miss ? 'none' : (d.src === 'bill' ? 'bill' : 'form'));
+      const miss = d.rows.some(r => r.p == null), pr = d.rows.find(r => r.pull);
+      const c = d.hand ? 'edit' : (d.pulled ? 'pull' : (miss ? 'none' : (d.src === 'bill' ? 'bill' : 'form')));
       s.className = 'fc-tag ' + c;
-      s.textContent = d.edited ? 'แก้แล้ว' : (miss ? 'ยังไม่มีราคา' : (d.src === 'bill' ? 'บิล' : (d.src === 'mix' ? 'บิล+ฟอร์ม' : 'ฟอร์ม')));
+      s.textContent = d.hand ? 'แก้แล้ว' : (d.pulled ? 'ดึงจากฟอร์ม ' + _fcDl(pr.pull) : (miss ? 'ยังไม่มีราคา' : (d.src === 'bill' ? 'บิล' : (d.src === 'mix' ? 'บิล+ฟอร์ม' : 'ฟอร์ม'))));
     }
   });
-  _fcTxt('fc-sv-coll', _fcF0(m.pastRev));
-  // ยังไม่เก็บ
+  _fcTxt('fc-v-coll', _fcF0(m.pastRev));
+  if (m.hasColl) _fcDot('coll', m.past.some(d => d.rows.some(r => r.p == null)) ? 'x' : (m.past.some(d => d.hand) ? 'e' : (m.past.some(d => d.pulled) ? 'p' : '')));
+  const pw = document.getElementById('fc-pullwarn');
+  if (pw) {
+    const noSrc = m.past.filter(d => d.rows.some(r => r.p0 == null) && !d.pulled).length;
+    pw.hidden = !noSrc;
+    _fcTxt('fc-pulltx', noSrc + ' วันไม่มีราคาในบิล/ฟอร์มของ “' + (_fcG.fruit || '') + '”');
+  }
+  // ที่เหลือ
   if (m.remMode === 'days' && m.hasColl) {
     m.days.forEach((d, i) => {
+      let tot = 0;
       m.mixOrder.forEach((k, j) => {
         const id = `d${i}_${j}`, kg = d.by[k] || 0, p = d.p[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
-        _fcTxt('fc-pk-' + id, _fcF0(kg)); money('fc-rv-' + id, kg, p);
-        _fcWas(id, chg, m.remP0[k], m.remP0[k] != null ? 'ฟอร์ม' : 'ไม่มีในฟอร์ม');
+        if (p != null) tot += kg * p;
+        _fcTxt('fc-pk-' + id, _fcF0(kg) + ' กก.'); money('fc-rv-' + id, kg, p);
+        _fcWas(id, chg, m.remP0[k]);
         _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
       });
+      _fcTxt('fc-pds' + i, _fcF0(tot));
       const ki = document.getElementById('fcin-dk' + i);
       if (ki && document.activeElement !== ki && Number(ki.value) !== d.kg) ki.value = _fcFp(d.kg);
     });
-    const pe = document.getElementById('fc-pun');
-    if (pe) {
-      pe.className = 'fc-left' + (m.unKg ? '' : ' ok');
-      pe.innerHTML = m.unKg ? `<span>ยังไม่ได้แบ่ง <b>${_fcF0(m.unKg)}</b> กก. · คิดราคาฟอร์มไปก่อน</span><b>${_fcF0(m.unRev)}</b>` : `<span>แบ่งครบทุกกิโลแล้ว</span><b></b>`;
-    }
+    _fcTxt('fc-pun', m.unKg ? 'ยังไม่แบ่ง ' + _fcF0(m.unKg) + ' กก. (ราคาฟอร์ม ' + _fcF0(m.unRev) + ')' : 'แบ่งครบแล้ว');
+    _fcCls('fc-pun', 'warn', !!m.unKg);
   } else {
     m.mixOrder.forEach((k, j) => {
       const id = 'r' + j, kg = m.remBy[k] || 0, p = m.remP[k], chg = p != null && m.remP0[k] != null && p !== m.remP0[k];
-      _fcTxt('fc-rk' + j, _fcF0(kg)); money('fc-rv-' + id, kg, p);
-      _fcWas(id, chg, m.remP0[k], m.remP0[k] != null ? 'ฟอร์ม' : 'ไม่มีในฟอร์ม');
+      _fcTxt('fc-rk' + j, _fcF0(kg) + ' กก.'); money('fc-rv-' + id, kg, p);
+      _fcWas(id, chg, m.remP0[k]);
       _fcCls('fcpin-' + id, 'miss', p == null && kg > 0);
     });
   }
-  _fcTxt('fc-sv-rem', m.target > 0 ? _fcF0(m.remRev) : '—');
+  _fcTxt('fc-v-rem', m.target > 0 ? (needIn('rem') ? '—' : _fcF0(m.remRev)) : '—');
   // สัดส่วน (ยังไม่เก็บ)
   if (!m.hasColl) {
     m.mixRows.forEach((r, i) => {
       const nm = String(r.name || '').trim(), k = fcKey(nm);
       const dup = m.mixRows.filter(z => fcKey(String(z.name || '').trim()) === k).length;
-      _fcTxt('fc-mxk' + i, _fcF0((nm && dup === 1 && m.remBy[k] != null) ? m.remBy[k] : Math.round(m.remKg * (r.pct || 0) / 100)));
+      const kg = (nm && dup === 1 && m.remBy[k] != null) ? m.remBy[k] : Math.round(m.remKg * (r.pct || 0) / 100);
+      _fcTxt('fc-mxk' + i, _fcF0(kg) + ' กก.');
+      _fcTxt('fc-rvx' + i, '—');
       const b0 = (k in m.mixPct0) && m.mixMode !== 'manual' ? m.mixPct0[k] : null;
-      _fcWas('mx' + i, b0 != null && r.pct !== b0, b0, '');
+      _fcWas('mx' + i, b0 != null && r.pct !== b0, b0);
       _fcCls('fcpin-mx' + i, 'miss', r.pct == null);
       _fcCls('fcin-gn' + i, 'miss', !nm);
     });
@@ -23851,66 +24072,68 @@ function _fcRefresh(fromRender) {
       const okS = Math.abs(m.mixSum - 100) < 0.001, seen = {}, dup = [];
       m.mixRows.forEach(r => { const nm = String(r.name || '').trim(), k = fcKey(nm); if (!nm) return; if (seen[k] && dup.indexOf(nm) < 0) dup.push(nm); seen[k] = 1; });
       sm.className = 'fc-msum' + (okS && !dup.length ? '' : ' bad');
-      sm.innerHTML = dup.length ? `<span>ชื่อเบอร์ซ้ำ: ${_fcEsc(dup.join(', '))} — ลบแถวที่ซ้ำออก</span><span>${_fcFp(m.mixSum)}%</span>`
-        : `<span>${okS ? 'รวมครบ' : (m.mixSum < 100 ? 'ขาด ' + _fcFp(100 - m.mixSum) + '%' : 'เกิน ' + _fcFp(m.mixSum - 100) + '%')}</span><span>${_fcFp(m.mixSum)}%</span>`;
+      sm.textContent = dup.length ? 'ชื่อเบอร์ซ้ำ: ' + dup.join(', ') + ' — ลบแถวที่ซ้ำออก'
+        : (okS ? 'รวม 100%' : 'รวม ' + _fcFp(m.mixSum) + '% · ' + (m.mixSum < 100 ? 'ขาด ' + _fcFp(100 - m.mixSum) : 'เกิน ' + _fcFp(m.mixSum - 100)) + '%');
     }
+    const bar = document.querySelector('#fc-sec-rem .fc-mixbar');
+    if (bar) { const tot = Math.max(100, m.mixSum || 0); [...bar.children].forEach((sp, i) => { const r = m.mixRows[i]; if (r) sp.style.width = ((Number(r.pct) || 0) / tot * 100) + '%'; }); }
   }
+  _fcDot('rem', needIn('rem') ? 'x' : ((Object.keys(_fcD.remPrice || {}).length || (_fcD.remMode === 'days' && m.hasColl) || (Array.isArray(_fcD.mixRows) && _fcD.mixMode === m.mixMode && m.mixMode !== 'manual')) ? 'e' : ''));
   // ค่าจัดทำ
   rateKeys.forEach((k, j) => {
     const kg = m.projBy[k] || 0, r = m.rate[k], r0 = m.rate0[k], chg = r != null && r0 != null && r !== r0;
-    _fcTxt('fc-ck' + j, _fcF0(kg)); money('fc-rv-c' + j, kg, r);
-    _fcWas('c' + j, chg, r0, m.rateSrc[k] === 'avg' ? 'เฉลี่ย' : (m.rateSrc[k] === 'mem' ? 'จำไว้' : 'ไม่มีบิลอ้างอิง'));
+    _fcTxt('fc-ck' + j, _fcF0(kg) + ' กก.'); money('fc-rv-c' + j, kg, r);
+    _fcWas('c' + j, chg, r0);
     _fcCls('fcpin-c' + j, 'miss', r == null && kg > 0);
   });
   _fcTxt('fc-dkg', _fcF0(m.projKg)); _fcTxt('fc-pkg', _fcF0(m.projKg));
   _fcTxt('fc-deal', m.deal.miss && !m.deal.amt ? '—' : _fcF0(m.deal.amt));
-  _fcTxt('fc-proc', _fcF0(m.proc));
+  _fcTxt('fc-v-proc', needIn('proc') ? '—' : _fcF0(m.proc));
+  _fcDot('proc', needIn('proc') ? 'x' : (Object.keys(_fcD.rate || {}).length ? 'e' : ''));
+  // รายได้อื่น / ค่าใช้จ่ายอื่น
   ['inc', 'exp'].forEach(t => {
     let tot = 0;
-    (_fcD[t] || []).forEach((it, i) => {
+    const list = _fcD[t] || [];
+    list.forEach((it, i) => {
       const a = it.u === 'kg' ? (Number(it.v) || 0) * m.projKg : (Number(it.v) || 0); tot += a;
       _fcTxt('fc-ht' + t + i, it.u === 'kg' ? _fcFp(Number(it.v) || 0) + ' × ' + _fcF0(m.projKg) + ' กก. = ' + _fcF0(a) : '');
     });
-    _fcTxt('fc-hs' + t, _fcF0(tot));
+    const v = document.getElementById('fc-v-' + t);
+    if (v) { if (list.length) { v.className = 'v'; v.textContent = _fcF0(tot); } else { v.className = 'v add'; v.textContent = '+ เพิ่ม'; } }
+    _fcTxt('fc-sub-' + t, list.map(it => String(it.n || '').trim() || '—').join(' · '));
   });
   const nz = o => !!(o && Object.keys(o).some(k => o[k] != null && (typeof o[k] !== 'object' || Object.keys(o[k]).length)));
   const lk = (id, on) => { const e = document.getElementById(id); if (e) e.hidden = !on; };
   lk('fc-lk-past', nz(_fcD.past)); lk('fc-lk-rem', nz(_fcD.remPrice) || (_fcD.remMode === 'days' && m.hasColl)); lk('fc-lk-rate', nz(_fcD.rate));
   lk('fc-lk-mix', Array.isArray(_fcD.mixRows) && _fcD.mixMode === m.mixMode);
-  // หัว + ท้าย + แถบล่าง
+  // หัว + ยอดหมวด + แถบล่าง
   const gain = m.profit >= 0, word = gain ? 'กำไร' : 'ขาดทุน';
-  const q = !(m.target > 0) ? 'ยังไม่ได้ตั้งเป้าในสวนนี้'
-    : (m.collKg >= m.target ? 'เก็บครบเป้าแล้ว ' + _fcF0(m.collKg) + ' กก. จะ' : 'ถ้าเก็บครบเป้า ' + _fcF0(m.target) + ' กก. จะ') + (ok ? word : '…');
-  _fcTxt('fc-hq', q);
+  _fcTxt('fc-hq', !(m.target > 0) ? 'ยังไม่ได้ตั้งเป้า' : (m.collKg >= m.target ? 'เก็บครบเป้าแล้ว ' + _fcF0(m.collKg) + ' กก.' : 'ถ้าเก็บครบ ' + _fcF0(m.target) + ' กก.'));
   const hero = document.getElementById('fc-hero');
   if (hero) hero.className = 'fc-hero ' + (ok ? (gain ? 'gain' : 'loss') : 'wait');
   const amt = document.getElementById('fc-hamt');
   if (amt) amt.innerHTML = ok ? _fcSgn(m.profit) + '<small>บาท</small>' : 'ยังคิดไม่ได้';
   const pill = document.getElementById('fc-hpct');
-  if (pill) { pill.hidden = !ok; pill.textContent = ok ? word + ' ' + (m.pct == null ? '—' : Math.abs(m.pct).toFixed(1) + '%') + ' ของทุน' : ''; }
-  _fcTxt('fc-hsold', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-hcost', ok ? _fcF0(m.cost) : '—');
+  if (pill) { pill.hidden = !ok; pill.textContent = ok ? word + ' ' + (m.pct == null ? '—' : Math.abs(m.pct).toFixed(1) + '%') : ''; }
   _fcTxt('fc-tin', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-tout', ok ? _fcF0(m.cost) : '—');
   const tg = m.target > 0 ? m.target : Math.max(1, m.collKg);
   const wa = Math.max(0, Math.min(100, m.collKg / tg * 100));
   const ba = document.getElementById('fc-hba'), bb = document.getElementById('fc-hbb');
   if (ba) ba.style.width = wa + '%'; if (bb) bb.style.width = (100 - wa) + '%';
-  _fcTxt('fc-hla', 'เก็บแล้ว ' + _fcF0(m.collKg) + ' กก. (จริง)');
-  _fcTxt('fc-hlb', 'ยังไม่เก็บ ' + _fcF0(m.remKg) + ' กก. (คาด)');
+  _fcTxt('fc-hla', 'เก็บแล้ว ' + _fcF0(m.collKg));
+  _fcTxt('fc-hlb', 'เหลือ ' + _fcF0(m.remKg) + ' กก.');
   const nd = document.getElementById('fc-hneed');
-  _fcNeedList = ok ? [] : _fcNeed(m);
+  _fcNeedList = need;
   if (nd) {
     nd.hidden = ok;
     if (!ok) {
-      const show = _fcNeedList.slice(0, 4);
-      nd.innerHTML = 'ยังขาด: ' + show.map((n, i) => `<button type="button" onclick="fcNeedGo(${i})">${_fcEsc(n.t)}</button>`).join('')
-        + (_fcNeedList.length > 4 ? `<span class="more">อีก ${_fcNeedList.length - 4} ช่อง</span>` : '')
-        + (!_fcNeedList.length ? `<span class="more">${_fcEsc(m.missing.join(' · '))}</span>` : '');
+      const show = need.slice(0, 4);
+      nd.innerHTML = 'ยังขาด ' + show.map((n, i) => `<button type="button" onclick="fcNeedGo(${i})">${_fcEsc(n.t)}</button>`).join('')
+        + (need.length > 4 ? `<span class="more">อีก ${need.length - 4} ช่อง</span>` : '')
+        + (!need.length ? `<span class="more">${_fcEsc(m.missing.join(' · '))}</span>` : '');
     }
   }
-  _fcTxt('fc-esold', ok ? _fcF0(m.sold) : '—'); _fcTxt('fc-ecost', ok ? '− ' + _fcF0(m.cost) : '—');
-  _fcTxt('fc-elbl', ok ? word : 'ผลลัพธ์');
-  const er = document.getElementById('fc-eres'); if (er) { er.textContent = ok ? _fcSgn(m.profit) : '—'; er.className = 'v r ' + (ok ? (gain ? 'in' : 'out') : ''); }
-  _fcTxt('fc-fl', ok ? 'คาดว่าจะ' + word : 'ยังขาด ' + Math.max(_fcNeedList.length, 1) + ' ช่อง');
+  _fcTxt('fc-fl', ok ? 'คาดว่าจะ' + word : 'ยังขาด ' + Math.max(need.length, 1) + ' ช่อง');
   const fr = document.getElementById('fc-fr'); if (fr) { fr.textContent = ok ? _fcSgn(m.profit) : '—'; fr.className = ok ? (gain ? 'in' : 'out') : ''; }
 }
 function _fcRerender() {
@@ -23929,15 +24152,44 @@ function _fcEnsureOv() {
   ov = document.createElement('div');
   ov.className = 'fc-ov'; ov.id = 'fc-ov';
   ov.innerHTML = `<div class="fc-hd"><button class="bk" type="button" onclick="fcClose()" aria-label="กลับ">←</button>
-    <div class="ti"><div class="t1" id="fc-t1">วางแผน</div><div class="t2" id="fc-t2">—</div></div><span class="badge" id="fc-badge">คาดการณ์</span>
+    <div class="ti"><div class="t1" id="fc-t1">วางแผน</div><div class="t2" id="fc-t2">—</div></div>
     <button class="more" type="button" onclick="fcMenu(event)" aria-label="เมนู"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/></svg></button>
-    <div class="fc-menu" id="fc-menu" hidden><button type="button" onclick="fcClear(true)">ล้างแผน<small>กลับไปใช้ค่าตั้งต้นทั้งหมด</small></button></div></div>
+    <div class="fc-menu" id="fc-menu" hidden>
+      <button type="button" onclick="fcHowTo()">วิธีคิดตัวเลข<small>ราคามาจากไหน · ค่าจัดทำเฉลี่ยยังไง</small></button>
+      <button type="button" onclick="fcResetAll()">คืนค่าเดิมทั้งหมด<small>ราคา · ค่าจัดทำ · สัดส่วน กลับเป็นค่าตั้งต้น</small></button>
+      <button type="button" class="red" onclick="fcClear(true)">ล้างแผน<small>ลบแผนที่บันทึกไว้ของสวนนี้</small></button></div></div>
     <div class="fc-body" id="fc-body"></div>
     <div class="fc-foot"><div class="res"><small id="fc-fl">คาดการณ์</small><b id="fc-fr">—</b></div><button class="save" type="button" onclick="fcSave()">บันทึกแผน</button></div>`;
   ov.addEventListener('click', e => { const mn = document.getElementById('fc-menu'); if (mn && !mn.hidden && !e.target.closest('#fc-menu') && !e.target.closest('.more')) mn.hidden = true; });
   document.body.appendChild(ov);
   return ov;
 }
+// ⋯ วิธีคิดตัวเลข — คำอธิบายยาวทั้งหมดอยู่ที่นี่ที่เดียว (หน้าหลักไม่ต้องมี)
+window.fcHowTo = function () {
+  const mn = document.getElementById('fc-menu'); if (mn) mn.hidden = true;
+  let el = document.getElementById('fc-how');
+  if (!el) { el = document.createElement('div'); el.id = 'fc-how'; el.className = 'fc-pp-wrap'; document.getElementById('fc-ov').appendChild(el); }
+  el.hidden = false;
+  el.innerHTML = `<div class="fc-pp-dim" onclick="fcHowClose()"></div><div class="fc-pp fc-how" role="dialog" aria-label="วิธีคิดตัวเลข">
+    <div class="fc-pp-h"><div class="grab"></div><div class="t">วิธีคิดตัวเลข</div><div class="s">ทุกตัวเลขเป็นแผนของสวนนี้ ไม่แตะบิล ไม่แตะคลังราคา</div><button type="button" class="cl" onclick="fcHowClose()" aria-label="ปิด">×</button></div>
+    <div class="fc-pp-b"><ul>
+      <li><b>เก็บแล้ว</b> — วันที่ส่งบิลแล้วใช้ราคาในบิล ยังไม่ส่งใช้ฟอร์มราคาที่ออกก่อนหรือตรงวันนั้น ใกล้ที่สุด</li>
+      <li><b>ที่เหลือ</b> — กิโลที่เหลือ = เป้า − เก็บแล้ว แบ่งเบอร์ตามสัดส่วนที่เก็บจริง ราคาตั้งต้นจากฟอร์มล่าสุด (ไม่มีฟอร์มผลไม้ชื่อเดียวกัน ใช้ผลไม้ที่เลือกไว้ตอนดึงราคา)</li>
+      <li><b>ยังไม่ได้เก็บเลย</b> — สัดส่วนเบอร์เฉลี่ยจากสวนผลไม้เดียวกันที่ปิดไม่เกิน 2 เดือน (สูงสุด 12 สวน) หรือเลือกสวนเดียว</li>
+      <li><b>ค่าจัดทำ</b> — เฉลี่ยแยกเบอร์จากบิลที่ปิดไม่เกิน 2 เดือน ถ่วงตามน้ำหนัก ไม่มีบิลใช้ค่าที่จำไว้จากบิลล่าสุด</li>
+      <li><b>ค่าขนส่ง ค่าอบ</b> — ไม่ได้คิดให้ ใส่เองใน "ค่าใช้จ่ายอื่น"</li>
+      <li><b>จุดสีท้ายชื่อแถว</b><div class="lg"><span><i class="fc-dot d-e"></i>แก้แล้ว</span><span><i class="fc-dot d-x"></i>ยังขาดข้อมูล</span><span><i class="fc-dot d-p"></i>ดึงจากคลัง</span></div></li>
+      <li><b>ช่องสีส้ม</b> = แก้แล้ว (ใต้ช่องบอกค่าเดิม) · <b>ขอบประ</b> = ยังว่าง · <b>สีฟ้า</b> = ดึงจากคลังราคา</li>
+    </ul></div></div>`;
+};
+window.fcHowClose = function () { const el = document.getElementById('fc-how'); if (el) el.hidden = true; };
+window.fcResetAll = function () {
+  if (!_fcD) return;
+  const mn = document.getElementById('fc-menu'); if (mn) mn.hidden = true;
+  ['past', 'pastSrc', 'remPrice', 'days', 'remMode', 'rate', 'mixRows'].forEach(k => { delete _fcD[k]; });
+  _fcTouch(); _fcRerender();
+  if (typeof toast === 'function') toast('คืนค่าเดิมทั้งหมดแล้ว · กด "บันทึกแผน" เพื่อเก็บ');
+};
 window.fcOpen = function (gid) {
   if (!canViewForecast()) {
     if (typeof toast === 'function') toast('ไม่มีสิทธิ์ดูคาดการณ์ — ให้แอดมินเปิด "เห็นคาดการณ์/วางแผน" ในหน้าจัดการผู้ใช้');
@@ -23948,7 +24200,10 @@ window.fcOpen = function (gid) {
   if (!fcIsOpen(g)) { if (typeof toast === 'function') toast('สวนนี้ไม่ได้อยู่ในสถานะเปิดสวน — คาดการณ์ใช้ได้เฉพาะสวนที่เปิดอยู่'); return; }
   try {
     fcCacheReset();
-    _fcG = g; _fcD = _fcClone(g.forecastPlan); _fcDirty = false; _fcOpenDays = {}; _fcRefOpen = false; _fcRefAll = false; _fcBackArm = 0;
+    _fcPP = null; { const pp = document.getElementById('fc-pp'); if (pp) pp.hidden = true; }
+    _fcG = g; _fcD = _fcClone(g.forecastPlan); _fcDirty = false;
+    _fcSec = {};
+    try { const m0 = fcModel(g, _fcD); if (!m0.complete) { _fcNeed(m0).forEach(n => { if (n.sec) _fcSec[n.sec] = true; }); if (!m0.hasColl) _fcSec.rem = true; } } catch (e) {} _fcOpenDays = {}; _fcRefOpen = false; _fcRefAll = false; _fcBackArm = 0;
     const ov = _fcEnsureOv();
     _fcRender();
     ov.classList.add('open');
@@ -23961,7 +24216,13 @@ window.fcOpen = function (gid) {
 };
 window.fcClose = function (force) {
   const mn = document.getElementById('fc-menu');
-  if (mn && !mn.hidden && force !== true) { mn.hidden = true; return; }   // เมนู ⋯ เปิดอยู่ → ปิดเมนูก่อน
+  if (mn && !mn.hidden && force !== true) { mn.hidden = true; return; }
+  const pp = document.getElementById('fc-pp');
+  if (pp && !pp.hidden && force !== true) { window.fcPullClose(); return; }   // แผ่นดึงราคาเปิดอยู่ → ปิดแผ่นก่อน
+  const hw = document.getElementById('fc-how');
+  if (hw && !hw.hidden && force !== true) { hw.hidden = true; return; }
+  if (hw) hw.hidden = true;
+  if (pp) { pp.hidden = true; _fcPP = null; }   // เมนู ⋯ เปิดอยู่ → ปิดเมนูก่อน
   // แก้แล้วยังไม่บันทึก → กดกลับครั้งแรกเตือน · กดซ้ำภายใน 3 วิ = ออกโดยไม่บันทึก
   if (_fcDirty && force !== true && Date.now() - _fcBackArm > 3000) {
     _fcBackArm = Date.now();
@@ -23983,6 +24244,10 @@ function _fcCleanPlan(d) {
     if (k === 'past') Object.keys(o.past).forEach(p => { if (!o.past[p] || !Object.keys(o.past[p]).length) delete o.past[p]; });
     if (!Object.keys(o[k]).length) delete o[k];
   } });
+  if (o.pastSrc && typeof o.pastSrc === 'object') {   // ที่มาของราคาที่ดึง: เก็บเฉพาะช่องที่ยังมีราคาในแผน
+    Object.keys(o.pastSrc).forEach(p => { const so = o.pastSrc[p] || {}; Object.keys(so).forEach(k => { if (!(o.past && o.past[p] && k in o.past[p])) delete so[k]; }); if (!Object.keys(so).length) delete o.pastSrc[p]; });
+    if (!Object.keys(o.pastSrc).length) delete o.pastSrc;
+  }
   ['inc', 'exp'].forEach(k => { if (Array.isArray(o[k])) { o[k] = o[k].filter(it => it && (String(it.n || '').trim() || Number(it.v))); if (!o[k].length) delete o[k]; } });
   if (o.remMode !== 'days') { delete o.remMode; delete o.days; }
   return o;
@@ -24024,7 +24289,7 @@ window.fcClear = function (force) {
 };
 window.fcReset = function (what) {
   if (!_fcD) return;
-  if (what === 'past') delete _fcD.past;
+  if (what === 'past') { delete _fcD.past; delete _fcD.pastSrc; }
   if (what === 'rem') { delete _fcD.remPrice; delete _fcD.days; delete _fcD.remMode; }
   if (what === 'rate') delete _fcD.rate;
   if (what === 'mix') delete _fcD.mixRows;
@@ -24043,6 +24308,7 @@ function _fcPastSet(di, ri, n) {
   _fcD.past = _fcD.past || {};
   const o = (_fcD.past[d.pid] = _fcD.past[d.pid] || {});
   if (n === '' || n == null || n === r.p0) delete o[r.key]; else o[r.key] = n;
+  if (_fcD.pastSrc && _fcD.pastSrc[d.pid]) delete _fcD.pastSrc[d.pid][r.key];   // พิมพ์เอง = ไม่ใช่ราคาที่ดึงจากฟอร์มแล้ว
   _fcTouch();
 }
 window.fcPastP = function (di, ri, v) { const n = _fcIn(v, FC_MAX.p); if (n === null) return; _fcPastSet(di, ri, n); _fcRefresh(); };
@@ -24198,6 +24464,123 @@ window.fcHidUnit = function (t, i, u) {
   const it = (_fcD[t] || [])[i]; if (!it || it.u === u) return;
   it.u = u; it.v = 0; _fcTouch(); _fcRerender();   // เปลี่ยนหน่วย = ตัวเลขเดิมไม่มีความหมายแล้ว → เริ่ม 0
   const e = document.getElementById('fcin-h' + t + i); if (e) e.focus();
+};
+
+// ═══ build 1150: ดึงราคาจากคลัง (หมวดเก็บแล้ว) — เลือกผลไม้/ฟอร์ม/วัน แล้วใส่ราคาลงแผน · ไม่แตะบิล ไม่แตะคลังราคา ═══
+let _fcPP = null;
+const FC_SVG_DL = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>';
+const FC_SVG_CHK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5"/></svg>';
+// ผลไม้ที่มีฟอร์มให้เลือก: ชื่อเดียวกัน → ชื่อคล้าย (มีคำซ้อนกัน) · ไม่มีทั้งสองแบบ → ทุกผลไม้ที่มีฟอร์ม (ให้คนเลือกเอง)
+function _fcPPFruits(g) {
+  const by = {}, fr = fruitCleanName(g.fruit || '');
+  (Array.isArray(priceForms) ? priceForms : []).forEach(f => {
+    if (!f || !f.date) return; const k = fruitCleanName(f.fruit || ''); if (!k) return;
+    (by[k] = by[k] || { key: k, name: String(f.fruit).trim(), n: 0 }).n++;
+  });
+  const list = Object.keys(by).map(k => Object.assign(by[k], { rank: k === fr ? 0 : ((fr && (k.indexOf(fr) >= 0 || fr.indexOf(k) >= 0)) ? 1 : 2) }));
+  const near = list.some(x => x.rank < 2);
+  return list.filter(x => near ? x.rank < 2 : true).sort((a, b) => a.rank - b.rank || b.n - a.n);
+}
+function _fcPPForms() { return _fcPP ? fcFormsOf(_fcPP.fruit).sort((a, b) => (b.date || '').localeCompare(a.date || '')) : []; }
+function _fcPPPreview(m) {
+  const pool = _fcPPForms();
+  return m.past.map(d => {
+    const f = _fcPP.mode === 'one' ? (pool[_fcPP.one] || null) : fcPickForm(pool, d.date);
+    const late = _fcPP.mode !== 'one' && !!f && (f.date || '') > d.date;
+    const pr = {}; if (f) (f.rows || []).forEach(x => { if (x && x.name != null) { const v = fcNum(x.price); if (v != null) pr[fcKey(String(x.name))] = v; } });
+    const rows = d.rows.map(r => ({ grade: r.grade, key: r.key, kg: r.kg, c: r.p, np: (r.key in pr) ? pr[r.key] : null, p0: r.p0 }));
+    const diff = rows.reduce((a, r) => a + (r.np != null ? (r.np - (r.c || 0)) * r.kg : 0), 0);
+    return { d, f, late, rows, diff, bill: d.src === 'bill' || d.src === 'mix' };
+  });
+}
+window.fcPullOpen = function () {
+  if (!_fcG) return;
+  const g = _fcG, m = _fcM(), fl = _fcPPFruits(g);
+  const keep = _fcD.pullFruit && fl.find(x => fcSameFruit(x.name, _fcD.pullFruit));
+  _fcPP = { fruit: keep ? keep.name : (fl[0] ? fl[0].name : ''), mode: 'day', one: 0, on: {}, all: false };
+  m.past.forEach(d => { _fcPP.on[d.pid] = !(d.src === 'bill' || d.src === 'mix'); });   // วันที่ส่งบิลแล้ว = ราคาขายจริง → ไม่ติ๊กไว้ก่อน
+  let el = document.getElementById('fc-pp');
+  if (!el) { el = document.createElement('div'); el.id = 'fc-pp'; el.className = 'fc-pp-wrap'; document.getElementById('fc-ov').appendChild(el); }
+  el.hidden = false;
+  _fcPPRender(true);
+};
+window.fcPullClose = function () { const el = document.getElementById('fc-pp'); if (el) el.hidden = true; _fcPP = null; };
+function _fcPPRender(first) {
+  const el = document.getElementById('fc-pp'); if (!el || !_fcPP) return;
+  const g = _fcG, m = _fcM(), fl = _fcPPFruits(g), st = _fcPP;
+  const old = el.querySelector('.fc-pp-b'), sc = old && !first ? old.scrollTop : 0;
+  let b = '';
+  if (!fl.length) {
+    b = `<div class="fc-emp">ยังไม่มีฟอร์มราคาในคลัง — สร้างฟอร์มราคาก่อน แล้วค่อยกลับมาดึง</div>`;
+  } else {
+    const exact = fl.some(x => x.rank === 0), near = fl.some(x => x.rank === 1);
+    b += `<div><div class="fc-pp-lbl">ใช้ฟอร์มของผลไม้</div>`;
+    if (!exact) b += `<div class="fc-pp-warn">${near ? 'ไม่มีฟอร์มชื่อ “' + _fcEsc(g.fruit || '') + '” ตรงๆ — เลือกชื่อที่ใกล้เคียง ระบบจะจำไว้ให้สวนนี้' : 'ไม่มีฟอร์มที่ชื่อคล้าย “' + _fcEsc(g.fruit || '') + '” — เลือกผลไม้ที่จะใช้ราคา ระบบจะจำไว้ให้สวนนี้'}</div>`;
+    b += `<div class="fc-pp-chips">` + fl.map((x, i) => `<button type="button" class="fc-pp-chip${fcSameFruit(x.name, st.fruit) ? ' on' : ''}" onclick="fcPullFruit(${i})">${_fcEsc(x.name)}<small>${x.n} ใบ</small></button>`).join('') + `</div></div>`;
+    const pool = _fcPPForms();
+    b += `<div><div class="fc-pp-lbl">ใช้ฟอร์มใบไหน</div><div class="fc-seg" role="group" aria-label="ใช้ฟอร์มใบไหน"><button type="button" class="${st.mode !== 'one' ? 'on' : ''}" onclick="fcPullMode('day')">ฟอร์มของแต่ละวัน</button><button type="button" class="${st.mode === 'one' ? 'on' : ''}" onclick="fcPullMode('one')">ฟอร์มเดียวทุกวัน</button></div>`;
+    if (st.mode === 'one') {
+      const lim = st.all ? pool.length : Math.min(10, pool.length);
+      b += `<div class="fc-pp-chips">` + pool.slice(0, lim).map((f, i) => `<button type="button" class="fc-pp-chip${i === st.one ? ' on' : ''}" onclick="fcPullOne(${i})">ฟอร์ม ${_fcEsc(_fcDl(f.date))}</button>`).join('')
+        + (pool.length > lim ? `<button type="button" class="fc-lnk" onclick="fcPullAllForms()">ดูทั้งหมด (${pool.length})</button>` : '') + `</div>`;
+    } else b += `<div class="fc-pp-sub">แต่ละวันใช้ฟอร์มที่ออกก่อนหรือตรงวันนั้น ใกล้ที่สุด</div>`;
+    b += `</div>`;
+    const pv = _fcPPPreview(m), nOn = pv.filter(x => st.on[x.d.pid] && x.f).length;
+    b += `<div class="fc-pp-lbl">เลือกวัน <small>· ติ๊กแล้ว ${nOn} จาก ${pv.length} วัน</small></div>`;
+    pv.forEach((x, di) => {
+      const on = !!st.on[x.d.pid] && !!x.f;
+      b += `<div class="fc-pp-day${on ? ' on' : ''}${x.f ? '' : ' off'}"><button type="button" class="fc-pp-dh" onclick="fcPullTog(${di})"${x.f ? '' : ' disabled'} aria-pressed="${on}">`
+        + `<span class="cb">${FC_SVG_CHK}</span><span class="dt"><b>${_fcEsc(_fcDl(x.d.date))}</b> <span class="${x.late ? 'late' : 'f'}">${x.f ? (x.late ? 'ใช้ฟอร์มวันหลัง ' : 'ฟอร์ม ') + _fcEsc(_fcDl(x.f.date)) : 'ไม่มีฟอร์ม'}</span>`
+        + (x.bill ? `<span class="bl">มีราคาในบิลแล้ว</span>` : '') + `</span><span class="dv ${x.diff > 0 ? 'up' : (x.diff < 0 ? 'dn' : '')}">${x.f ? _fcSgnZ(x.diff) : ''}</span></button>`;
+      if (x.f) {
+        b += `<div class="fc-pp-tr fc-pp-th"><span>เบอร์</span><span class="a">ตอนนี้</span><span></span><span class="b">ฟอร์ม</span><span class="c">ต่าง/กก.</span></div>`;
+        x.rows.forEach(r => {
+          const df = (r.np != null && r.c != null) ? Math.round((r.np - r.c) * 100) / 100 : null;
+          b += `<div class="fc-pp-tr"><span class="g">${_fcEsc(r.grade)}</span><span class="a">${r.c == null ? '—' : _fcFp(r.c)}</span><span class="ar">→</span><span class="b">${r.np == null ? '—' : _fcFp(r.np)}</span>`
+            + `<span class="c ${df > 0 ? 'up' : (df < 0 ? 'dn' : '')}">${df == null ? (r.np != null ? 'ใหม่' : '') : (df === 0 ? 'เท่าเดิม' : (df > 0 ? '+' : '−') + _fcFp(Math.abs(df)))}</span>`
+            + (r.np == null ? `<span class="nt">ไม่มีเบอร์นี้ในฟอร์ม · คงราคาเดิม</span>` : '') + `</div>`;
+        });
+      }
+      b += `</div>`;
+    });
+  }
+  const pv = fl.length ? _fcPPPreview(m) : [];
+  const sel = pv.filter(x => st.on[x.d.pid] && x.f);
+  const sum = sel.reduce((a, x) => a + x.diff, 0), cells = sel.reduce((a, x) => a + x.rows.filter(r => r.np != null && r.np !== r.c).length, 0);
+  el.innerHTML = `<div class="fc-pp-dim" onclick="fcPullClose()"></div><div class="fc-pp" role="dialog" aria-label="ดึงราคาจากคลัง">
+    <div class="fc-pp-h"><div class="grab"></div><div class="t">ดึงราคาจากคลัง</div><div class="s">ราคาเข้าแผนสวนนี้เท่านั้น · ไม่แตะบิล ไม่แตะคลังราคา</div><button type="button" class="cl" onclick="fcPullClose()" aria-label="ปิด">×</button></div>
+    <div class="fc-pp-b">${b}</div>
+    <div class="fc-pp-f"><div class="sm">เปลี่ยน ${cells} ช่อง · ยอดขายส่วนเก็บแล้ว<br><b class="${sum > 0 ? 'up' : (sum < 0 ? 'dn' : '')}">${_fcSgnZ(sum)}</b></div><button type="button" class="ok" onclick="fcPullApply()"${sel.length ? '' : ' disabled'}>ใช้ราคานี้</button></div></div>`;
+  const nb = el.querySelector('.fc-pp-b'); if (nb) nb.scrollTop = sc;
+}
+function _fcSgnZ(n) { n = Math.round(n); return n === 0 ? '±0' : _fcSgn(n); }
+window.fcPullFruit = function (i) { const fl = _fcPPFruits(_fcG), x = fl[i]; if (!x || !_fcPP) return; _fcPP.fruit = x.name; _fcPP.one = 0; _fcPP.all = false; _fcPPRender(); };
+window.fcPullMode = function (md) { if (!_fcPP) return; _fcPP.mode = md === 'one' ? 'one' : 'day'; _fcPPRender(); };
+window.fcPullOne = function (i) { if (!_fcPP) return; _fcPP.one = i; _fcPPRender(); };
+window.fcPullAllForms = function () { if (!_fcPP) return; _fcPP.all = true; _fcPPRender(); };
+window.fcPullTog = function (di) { if (!_fcPP) return; const d = _fcM().past[di]; if (!d) return; _fcPP.on[d.pid] = !_fcPP.on[d.pid]; _fcPPRender(); };
+window.fcPullApply = function () {
+  if (!_fcPP || !_fcG) return;
+  const m = _fcM(), pv = _fcPPPreview(m);
+  let nd = 0;
+  _fcD.past = _fcD.past || {}; _fcD.pastSrc = _fcD.pastSrc || {};
+  pv.forEach(x => {
+    if (!_fcPP.on[x.d.pid] || !x.f) return;
+    let any = false;
+    const o = (_fcD.past[x.d.pid] = _fcD.past[x.d.pid] || {}), so = (_fcD.pastSrc[x.d.pid] = _fcD.pastSrc[x.d.pid] || {});
+    x.rows.forEach(r => {
+      if (r.np == null) return;   // ไม่มีเบอร์นี้ในฟอร์ม → คงราคาเดิม
+      any = true;
+      if (r.p0 != null && r.np === r.p0) { delete o[r.key]; delete so[r.key]; }   // ตรงกับราคาบิล/ฟอร์มเดิมอยู่แล้ว
+      else { o[r.key] = r.np; so[r.key] = x.f.date; }
+    });
+    if (any) nd++;
+  });
+  _fcD.pullFruit = _fcPP.fruit;   // จำผลไม้ที่เลือกไว้ให้สวนนี้ ครั้งหน้าไม่ต้องเลือกซ้ำ
+  _fcTouch();
+  window.fcPullClose();
+  _fcRerender();
+  if (typeof toast === 'function') toast('ดึงราคาแล้ว ' + nd + ' วัน · กด "บันทึกแผน" เพื่อเก็บ');
 };
 
 function buildStampBox(s, gid) {
@@ -33395,6 +33778,53 @@ window.gvBsetCloudMigrateConfirm = gvBsetCloudMigrateConfirm;
 window.gvBsetCloudMigrateApply = gvBsetCloudMigrateApply;
 window.gvBsetIdbPurgeConfirm = gvBsetIdbPurgeConfirm;
 window.gvBsetIdbPurgeApply = gvBsetIdbPurgeApply;
+
+// ═══ build 1152: กันคีย์บอร์ดดันหน้ากระโดด (ฟอร์มสวน · หน้าวางแผน · แก้ฟอร์มราคา) ═══
+// ตอนพิมพ์: ให้จอ fixed นั้นมีขนาดเท่าพื้นที่เหนือคีย์บอร์ดพอดี (visualViewport) → หัวค้างที่เดิม เนื้อหาเลื่อนในกล่องตัวเอง
+// แถบล่างลอย (บันทึกแผน) ซ่อนชั่วคราว · ปิดคีย์บอร์ด/ออกจากช่อง → คืนค่าเดิมทั้งหมด
+(function () {
+  const SEL = '#garden-form-screen, #fc-ov, #pf-edit, #pf-pull';
+  const NOKB = /^(checkbox|radio|button|submit|reset|range|color|file|image|hidden)$/i;
+  let cur = null, raf = 0, lastEl = null, lastH = 0;
+  const typing = el => !!el && !el.readOnly && !el.disabled &&
+    ((el.tagName === 'INPUT' && !NOKB.test(el.type || '')) || el.tagName === 'TEXTAREA' || el.isContentEditable);
+  function clear() {
+    if (!cur) return;
+    cur.classList.remove('kb-on'); cur.style.top = ''; cur.style.bottom = ''; cur.style.height = '';
+    cur = null; lastEl = null; lastH = 0;
+  }
+  function scroller(el, stop) {
+    for (let p = el.parentElement; p && p !== stop; p = p.parentElement) {
+      if (/(auto|scroll)/.test(getComputedStyle(p).overflowY) && p.scrollHeight > p.clientHeight + 1) return p;
+    }
+    return null;
+  }
+  function keep(el) {
+    const p = scroller(el, cur); if (!p) return;
+    const r = el.getBoundingClientRect(), b = p.getBoundingClientRect(), pad = 14;
+    if (r.bottom > b.bottom - pad) p.scrollTop += Math.ceil(r.bottom - b.bottom + pad);
+    else if (r.top < b.top + pad) p.scrollTop -= Math.ceil(b.top + pad - r.top);
+  }
+  function fit() {
+    raf = 0;
+    const vv = window.visualViewport, ae = document.activeElement;
+    const scr = ae && ae.closest ? ae.closest(SEL) : null;
+    const kb = vv ? window.innerHeight - vv.height : 0;
+    if (!vv || !scr || !typing(ae) || kb < 120 || Math.abs((vv.scale || 1) - 1) > 0.05 || getComputedStyle(scr).display === 'none') { clear(); return; }
+    if (cur && cur !== scr) clear();
+    cur = scr;
+    scr.classList.add('kb-on');
+    scr.style.top = Math.max(0, Math.round(vv.offsetTop)) + 'px';
+    scr.style.bottom = 'auto';
+    scr.style.height = Math.round(vv.height) + 'px';
+    if (ae !== lastEl || Math.round(vv.height) !== lastH) { lastEl = ae; lastH = Math.round(vv.height); keep(ae); }
+  }
+  const req = () => { if (!raf) raf = requestAnimationFrame(fit); };
+  if (window.visualViewport) { visualViewport.addEventListener('resize', req); visualViewport.addEventListener('scroll', req); }
+  document.addEventListener('focusin', req, true);
+  document.addEventListener('focusout', () => setTimeout(req, 60), true);
+  window.__kbFit = fit;
+})();
 
 
 })();
