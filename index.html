@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1153;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 14 พ.ย. 69 (153)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1155;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 25 พ.ย. 69 (155)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 // ═══ build 1152: Service Worker (ไฟล์ sw.js ต้องอยู่ข้าง index.html) ═══
 // หน้าแอปดึงจากเน็ตก่อนเสมอ (ได้เวอร์ชันล่าสุด) · เน็ตช้า/ไม่มีเน็ต → เปิดจากสำเนาในเครื่อง
@@ -12272,6 +12272,102 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; box-shadow:none 
 .section-h.pf-sold-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pf-pull-btn { font-size: 12px; font-weight: 800; color: #3a2410; background: linear-gradient(180deg,#e0a93a,#b8860b); border: 1px solid #8a6410; border-radius: 9px; padding: 6px 12px; font-family: 'Sarabun',sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
 .pf-pull-btn:active { transform: scale(.96); }
+/* ═══ build 1154: คลังราคา แบบตาราง ═══ */
+#price-lib {
+  /* ╔══════════════════════════════════════════════════════════════╗
+     ║  ตัวปรับขนาด — แก้ตัวเลขตรงนี้ที่เดียว (หน่วย px)              ║
+     ╚══════════════════════════════════════════════════════════════╝ */
+  --date-col-w: 44px;      /* ความกว้างช่องวันที่ */
+  --date-num: 12.5px;      /* ขนาดเลขวัน */
+  --date-wd: 10px;         /* ขนาดชื่อวัน (จ. อ. พ.) และคำว่า "ล่าสุด" */
+  --mon-h: 32px;           /* ความสูงแถบหัวเดือน */
+  --mon-name: 12px;        /* ขนาดชื่อเดือน */
+  --mon-year: 9.5px;       /* ขนาดปี */
+  --grade-head: 13.5px;    /* ขนาดชื่อเบอร์ที่หัวตาราง */
+  --pfs: 12px;             /* ขนาดราคา */
+  --dfs: 9.5px;            /* ขนาดส่วนต่าง (▲0.2 / ▼9.29) */
+  --rowh: 41px;            /* ความสูงแต่ละแถว */
+  --cel-gap: 0px;          /* ระยะห่างราคากับส่วนต่าง */
+  --tab-fs: 12px;          /* ขนาดชื่อแท็บหน้า (ราคาหลัก / ทีม) */
+  --fruit-fs: 13px;        /* ขนาดชื่อผลไม้ด้านบน */
+  --page-pad: 5px;         /* ขอบซ้ายขวาของตาราง */
+  --pt-ink: #2a1c0c; --pt-ink2: #5f4a2a; --pt-mute: #a08c66; --pt-line: #efe7d2; --pt-line2: #dccfab; --pt-card: #fffdf8; --pt-paper: #f6f0e0;
+  --pt-up: #2f7a3a; --pt-dn: #b5281b; --pt-hl: #fbf3dc; --pt-brown: #4a2e15;
+}
+#price-lib .pt-top { flex: 0 0 auto; background: var(--pt-paper); border-bottom: 1px solid var(--pt-line2); }
+#price-lib .pt-bar { display: flex; align-items: center; gap: 8px; padding: 10px 10px 6px; }
+#price-lib .pt-seg { flex: 1; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+#price-lib .pt-seg span { flex: 0 0 auto; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--pt-line2); background: #fff; font: 600 var(--fruit-fs) 'Sarabun',sans-serif; color: var(--pt-ink2); cursor: pointer; }
+#price-lib .pt-seg span.on { background: var(--pt-brown); border-color: var(--pt-brown); color: #f3e8c8; }
+#price-lib .pt-btn { flex: 0 0 auto; font: 700 13px 'Sarabun',sans-serif; border: 1px solid var(--pt-line2); background: #fff; color: var(--pt-brown); border-radius: 10px; padding: 6px 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+#price-lib .pt-sub { display: flex; align-items: flex-end; padding: 0 6px 0 10px; gap: 2px; }
+#price-lib .pt-tabs { flex: 1; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+#price-lib .pt-tab { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 7px 11px 8px; font: 700 var(--tab-fs) 'Sarabun',sans-serif; color: var(--pt-mute); cursor: pointer; border-bottom: 3px solid transparent; }
+#price-lib .pt-tab .dot { width: 8px; height: 8px; border-radius: 50%; }
+#price-lib .pt-tab.on { color: var(--pt-ink); border-bottom-color: var(--c,#4a2e15); }
+#price-lib .pt-tab.add { color: var(--pt-brown); padding: 7px 9px 8px; }
+#price-lib .pt-sub .mn { border: none; background: none; color: var(--pt-ink2); padding: 6px 6px 9px; cursor: pointer; }
+#price-lib .pt-scr { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 var(--page-pad) 18px; }
+#price-lib .pt-scr > .pt-mon:first-child, #price-lib .pt-scr > .pt-empty, #price-lib .pt-scr > .pt-more:first-child { margin-top: 10px; }
+#price-lib .pt-more { display: block; width: 100%; margin: 0 0 10px; padding: 9px; border: 1px dashed var(--pt-line2); border-radius: 12px; background: none; color: var(--pt-ink2); font: 700 13px 'Sarabun',sans-serif; cursor: pointer; }
+#price-lib .pt-mon { background: var(--pt-card); border: 1px solid var(--pt-line2); border-radius: 14px; margin-bottom: 12px; overflow: clip; }
+#price-lib .pt-mon table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+#price-lib .pt-mon col.pt-dcol { width: var(--date-col-w); }
+#price-lib .pt-mon th, #price-lib .pt-mon td { padding: 0; text-align: center; white-space: nowrap; overflow: hidden; }
+#price-lib .pt-mon thead th { position: sticky; top: 0; z-index: 3; height: var(--mon-h); vertical-align: middle; background: linear-gradient(180deg,#fbf4e2,#efe3c3); border-bottom: 1px solid #cdb98a; box-shadow: 0 3px 6px -3px rgba(74,46,21,.35), inset 0 1px 0 #fff; font: 800 var(--grade-head) 'Sarabun',sans-serif; color: var(--pt-ink); }
+#price-lib .pt-mon thead th.mh { text-align: left; padding-left: 9px; line-height: 1.05; }
+#price-lib .pt-mon thead th.mh b { display: block; font: 800 var(--mon-name) 'Sarabun',sans-serif; color: var(--pt-brown); }
+#price-lib .pt-mon thead th.mh small { display: block; font: 600 var(--mon-year) 'Sarabun',sans-serif; color: var(--pt-mute); margin-top: 1px; }
+#price-lib .pt-mon thead th:not(.mh) { border-left: 1px solid rgba(205,185,138,.45); }
+#price-lib .pt-mon td { height: var(--rowh); border-bottom: 1px solid var(--pt-line); vertical-align: middle; }
+#price-lib .pt-mon tbody tr:last-child td { border-bottom: none; }
+#price-lib .pt-mon td.dd { border-right: 1px solid var(--pt-line2); cursor: pointer; line-height: 1; }
+#price-lib .pt-mon td.dd .n { display: block; font: 800 var(--date-num) 'Sarabun',sans-serif; }
+#price-lib .pt-mon td.dd .w { display: block; font: 500 var(--date-wd) 'Sarabun',sans-serif; color: var(--pt-mute); margin-top: 3px; }
+#price-lib .pt-mon tr.last td { background: var(--pt-hl); }
+#price-lib .pt-mon tr.last td.dd .w { color: #9a6a12; font-weight: 800; }
+#price-lib .pt-cel { display: inline-flex; flex-direction: column; align-items: center; gap: var(--cel-gap); line-height: 1; padding: 3px; border-radius: 7px; max-width: 100%; }
+#price-lib .pt-cel.side { flex-direction: row; align-items: baseline; gap: 3px; }
+#price-lib .pt-p { font: 700 var(--pfs) 'JetBrains Mono',monospace; letter-spacing: -.4px; }
+#price-lib .pt-d { font: 600 var(--dfs) 'JetBrains Mono',monospace; letter-spacing: -.3px; }
+#price-lib .pt-d.u { color: var(--pt-up); } #price-lib .pt-d.n { color: var(--pt-dn); } #price-lib .pt-d.e { color: #c4b48c; }
+#price-lib .pt-cel.big-u { background: #e4f2e3; } #price-lib .pt-cel.big-n { background: #f9e1dd; }
+#price-lib .pt-x { color: #d9ccaa; font: 500 14px 'JetBrains Mono',monospace; }
+#price-lib .pt-hint { padding: 2px 8px 10px; font-size: 12px; color: var(--pt-mute); line-height: 1.5; text-align: center; }
+#price-lib .pt-empty { text-align: center; color: var(--pt-mute); font-size: 13px; padding: 40px 20px; line-height: 1.6; }
+#price-lib .pt-sb { position: absolute; inset: 0; background: rgba(30,20,8,.35); display: flex; align-items: flex-end; z-index: 20; }
+#price-lib .pt-sh { width: 100%; max-height: 86%; overflow-y: auto; background: var(--pt-card); border-radius: 18px 18px 0 0; padding: 12px 14px calc(22px + env(safe-area-inset-bottom,0)); }
+#price-lib .pt-sh .grab { width: 38px; height: 4px; border-radius: 2px; background: var(--pt-line2); margin: 0 auto 10px; }
+#price-lib .pt-sh .tt { font: 800 16px 'Sarabun',sans-serif; text-align: center; }
+#price-lib .pt-sh .st { font-size: 12.5px; color: var(--pt-mute); text-align: center; margin: 2px 0 12px; }
+#price-lib .pt-sh .pv { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+#price-lib .pt-sh .pv span { border: 1px solid var(--pt-line2); border-radius: 9px; padding: 4px 9px; font: 600 13px 'Sarabun',sans-serif; }
+#price-lib .pt-sh .pv b { font-family: 'JetBrains Mono',monospace; }
+#price-lib .pt-sh button.big { width: 100%; font: 700 15px 'Sarabun',sans-serif; border-radius: 12px; padding: 12px; margin-top: 8px; border: 1px solid var(--pt-line2); background: #fff; color: var(--pt-ink); display: flex; justify-content: center; gap: 8px; align-items: center; cursor: pointer; }
+#price-lib .pt-sh button.pri { background: var(--pt-brown); color: #f3e8c8; border-color: var(--pt-brown); }
+#price-lib .pt-sh button.pri.dis { opacity: .4; }
+#price-lib .pt-sh button.del { color: var(--pt-dn); border-color: #ecc6c0; }
+#price-lib .pt-sh button.cc { background: none; border: none; color: var(--pt-mute); }
+#price-lib .pt-sh .fl { font: 700 12.5px 'Sarabun',sans-serif; color: var(--pt-ink2); margin: 12px 0 6px; display: flex; justify-content: space-between; align-items: center; }
+#price-lib .pt-sh .fl small { font-weight: 500; color: var(--pt-mute); }
+#price-lib .pt-sh .in { width: 100%; box-sizing: border-box; font: 600 15px 'Sarabun',sans-serif; border: 1.5px solid var(--pt-line2); border-radius: 10px; padding: 9px 11px; background: #fff; color: var(--pt-ink); }
+#price-lib .pt-sh .gchips { display: flex; flex-wrap: wrap; gap: 6px; }
+#price-lib .pt-sh .gch { border: 1px solid var(--pt-line2); background: #fff; border-radius: 999px; padding: 5px 11px; font: 700 13px 'Sarabun',sans-serif; cursor: pointer; display: flex; gap: 5px; align-items: center; }
+#price-lib .pt-sh .gch small { font-weight: 500; color: var(--pt-mute); font-size: 11px; }
+#price-lib .pt-sh .gch.on { background: #efe4c6; border-color: #c9a24a; }
+#price-lib .pt-sh .colors { display: flex; gap: 9px; }
+#price-lib .pt-sh .colors span { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+#price-lib .pt-sh .colors span.on { border-color: var(--pt-ink); box-shadow: inset 0 0 0 2px #fff; }
+#price-lib .pt-sh .addg { display: flex; gap: 6px; margin-top: 8px; }
+#price-lib .pt-sh .addg .in { flex: 1; padding: 7px 10px; font-size: 14px; }
+#price-lib .pt-sh .addg button { font: 700 13px 'Sarabun',sans-serif; border: 1px solid var(--pt-line2); background: #fff; border-radius: 10px; padding: 0 12px; cursor: pointer; color: var(--pt-brown); }
+#price-lib .pt-sh .warn { font-size: 12px; color: var(--pt-ink2); background: #f3ecda; border-radius: 9px; padding: 8px 10px; margin-top: 10px; line-height: 1.5; }
+#price-lib .pt-sh .cf { margin-top: 12px; }
+#price-lib .pt-sh .cf-g { font: 800 15px 'Sarabun',sans-serif; margin-bottom: 5px; }
+#price-lib .pt-sh .st3 { display: flex; border: 1px solid var(--pt-line2); border-radius: 10px; overflow: hidden; background: #fff; }
+#price-lib .pt-sh .st3 span { flex: 1; text-align: center; padding: 8px 4px; font: 600 12.5px 'Sarabun',sans-serif; color: var(--pt-ink2); cursor: pointer; border-left: 1px solid var(--pt-line); }
+#price-lib .pt-sh .st3 span:first-child { border-left: none; }
+#price-lib .pt-sh .st3 span.on { background: #efe4c6; color: var(--pt-ink); font-weight: 800; }
 /* ═══ build 1152: หน้าดึงราคาในบิล แบบ A ═══ */
 #pf-pull { --pp-ink:#2a1c0c; --pp-ink2:#5f4a2a; --pp-mute:#9a8560; --pp-line:#ebe2c9; --pp-line2:#d8caa6; --pp-card:#fffdf7;
   --pp-pull:#2d6a8a; --pp-pull-bg:#e6f0f5; --pp-edit:#c46a12; --pp-edit-bg:#fff3e2; --pp-miss:#b07a22; --pp-miss-bg:#fff8ec; --pp-red:#b5281b; --pp-green:#1f5c2e; }
@@ -13669,12 +13765,10 @@ function cloudInit() {
     }
     // Mark ทุก quote เป็น dirty → push ขึ้น cloud
     console.log('[cloud] migrating', state.quotes.length, 'quotes to cloud');
-    state.quotes.forEach(q => {
-      _cloudDirty.quotes.add(q.id);
-    });
-    cloudSaveDirty(_cloudDirty);
+    if (typeof window.cloudMarkQuotesDirty !== 'function') return;   // ยังโหลดไม่เสร็จ → ไม่ตั้งธง done รอบหน้าลองใหม่
+    window.cloudMarkQuotesDirty(state.quotes.map(q => q.id));
     localStorage.setItem(migrationKey, 'done');
-    cloudScheduleSync(2000);
+    window.cloudScheduleSync(2000);
   }, 3000);
 }
 
@@ -16191,60 +16285,312 @@ function pfWatchBottom() {
   _pfSenObs.observe(sen);
 }
 
-function renderPriceLib() {
-  const scr = document.getElementById('price-lib');
-  if (!scr) return;
-  const fruits = pfAllFruits();
-  const admin = pfIsAdmin();
-  const oldN = admin ? pfCountOld() : 0;
-  const esc = s => pfEsc(s).replace(/'/g, "\\'");
-  const tabs = ['<span class="pf-pill' + (_pfFruitFilter === null ? ' on' : '') + '" onclick="pfSetFilter(null)">ทั้งหมด</span>']
-    .concat(fruits.map(f => '<span class="pf-pill' + (_pfFruitFilter === f ? ' on' : '') + '" onclick="pfSetFilter(\'' + esc(f) + '\')">' + pfEsc(f) + '</span>')).join('');
-  const list = pfFilteredList();
-  const totalUnfiltered = pfByFruit(_pfFruitFilter).length;
-  const filtering = !!(_pfQuery.trim() || _pfYear != null || _pfMonth != null);
-  if (_pfShown > list.length) _pfShown = Math.max(PF_PAGE, Math.min(_pfShown, list.length));
+// ═══════════════════════════════════════════════════════════════════
+// build 1154: คลังราคา แบบตาราง (วัน × เบอร์) แยกเป็นตารางรายเดือน + หน้าทีม
+//  · ตัวปรับ "ขนาด/ฟอนต์" อยู่ใน CSS บล็อก  #price-lib { --date-col-w … }  (ค้นคำว่า "ตัวปรับขนาด")
+//  · ตัวปรับ "พฤติกรรม" อยู่ในบล็อก PFT_CFG ด้านล่าง
+//  · ไม่มีหน้าตั้งค่าในแอป — แก้เลข บันทึก แล้ว push
+// ═══════════════════════════════════════════════════════════════════
+const PFT_CFG = {
+  fmt: 'arrow',    // รูปแบบส่วนต่าง: 'num' = +0.2 · 'arrow' = ▲0.2 · 'pct' = +0.5% · 'hide' = ซ่อน
+  dec: 'auto',     // ทศนิยม: 'auto' · 0 · 1 · 2
+  pos: 'below',    // ตำแหน่งส่วนต่าง: 'below' = ใต้ราคา · 'side' = ข้างราคา
+  base: 'prev',    // เทียบกับ: 'prev' = วันก่อนหน้า · 'week' = 7 วันก่อน
+  hideEq: true,    // true = ซ่อนเครื่องหมาย = เมื่อราคาเท่าเดิม
+  hl: 2,           // เน้นพื้นช่องเมื่อราคาต่างเกินกี่บาท (0 = ไม่เน้น)
+  dcol: 'soft',    // สีส่วนต่าง: 'normal' = เขียว/แดง · 'soft' = จาง · 'mono' = ขาวดำ
+  newTop: false,   // true = วันใหม่อยู่บน · false = วันเก่าอยู่บน (วันใหม่ล่างสุด)
+  months: 4,       // เปิดมาโชว์กี่เดือนล่าสุด (เดือนก่อนหน้ากดโหลดเพิ่มทีละ monthsMore)
+  monthsMore: 3
+};
+const PFT_PAGES_KEY = 'thodsapon_pf_pages_v1';
+const PFT_CLOUD_ID = '__pf_pages_v1';
+const PFT_COLORS = ['#8a6a2e', '#2d6a8a', '#7a3e8a', '#2f7a3a', '#b5591b', '#8a2e4a'];
+const _PFT_WD = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+const _PFT_WDF = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+let _ptPage = {};          // fruit → page id ที่เปิดอยู่
+let _ptMonths = PFT_CFG.months;
+let _ptSheet = null;       // {k:'day'|'menu'|'del'|'edit'|'conf', ...}
+let _ptDraft = null;
+let _ptCfg = null;         // {updatedAt, fruits:{ fruit:[ {id,name,color,main?,grades[]} ] }}
 
-  // แถบค้นหา
-  const clr = _pfQuery ? '<span class="pf-sclr" onclick="pfSearchClear()">✕</span>' : '';
-  const searchBar = '<div class="pf-search"><div class="pf-sbox"><span class="ico">🔍</span>'
-    + '<input id="pf-q" type="text" placeholder="ค้นหาเบอร์ / ผลไม้…" value="' + pfEsc(_pfQuery) + '" oninput="pfSearchInput(this.value)">' + clr + '</div></div>';
+const _ptKey = s => String(s == null ? '' : s).normalize('NFC').replace(/\s+/g, '').toLowerCase();
+const _ptFr = s => String(s == null ? '' : s).normalize('NFC').trim();
 
-  // ตัวกรองปี/เดือน
-  const yLbl = _pfYear != null ? (String(_pfYear + 543).slice(-2)) : 'ทุกปี';
-  const mLbl = _pfMonth != null ? _TH_MON[_pfMonth] : 'ทุกเดือน';
-  const filterBar = '<div class="pf-filters">'
-    + '<div class="pf-fsel' + (_pfYear != null ? ' on' : '') + '" onclick="pfToggleDrop(\'year\')"><span>ปี</span><span class="cur">' + yLbl + ' ▾</span></div>'
-    + '<div class="pf-fsel' + (_pfMonth != null ? ' on' : '') + '" onclick="pfToggleDrop(\'month\')"><span>เดือน</span><span class="cur">' + mLbl + ' ▾</span></div>'
-    + '</div><div id="pf-drop"></div>';
-
-  // ตัวนับผล (เฉพาะตอนกรอง)
-  const countBar = filtering
-    ? '<div class="pf-count">พบ ' + list.length + ' ฟอร์ม' + (_pfQuery.trim() ? (' · คำค้น "' + pfEsc(_pfQuery.trim()) + '"') : '') + '</div>'
-    : '';
-
-  let listHtml;
-  if (!list.length) {
-    listHtml = '<div class="pf-empty">' + (filtering ? 'ไม่พบฟอร์มที่ตรงเงื่อนไข' : ('ยังไม่มีฟอร์มราคา' + (_pfFruitFilter ? (' "' + pfEsc(_pfFruitFilter) + '"') : '')))
-      + '</div>' + (filtering ? '<button class="pf-add-btn" onclick="pfSearchClear()">ล้างตัวกรอง</button>' : (admin ? '<button class="pf-add-btn" onclick="pfOpenEdit()">+ สร้างฟอร์มเลย</button>' : ''));
-  } else {
-    const shown = Math.min(_pfShown, list.length);
-    listHtml = list.slice(0, shown).map(f => pfCardHtml(f, admin, pfPrevSameFruit(f))).join('');
-    if (shown < list.length) listHtml += '<div id="pf-sentinel" class="pf-sentinel">เหลืออีก ' + (list.length - shown) + ' ใบ · เลื่อนต่อ</div>';
+function ptCfgLoad() {
+  if (_ptCfg) return _ptCfg;
+  try { _ptCfg = JSON.parse(localStorage.getItem(PFT_PAGES_KEY) || 'null'); } catch (e) { _ptCfg = null; }
+  if (!_ptCfg || typeof _ptCfg !== 'object' || !_ptCfg.fruits) _ptCfg = { updatedAt: 0, fruits: {} };
+  return _ptCfg;
+}
+function ptCfgSave() {
+  _ptCfg.updatedAt = Date.now();
+  try { localStorage.setItem(PFT_PAGES_KEY, JSON.stringify(_ptCfg)); } catch (e) {}
+  if (typeof cloudSyncPriceForms === 'function') { try { cloudSyncPriceForms(); } catch (e) {} }
+}
+// หน้าของผลไม้ — มี "หน้าหลัก" เสมอ 1 หน้า · เบอร์ที่ซ้ำกัน 2 หน้า = หน้าแรกในลิสต์ชนะ (กันพังถ้าข้อมูลเพี้ยน)
+function ptPages(fruit) {
+  const c = ptCfgLoad();
+  let a = c.fruits[fruit];
+  if (!Array.isArray(a)) a = c.fruits[fruit] = [];
+  if (!a.some(p => p && p.main)) a.unshift({ id: 'main', name: 'ราคาหลัก', color: PFT_COLORS[0], main: true, grades: [] });
+  return a;
+}
+function ptOwner(fruit, gKey) {
+  const T = ptPages(fruit);
+  return T.find(p => !p.main && (p.grades || []).some(g => _ptKey(g) === gKey)) || T.find(p => p.main);
+}
+// ข้อมูลของผลไม้: วัน → {gKey → ราคา} (ฟอร์มที่แก้ล่าสุดชนะถ้าวันเดียวกันมีหลายใบ)
+function ptModel(fruit) {
+  const forms = priceForms.filter(f => _ptFr(f.fruit) === fruit && f.date).slice()
+    .sort((a, b) => (a.date || '').localeCompare(b.date || '') || ((a.updatedAt || a.createdAt || 0) - (b.updatedAt || b.createdAt || 0)));
+  const days = []; const byD = {}; const names = {}; const order = [];
+  forms.forEach(f => {
+    let d = byD[f.date]; if (!d) { d = byD[f.date] = { date: f.date, v: {}, ids: [] }; days.push(d); }
+    d.ids.push(f.id);
+    (f.rows || []).forEach(r => {
+      const k = _ptKey(r && r.name); const p = Number(r && r.price);
+      if (!k || r.price === '' || r.price == null || !isFinite(p)) return;
+      d.v[k] = p; names[k] = _ptFr(r.name);
+    });
+  });
+  // ลำดับเบอร์: ตามลำดับในฟอร์มใหม่สุดก่อน แล้วต่อด้วยเบอร์ที่เหลือจากฟอร์มเก่า
+  for (let i = forms.length - 1; i >= 0; i--) (forms[i].rows || []).forEach(r => { const k = _ptKey(r && r.name); if (k && names[k] && !order.includes(k)) order.push(k); });
+  return { days, names, order };
+}
+function ptFmtNum(v, dec) { return dec === 'auto' ? String(Math.round(v * 100) / 100) : v.toFixed(+dec); }
+function ptPrev(days, i, k) {
+  if (PFT_CFG.base === 'prev') { for (let j = i - 1; j >= 0; j--) if (k in days[j].v) return days[j].v[k]; return null; }
+  const t = new Date(days[i].date + 'T00:00:00'); t.setDate(t.getDate() - 7);
+  const lim = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+  for (let j = i - 1; j >= 0; j--) if (days[j].date <= lim && k in days[j].v) return days[j].v[k]; return null;
+}
+function ptCell(v, pv) {
+  let d = '', cls = 'pt-cel' + (PFT_CFG.pos === 'side' ? ' side' : '');
+  if (PFT_CFG.fmt !== 'hide' && pv != null) {
+    const df = Math.round((v - pv) * 100) / 100;
+    if (df === 0) { d = PFT_CFG.hideEq ? '' : '<span class="pt-d e">=</span>'; }
+    else {
+      const a = Math.abs(df); let t;
+      if (PFT_CFG.fmt === 'pct') t = (df > 0 ? '+' : '−') + ptFmtNum(a / pv * 100, PFT_CFG.dec === 'auto' ? 1 : PFT_CFG.dec) + '%';
+      else if (PFT_CFG.fmt === 'arrow') t = (df > 0 ? '▲' : '▼') + ptFmtNum(a, PFT_CFG.dec);
+      else t = (df > 0 ? '+' : '−') + ptFmtNum(a, PFT_CFG.dec);
+      const st = (PFT_CFG.dcol === 'mono' ? 'color:var(--pt-ink2);' : '') + (PFT_CFG.dcol === 'soft' ? 'opacity:.55;' : '');
+      d = '<span class="pt-d ' + (df > 0 ? 'u' : 'n') + '" style="' + st + '">' + t + '</span>';
+      if (PFT_CFG.hl > 0 && a >= PFT_CFG.hl) cls += df > 0 ? ' big-u' : ' big-n';
+    }
   }
-  scr.innerHTML =
-    '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfClose()">← <span class="pf-bk-t">กลับ</span></button></div><div class="pf-ttl">📋 คลังราคา</div><div class="pf-hd-r">' + mailBtnHtml('walnut', '') + '</div></div>' + '</div>'
-    + '<div class="pf-body">'
-    + (admin ? '<button class="pf-add-btn pf-add-top" onclick="pfOpenEdit()">+ เพิ่มฟอร์มราคาใหม่</button>' : '')
-    + searchBar + filterBar
-    + '<div class="pf-tabs">' + tabs + '</div>'
-    + countBar
-    + '<div class="pf-list">' + listHtml + '</div>'
-    + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">🧹 ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '')
-    + '</div>';
-  pfWatchBottom();
+  return '<span class="' + cls + '"><span class="pt-p">' + ptFmtNum(v, PFT_CFG.dec) + '</span>' + d + '</span>';
+}
+function ptFruits() {
+  const s = []; priceForms.forEach(f => { const n = _ptFr(f.fruit); if (n && !s.includes(n)) s.push(n); });
+  // เรียงตามวันล่าสุดของแต่ละผลไม้ (ใหม่สุดมาก่อน)
+  const last = {}; priceForms.forEach(f => { const n = _ptFr(f.fruit); if (n && (f.date || '') > (last[n] || '')) last[n] = f.date || ''; });
+  return s.sort((a, b) => (last[b] || '').localeCompare(last[a] || ''));
+}
+function ptCurFruit() {
+  const fr = ptFruits();
+  if (!fr.length) return null;
+  if (!_pfFruitFilter || !fr.includes(_ptFr(_pfFruitFilter))) _pfFruitFilter = fr[0];
+  return _ptFr(_pfFruitFilter);
+}
+function ptCurPage(fruit) { const T = ptPages(fruit); return T.find(p => p.id === _ptPage[fruit]) || T[0]; }
+function ptPageGrades(fruit, page, model) {
+  return model.order.filter(k => ptOwner(fruit, k).id === page.id);
+}
+function ptTableHtml(fruit, page, model) {
+  const gs = ptPageGrades(fruit, page, model);
+  if (!gs.length) return '<div class="pt-empty">หน้านี้ยังไม่มีเบอร์' + (pfIsAdmin() ? '<br>กด ⋯ → แก้ชื่อ / เลือกเบอร์' : '') + '</div>';
+  const idx = model.days.map((d, i) => i).filter(i => gs.some(k => k in model.days[i].v));
+  if (!idx.length) return '<div class="pt-empty">ยังไม่มีราคาของหน้านี้</div>';
+  const lastDate = model.days[idx[idx.length - 1]].date;
+  const months = [];
+  idx.forEach(i => { const key = model.days[i].date.slice(0, 7); let m = months[months.length - 1]; if (!m || m.k !== key) { m = { k: key, idx: [] }; months.push(m); } m.idx.push(i); });
+  const total = months.length;
+  const shownM = months.slice(Math.max(0, total - _ptMonths));
+  const hidden = total - shownM.length;
+  const ord = PFT_CFG.newTop ? shownM.slice().reverse() : shownM;
+  let out = '';
+  if (hidden > 0 && !PFT_CFG.newTop) out += '<button class="pt-more" data-pt="more">ดูเดือนก่อนหน้า (อีก ' + hidden + ' เดือน)</button>';
+  ord.forEach(m => {
+    const mg = gs.filter(k => m.idx.some(i => k in model.days[i].v));
+    const dt = new Date(m.k + '-01T00:00:00');
+    const rows = PFT_CFG.newTop ? m.idx.slice().reverse() : m.idx;
+    let h = '<div class="pt-mon"><table><colgroup><col class="pt-dcol">' + mg.map(() => '<col>').join('') + '</colgroup><thead><tr><th class="mh"><b>' + _TH_MON[dt.getMonth() + 1] + '</b><small>' + String((dt.getFullYear() + 543) % 100).padStart(2, '0') + '</small></th>'
+      + mg.map(k => '<th>' + pfEsc(model.names[k]) + '</th>').join('') + '</tr></thead><tbody>';
+    rows.forEach(i => {
+      const d = model.days[i]; const x = new Date(d.date + 'T00:00:00');
+      h += '<tr class="' + (d.date === lastDate ? 'last' : '') + '"><td class="dd" data-pt="day" data-d="' + d.date + '"><span class="n">' + x.getDate() + '</span><span class="w">' + (d.date === lastDate ? 'ล่าสุด' : _PFT_WD[x.getDay()]) + '</span></td>'
+        + mg.map(k => '<td>' + (k in d.v ? ptCell(d.v[k], ptPrev(model.days, i, k)) : '<span class="pt-x">–</span>') + '</td>').join('') + '</tr>';
+    });
+    out += h + '</tbody></table></div>';
+  });
+  if (hidden > 0 && PFT_CFG.newTop) out += '<button class="pt-more" data-pt="more">ดูเดือนก่อนหน้า (อีก ' + hidden + ' เดือน)</button>';
+  return out + '<div class="pt-hint">' + (pfIsAdmin() ? 'แตะวันที่เพื่อแก้ไขหรือลบฟอร์มวันนั้น' : 'แตะวันที่เพื่อดูราคาวันนั้น') + '</div>';
+}
+const _PT_IC = {
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  more: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+  pen: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  bin: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  l: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  r: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+};
+function ptSheetHtml() {
+  const s = _ptSheet; if (!s) return '';
+  const fruit = ptCurFruit(); if (!fruit) return '';
+  const model = ptModel(fruit), T = ptPages(fruit), admin = pfIsAdmin();
+  let x = '';
+  if (s.k === 'day') {
+    const day = model.days.find(d => d.date === s.d); if (!day) return '';
+    const pg = ptCurPage(fruit), gs = ptPageGrades(fruit, pg, model), dt = new Date(s.d + 'T00:00:00');
+    x = '<div class="tt">' + pfEsc(fruit) + ' · ' + pfEsc(pg.name) + '</div><div class="st">วัน' + _PFT_WDF[dt.getDay()] + ' ' + pfDateLabel(s.d) + '</div><div class="pv">'
+      + gs.filter(k => k in day.v).map(k => '<span>' + pfEsc(model.names[k]) + ' <b>' + ptFmtNum(day.v[k], 'auto') + '</b></span>').join('') + '</div>';
+    if (admin) day.ids.forEach((id, n) => {
+      const lab = day.ids.length > 1 ? (' ใบที่ ' + (n + 1)) : '';
+      x += '<button class="big" data-pt="edit-form" data-id="' + pfEsc(id) + '">' + _PT_IC.pen + 'แก้ไขราคา' + lab + '</button><button class="big del" data-pt="del-form" data-id="' + pfEsc(id) + '">' + _PT_IC.bin + 'ลบฟอร์มวันนี้' + lab + '</button>';
+    });
+    x += '<button class="big cc" data-pt="close">' + (admin ? 'ยกเลิก' : 'ปิด') + '</button>';
+  } else if (s.k === 'menu') {
+    const i = T.findIndex(t => t.id === s.id), t = T[i]; if (!t) return '';
+    x = '<div class="tt">หน้า "' + pfEsc(t.name) + '"</div><div class="st">' + pfEsc(ptPageGrades(fruit, t, model).map(k => model.names[k]).join(' · ') || 'ยังไม่มีเบอร์') + '</div>'
+      + '<button class="big" data-pt="edit">' + _PT_IC.pen + 'แก้ชื่อ / เลือกเบอร์</button>'
+      + (i > 0 ? '<button class="big" data-pt="mvl">' + _PT_IC.l + 'ย้ายแท็บไปทางซ้าย</button>' : '') + (i < T.length - 1 ? '<button class="big" data-pt="mvr">' + _PT_IC.r + 'ย้ายแท็บไปทางขวา</button>' : '')
+      + (t.main ? '' : '<button class="big del" data-pt="askdel">' + _PT_IC.bin + 'ลบหน้านี้</button>') + '<button class="big cc" data-pt="close">ยกเลิก</button>';
+  } else if (s.k === 'del') {
+    const t = T.find(z => z.id === s.id); if (!t) return '';
+    x = '<div class="tt">ลบหน้า "' + pfEsc(t.name) + '"?</div><div class="warn">เบอร์ ' + pfEsc(ptPageGrades(fruit, t, model).map(k => model.names[k]).join(', ') || '–') + ' จะกลับไปอยู่หน้า "' + pfEsc(T.find(z => z.main).name) + '" · <b>ราคาทุกวันยังอยู่ครบ</b> ไม่มีอะไรถูกลบ</div>'
+      + '<button class="big del" data-pt="del">' + _PT_IC.bin + 'ลบหน้า</button><button class="big cc" data-pt="close">ยกเลิก</button>';
+  } else if (s.k === 'edit') {
+    const D = _ptDraft, base = model.order.map(k => model.names[k]);
+    const all = base.concat(D.extra.filter(g => !base.some(b => _ptKey(b) === _ptKey(g))));
+    x = '<div class="tt">' + (D.isNew ? 'เพิ่มหน้า (ทีม)' : 'แก้หน้า') + '</div><div class="st">' + (D.main ? 'หน้าหลัก: เบอร์ที่ไม่ได้อยู่หน้าอื่นจะอยู่ที่นี่เอง' : 'เลือกเบอร์ที่จะแสดงในหน้านี้') + '</div>'
+      + '<div class="fl">ชื่อหน้า</div><input class="in" id="pt-dn" value="' + pfEsc(D.name) + '" placeholder="เช่น ทีมเจ๊น้อย">'
+      + '<div class="fl">สีแท็บ</div><div class="colors">' + PFT_COLORS.map(c => '<span style="background:' + c + '" class="' + (c === D.color ? 'on' : '') + '" data-pt="col" data-c="' + c + '"></span>').join('') + '</div>'
+      + (D.main ? '' : '<div class="fl">เบอร์ในหน้านี้ <small>แตะเพื่อเลือก · ตัวเล็ก = อยู่หน้าไหนตอนนี้</small></div><div class="gchips">' + all.map(g => {
+        const k = _ptKey(g), on = D.grades.some(z => _ptKey(z) === k), own = ptOwner(fruit, k), cur = own && own.id !== D.id ? own.name : '';
+        return '<span class="gch' + (on ? ' on' : '') + '" data-pt="g" data-g="' + pfEsc(g) + '">' + pfEsc(g) + (cur && !on ? '<small>' + pfEsc(cur) + '</small>' : '') + '</span>';
+      }).join('') + '</div><div class="addg"><input class="in" id="pt-ng" placeholder="พิมพ์เบอร์ใหม่ เช่น AAA"><button data-pt="addg">+ เพิ่มเบอร์</button></div>'
+      + '<div class="warn">เบอร์หนึ่งอยู่ได้หน้าเดียว · ถ้าเลือกเบอร์ที่อยู่หน้าอื่นอยู่แล้ว ระบบจะถามให้เลือกก่อนบันทึก · การย้ายเปลี่ยนที่แสดงเท่านั้น ราคาเดิมไม่เปลี่ยน · แนะนำไม่เกิน 6 เบอร์ต่อหน้า</div>')
+      + '<button class="big pri" data-pt="save">' + (D.isNew ? 'สร้างหน้า' : 'บันทึก') + '</button><button class="big cc" data-pt="close">ยกเลิก</button>';
+  } else if (s.k === 'conf') {
+    const D = _ptDraft;
+    x = '<div class="tt">มีเบอร์ที่อยู่หน้าอื่นแล้ว</div><div class="st">เบอร์หนึ่งอยู่ได้หน้าเดียว — เลือกว่าจะให้อยู่หน้าไหน</div>'
+      + s.list.map((c, n) => '<div class="cf"><div class="cf-g">' + pfEsc(c.g) + '</div><div class="st3"><span class="' + (c.pick === 'move' ? 'on' : '') + '" data-pt="pick" data-n="' + n + '" data-v="move">ย้ายมา "' + pfEsc(D.name || 'หน้านี้') + '"</span><span class="' + (c.pick === 'keep' ? 'on' : '') + '" data-pt="pick" data-n="' + n + '" data-v="keep">คงไว้ที่ "' + pfEsc(c.owner) + '"</span></div></div>').join('')
+      + '<button class="big pri' + (s.list.every(c => c.pick) ? '' : ' dis') + '" data-pt="confok">ยืนยันและบันทึก</button><button class="big cc" data-pt="back">กลับไปแก้</button>';
+  }
+  return '<div class="pt-sb" data-pt="bg"><div class="pt-sh"><div class="grab"></div>' + x + '</div></div>';
+}
+function ptRenderSheet() {
+  const h = document.getElementById('pt-sheet'); if (!h) return;
+  const old = h.querySelector('.pt-sh'), st = old ? old.scrollTop : 0;
+  h.innerHTML = ptSheetHtml();
+  const n = h.querySelector('.pt-sh'); if (n) n.scrollTop = st;
+}
+function renderPriceLib(keepScroll) {
+  const scr = document.getElementById('price-lib'); if (!scr) return;
+  const admin = pfIsAdmin();
+  const fruit = ptCurFruit();
+  const oldN = admin ? pfCountOld() : 0;
+  const head = '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfClose()">← <span class="pf-bk-t">กลับ</span></button></div><div class="pf-ttl">คลังราคา</div><div class="pf-hd-r">' + mailBtnHtml('walnut', '') + '</div></div>';
+  if (!fruit) {
+    scr.innerHTML = head + '<div class="pt-scr"><div class="pt-empty">ยังไม่มีฟอร์มราคา' + (admin ? '</div><button class="pf-add-btn" onclick="pfOpenEdit()">+ สร้างฟอร์มเลย</button>' : '</div>') + '</div><div id="pt-sheet"></div>';
+    if (typeof updateMailNotif === 'function') updateMailNotif();
+    return;
+  }
+  const model = ptModel(fruit), T = ptPages(fruit), pg = ptCurPage(fruit);
+  const old = scr.querySelector('.pt-scr'); const st = old ? old.scrollTop : 0;
+  scr.innerHTML = head
+    + '<div class="pt-top"><div class="pt-bar"><div class="pt-seg">' + ptFruits().map(x => '<span class="' + (x === fruit ? 'on' : '') + '" data-pt="fruit" data-f="' + pfEsc(x) + '">' + pfEsc(x) + '</span>').join('') + '</div>'
+    + (admin ? '<span class="pt-btn" onclick="pfOpenEdit()">' + _PT_IC.plus + 'เพิ่มราคา</span>' : '') + '</div>'
+    + '<div class="pt-sub"><div class="pt-tabs">' + T.map(t => '<span class="pt-tab' + (t.id === pg.id ? ' on' : '') + '" style="--c:' + t.color + '" data-pt="page" data-id="' + pfEsc(t.id) + '"><span class="dot" style="background:' + t.color + '"></span>' + pfEsc(t.name) + '</span>').join('')
+    + (admin ? '<span class="pt-tab add" data-pt="new">' + _PT_IC.plus + '</span>' : '') + '</div>' + (admin ? '<button class="mn" data-pt="menu" data-id="' + pfEsc(pg.id) + '">' + _PT_IC.more + '</button>' : '') + '</div></div>'
+    + '<div class="pt-scr">' + ptTableHtml(fruit, pg, model)
+    + (oldN > 0 ? '<button class="pf-purge-btn" onclick="pfPurgeOld()">ลบรายการเก่าเกิน 1 ปี (' + oldN + ')</button>' : '') + '</div><div id="pt-sheet"></div>';
+  const sc = scr.querySelector('.pt-scr');
+  if (sc) sc.scrollTop = keepScroll ? st : (PFT_CFG.newTop ? 0 : sc.scrollHeight);
+  ptRenderSheet();
   if (typeof updateMailNotif === 'function') updateMailNotif();
 }
+// ── เหตุการณ์ทั้งหมดของคลังราคา (ผูกครั้งเดียวที่ #price-lib) ──
+function ptSaveDraft() {
+  const fruit = ptCurFruit(); const D = _ptDraft; if (!D) return;
+  const nm = (D.name || '').trim() || 'หน้าใหม่';
+  const T = ptPages(fruit);
+  if (D.isNew) { T.push({ id: D.id, name: nm, color: D.color, grades: D.grades.slice() }); _ptPage[fruit] = D.id; }
+  else { const t = T.find(z => z.id === D.id); if (t) { t.name = nm; t.color = D.color; if (!t.main) t.grades = D.grades.slice(); } }
+  ptCfgSave(); _ptSheet = null; _ptDraft = null; renderPriceLib();
+}
+document.addEventListener('click', function (e) {
+  const scr = document.getElementById('price-lib'); if (!scr || !scr.contains(e.target)) return;
+  const t = e.target.closest('[data-pt]'); if (!t) return;
+  const a = t.dataset.pt; const fruit = ptCurFruit(); if (!fruit) return;
+  const admin = pfIsAdmin(); const T = ptPages(fruit);
+  const syncName = () => { const el = document.getElementById('pt-dn'); if (el && _ptDraft) _ptDraft.name = el.value; };
+  if (a === 'bg') { if (e.target === t) { _ptSheet = null; _ptDraft = null; ptRenderSheet(); } return; }
+  if (a === 'close') { _ptSheet = null; _ptDraft = null; ptRenderSheet(); return; }
+  if (a === 'fruit') { _pfFruitFilter = t.dataset.f; _ptMonths = PFT_CFG.months; _ptSheet = null; renderPriceLib(); return; }
+  if (a === 'page') { _ptPage[fruit] = t.dataset.id; _ptMonths = PFT_CFG.months; _ptSheet = null; renderPriceLib(); return; }
+  if (a === 'more') {
+    const sc = scr.querySelector('.pt-scr'), h0 = sc ? sc.scrollHeight : 0, y0 = sc ? sc.scrollTop : 0;
+    _ptMonths += PFT_CFG.monthsMore; renderPriceLib(true);
+    const s2 = scr.querySelector('.pt-scr'); if (s2 && !PFT_CFG.newTop) s2.scrollTop = y0 + (s2.scrollHeight - h0);
+    return;
+  }
+  if (a === 'day') { _ptSheet = { k: 'day', d: t.dataset.d }; ptRenderSheet(); return; }
+  if (a === 'edit-form') { const id = t.dataset.id; _ptSheet = null; ptRenderSheet(); pfOpenEdit(id); return; }
+  if (a === 'del-form') { const id = t.dataset.id; _ptSheet = null; ptRenderSheet(); pfDeleteForm(id); return; }
+  if (!admin) return;
+  if (a === 'menu') { _ptSheet = { k: 'menu', id: t.dataset.id }; ptRenderSheet(); return; }
+  if (a === 'new') { _ptDraft = { isNew: true, id: 't' + Date.now().toString(36), name: '', color: PFT_COLORS[T.length % PFT_COLORS.length], grades: [], extra: [] }; _ptSheet = { k: 'edit' }; ptRenderSheet(); return; }
+  if (a === 'edit') { const x = T.find(z => z.id === _ptSheet.id); if (!x) return; _ptDraft = { isNew: false, id: x.id, main: !!x.main, name: x.name, color: x.color, grades: (x.grades || []).slice(), extra: [] }; _ptSheet = { k: 'edit' }; ptRenderSheet(); return; }
+  if (a === 'mvl' || a === 'mvr') {
+    const i = T.findIndex(z => z.id === _ptSheet.id), j = a === 'mvl' ? i - 1 : i + 1;
+    if (i < 0 || j < 0 || j >= T.length) return;
+    [T[i], T[j]] = [T[j], T[i]]; ptCfgSave(); _ptSheet = null; renderPriceLib(true); return;
+  }
+  if (a === 'askdel') { _ptSheet = { k: 'del', id: _ptSheet.id }; ptRenderSheet(); return; }
+  if (a === 'del') {
+    const c = ptCfgLoad(); c.fruits[fruit] = T.filter(z => z.main || z.id !== _ptSheet.id); _ptPage[fruit] = null;
+    ptCfgSave(); _ptSheet = null; renderPriceLib(); return;
+  }
+  if (a === 'col') { syncName(); _ptDraft.color = t.dataset.c; ptRenderSheet(); return; }
+  if (a === 'g') {
+    syncName(); const g = t.dataset.g, k = _ptKey(g), G = _ptDraft.grades, i = G.findIndex(z => _ptKey(z) === k);
+    if (i < 0) G.push(g); else G.splice(i, 1); ptRenderSheet(); return;
+  }
+  if (a === 'addg') {
+    syncName(); const el = document.getElementById('pt-ng'); const v = el ? _ptFr(el.value) : '';
+    if (v) {
+      const k = _ptKey(v);
+      if (!_ptDraft.extra.some(z => _ptKey(z) === k)) _ptDraft.extra.push(v);
+      if (!_ptDraft.grades.some(z => _ptKey(z) === k)) _ptDraft.grades.push(v);
+    }
+    ptRenderSheet(); return;
+  }
+  if (a === 'save') {
+    syncName(); const D = _ptDraft;
+    // ตรวจเบอร์ซ้ำ: เบอร์ที่เลือกแต่ตอนนี้อยู่หน้าอื่น → ต้องเลือกก่อนว่าย้ายหรือคงไว้
+    const list = [];
+    if (!D.main) D.grades.forEach(g => {
+      const own = T.find(p => !p.main && p.id !== D.id && (p.grades || []).some(z => _ptKey(z) === _ptKey(g)));
+      if (own) list.push({ g, owner: own.name, ownerId: own.id, pick: null });
+    });
+    if (list.length) { _ptSheet = { k: 'conf', list }; ptRenderSheet(); return; }
+    ptSaveDraft(); return;
+  }
+  if (a === 'pick') { const c = _ptSheet.list[+t.dataset.n]; if (c) c.pick = t.dataset.v; ptRenderSheet(); return; }
+  if (a === 'back') { _ptSheet = { k: 'edit' }; ptRenderSheet(); return; }
+  if (a === 'confok') {
+    const s = _ptSheet; if (!s.list.every(c => c.pick)) { if (typeof toast === 'function') toast('เลือกให้ครบทุกเบอร์ก่อน'); return; }
+    const D = _ptDraft;
+    s.list.forEach(c => {
+      if (c.pick === 'move') { const o = T.find(p => p.id === c.ownerId); if (o) o.grades = (o.grades || []).filter(z => _ptKey(z) !== _ptKey(c.g)); }
+      else D.grades = D.grades.filter(z => _ptKey(z) !== _ptKey(c.g));
+    });
+    ptSaveDraft(); return;
+  }
+});
 
 // ── ค้นหา: พิมพ์แล้วกรองสด (ไม่วาดทั้งหน้า — แค่ list + ตัวนับ เพื่อไม่ให้ช่องค้นหาเสีย focus) ──
 let _pfDrop = null;   // dropdown ที่เปิดอยู่: 'year'|'month'|null
@@ -16601,9 +16947,20 @@ window.cloudSyncPriceForms = async function () {
     if (error) return; // ตารางอาจยังไม่มี — เงียบไว้
     let changed = false;
     const cloudById = {};
+    let ptChanged = false;
     (data || []).forEach(row => {
       cloudById[row.id] = row;
       const cu = new Date(row.updated_at || 0).getTime();
+      // build 1154: แถวพิเศษเก็บ "หน้าทีม" ของคลังราคา (ไม่ใช่ฟอร์ม — ห้ามเข้า priceForms)
+      if (row.id === PFT_CLOUD_ID) {
+        const loc = ptCfgLoad();
+        if (!row.deleted && row.data && row.data.fruits && cu > (loc.updatedAt || 0)) {
+          _ptCfg = { updatedAt: cu, fruits: row.data.fruits };
+          try { localStorage.setItem(PFT_PAGES_KEY, JSON.stringify(_ptCfg)); } catch (e) {}
+          ptChanged = true;
+        }
+        return;
+      }
       const idx = priceForms.findIndex(f => f.id === row.id);
       if (row.deleted) { if (idx >= 0) { priceForms.splice(idx, 1); changed = true; } return; }
       const inc = Object.assign({}, row.data || {});
@@ -16613,6 +16970,8 @@ window.cloudSyncPriceForms = async function () {
       else { const lu = new Date(priceForms[idx].updatedAt || 0).getTime(); if (cu > lu) { priceForms[idx] = inc; changed = true; } }
     });
     const push = [];
+    { const loc = ptCfgLoad(), c = cloudById[PFT_CLOUD_ID];
+      if (loc.updatedAt && (!c || loc.updatedAt > new Date(c.updated_at || 0).getTime())) push.push({ id: PFT_CLOUD_ID, data: { fruits: loc.fruits }, updated_at: new Date(loc.updatedAt).toISOString(), deleted: false }); }
     priceForms.forEach(f => {
       const c = cloudById[f.id];
       const lu = new Date(f.updatedAt || 0).getTime();
@@ -16622,7 +16981,7 @@ window.cloudSyncPriceForms = async function () {
     dels.forEach(id => { const c = cloudById[id]; if (!c || !c.deleted) push.push({ id, data: {}, updated_at: new Date().toISOString(), deleted: true }); pushedDel.push(id); });
     if (push.length) { const { error: e2 } = await window.supaClient.from('price_forms').upsert(push, { onConflict: 'id' }); if (!e2) pfDeletedClear(pushedDel); }
     else if (pushedDel.length) pfDeletedClear(pushedDel);
-    if (changed) {
+    if (changed || ptChanged) {
       try { localStorage.setItem(PF_KEY, JSON.stringify(priceForms)); } catch (e) {}
       const scr = document.getElementById('price-lib');
       if (scr && scr.style.display !== 'none') renderPriceLib();
@@ -21893,6 +22252,9 @@ async function cloudPullUpdates() {
 // expose for debug
 window.cloudSyncOnce = cloudSyncOnce;
 window.cloudOnLocalChange = cloudOnLocalChange;
+// build 1155: ให้ส่วนย้ายบิลครั้งแรก (cloudInit) ติดป้ายบิลเป็น 'รอส่ง' ได้ — ตัวแปรคิวอยู่คนละขอบเขตกับ cloudInit
+window.cloudScheduleSync = cloudScheduleSync;
+window.cloudMarkQuotesDirty = function (ids) { (ids || []).forEach(id => _cloudDirty.quotes.add(id)); cloudSaveDirty(_cloudDirty); };
 
 let gardens = loadGardens();
 let notes = loadNotes();
