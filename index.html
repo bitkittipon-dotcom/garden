@@ -30,8 +30,8 @@
 //  ระบบบันทึกข้อผิดพลาด (errlog) — ตัวดักจับเงียบ + เวอร์ชัน + breadcrumbs
 //  เก็บเงียบ ไม่มี UI เด้ง · admin เปิดดูในหน้าจัดการผู้ใช้
 // ════════════════════════════════════════════
-window.__APP_BUILD = 1155;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
-window.__APP_VERSION = 'อัปเดต 25 พ.ย. 69 (155)';  // ← ข้อความเวอร์ชันโชว์ในแอป
+window.__APP_BUILD = 1156;                       // ← เลขบิลด์ (ผมบวกทุกครั้งที่ส่งไฟล์ใหม่ = ใช้ตัดสิน "แก้แล้ว")
+window.__APP_VERSION = 'อัปเดต 25 พ.ย. 69 (156)';  // ← ข้อความเวอร์ชันโชว์ในแอป
 
 // ═══ build 1152: Service Worker (ไฟล์ sw.js ต้องอยู่ข้าง index.html) ═══
 // หน้าแอปดึงจากเน็ตก่อนเสมอ (ได้เวอร์ชันล่าสุด) · เน็ตช้า/ไม่มีเน็ต → เปิดจากสำเนาในเครื่อง
@@ -12272,6 +12272,36 @@ tr.mg-dayhdr + tr.pf-grp-start td { border-top:none !important; box-shadow:none 
 .section-h.pf-sold-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pf-pull-btn { font-size: 12px; font-weight: 800; color: #3a2410; background: linear-gradient(180deg,#e0a93a,#b8860b); border: 1px solid #8a6410; border-radius: 9px; padding: 6px 12px; font-family: 'Sarabun',sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
 .pf-pull-btn:active { transform: scale(.96); }
+/* ═══ build 1156 (V6.2): ดึงราคาจากแอปขาย ═══ */
+.pf-pullsales { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px dashed #b88a2a; background: #fbf3dc; color: #7a5410; border-radius: 12px; padding: 11px; font: 800 14px 'Sarabun',sans-serif; margin: 0 0 12px; cursor: pointer; }
+#pss .pss-sb { position: fixed; inset: 0; z-index: 440; background: rgba(30,20,8,.4); display: flex; align-items: flex-end; font-family: 'Sarabun',sans-serif; color: #2a1c0c; }
+#pss .pss-sh { width: 100%; max-height: 88%; overflow-y: auto; background: #fffdf8; border-radius: 18px 18px 0 0; padding: 12px 14px calc(20px + env(safe-area-inset-bottom,0)); }
+#pss .pss-grab { width: 38px; height: 4px; border-radius: 2px; background: #dccfab; margin: 0 auto 10px; }
+#pss .pss-tt { text-align: center; font-weight: 800; font-size: 16px; }
+#pss .pss-st { text-align: center; font-size: 12.5px; color: #a08c66; margin: 2px 0 10px; }
+#pss .pss-dt { display: flex; gap: 8px; align-items: stretch; margin-bottom: 10px; }
+#pss .pss-dt button { flex: 0 0 44px; border: 1px solid #dccfab; background: #fff; border-radius: 10px; font-size: 22px; color: #5f4a2a; cursor: pointer; }
+#pss .pss-dt label { flex: 1; position: relative; border: 1.5px solid #dccfab; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font: 800 15px 'Sarabun',sans-serif; }
+#pss .pss-dt input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; }
+#pss .pss-s2 { font-size: 11.5px; border-radius: 8px; padding: 6px 9px; margin-bottom: 10px; }
+#pss .pss-s2.ok { background: #e4f2e3; color: #2f6a3a; } #pss .pss-s2.op { background: #fbf0d4; color: #8a5c10; }
+#pss .pss-fr { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
+#pss .pss-fr span { flex: 0 0 auto; border: 1px solid #dccfab; border-radius: 999px; padding: 4px 11px; font: 700 12.5px 'Sarabun',sans-serif; background: #fff; cursor: pointer; }
+#pss .pss-fr span.on { background: #efe4c6; border-color: #c9a24a; }
+#pss .pss-gl { border: 1px solid #efe7d2; border-radius: 12px; overflow: hidden; }
+#pss .pss-gr { display: flex; align-items: center; gap: 9px; padding: 10px 11px; border-bottom: 1px solid #efe7d2; }
+#pss .pss-gr:last-child { border: none; }
+#pss .pss-ck { width: 22px; height: 22px; flex: 0 0 22px; border-radius: 6px; border: 2px solid #c9a24a; background: #c9a24a; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+#pss .pss-ck.off { background: #fff; }
+#pss .pss-nm { font-weight: 800; min-width: 54px; } #pss .pss-sub { font-size: 11px; color: #a08c66; flex: 1; }
+#pss .pss-av { font: 800 16px 'JetBrains Mono',monospace; }
+#pss .pss-new { font-size: 10px; color: #9a6a12; background: #fbf0d4; border-radius: 5px; padding: 1px 5px; margin-left: 4px; font-weight: 700; }
+#pss .pss-low { font-size: 10px; color: #b5281b; background: #f9e1dd; border-radius: 5px; padding: 1px 5px; font-weight: 700; }
+#pss .pss-msg { text-align: center; color: #6b5731; font-size: 13px; padding: 26px 12px; line-height: 1.6; }
+#pss .pss-er { background: #fbeceb; border-radius: 10px; color: #8a2519; padding: 14px; }
+#pss .pss-note { font-size: 11.5px; color: #6b5731; background: #f3ecda; border-radius: 9px; padding: 8px 10px; margin-top: 10px; line-height: 1.5; }
+#pss .pss-big { width: 100%; margin-top: 10px; border: none; border-radius: 12px; padding: 12px; font: 800 15px 'Sarabun',sans-serif; background: #4a2e15; color: #f3e8c8; cursor: pointer; }
+#pss .pss-big.dis { opacity: .4; } #pss .pss-cc { background: none; color: #a08c66; margin-top: 2px; }
 /* ═══ build 1154: คลังราคา แบบตาราง ═══ */
 #price-lib {
   /* ╔══════════════════════════════════════════════════════════════╗
@@ -16781,6 +16811,7 @@ function pfRenderEdit() {
     }
   }
   window.__pfCopiedFrom = copiedFrom ? { date: copiedFrom.date, fruit: copiedFrom.fruit } : null;
+  window.__pfSalesNote = null;
   scr.innerHTML =
     '<div class="pf-hd"><div class="pf-hd-l"><button class="pf-back" onclick="pfCloseEdit()">← <span class="pf-bk-t">กลับ</span></button></div>'
     + '<div class="pf-ttl">' + (editing ? '✎ แก้ฟอร์มราคา' : 'ฟอร์มราคาใหม่') + '</div>'
@@ -16791,6 +16822,8 @@ function pfRenderEdit() {
     + '<div class="pf-body">'
     + '<div class="pf-sub">เรียงจากเบอร์ใหญ่/แพงสุด → เล็กสุด · ชื่อเป็นแค่ตัวช่วยจำ</div>'
     + '<div class="pf-frow">' + (window.fpFieldHtml ? window.fpFieldHtml('pf-fruit', fruit) : '<input id="pf-fruit" class="pf-fld" placeholder="ผลไม้" value="' + pfEsc(fruit) + '">') + '<input id="pf-date" class="pf-fld pf-datefld" type="date" value="' + pfEsc(date) + '" onchange="pfDateChanged(this.value)"></div>'
+    + '<button class="pf-pullsales" onclick="pfSalesOpen()">' + _PSS_DL + 'ดึงราคาเฉลี่ยจากแอปขาย</button>'
+    + '<div id="pf-salesnote"></div>'
     + '<div id="pf-copybar">' + pfCopyBarHtml() + '</div>'
     + '<div id="pf-rows">' + pfRowInputsHtml() + '</div>'
     + '<button class="pf-addrow" onclick="pfAddRow()">+ เพิ่มเบอร์</button>'
@@ -16888,6 +16921,180 @@ function pfRefillFor(fruit, dateISO) {
   pfRerenderRows();
   pfCopyBarUpdate();
 }
+// ═══════════════════════════════════════════════════════════════════
+// build 1156 (V6.2): ดึงราคาเฉลี่ยจากแอปขาย (Firestore) ลงฟอร์มราคา — อ่านอย่างเดียว
+//  · ต่อ Firebase โปรเจกต์ของแอปขายแบบ "ตั้งชื่อแอปแยก" ไม่กวน Supabase/ระบบเดิม · โหลด SDK ตอนกดดึงครั้งแรกเท่านั้น
+//  · อ่านเอกสารวันเดียว stores/<STORE>/days/<ปี พ.ศ.><เดือน><วัน> เมื่อกด (ไม่ฟังตลอด) → กินโควต้า 1 อ่านต่อวันที่เลือก
+//  · สูตรเฉลี่ยเหมือนหน้าสรุปแอปขาย: Σยอด ÷ Σ(ยอด÷ราคา) รวมหน้าร้าน+จัดส่ง+คนตัด
+// ═══════════════════════════════════════════════════════════════════
+const PSS_CFG = {
+  firebase: { apiKey: 'AIzaSyANFwh9xpqfDC5vgaM7l47e9eRSUL2s0lk', authDomain: 'sell-thodsapron.firebaseapp.com', projectId: 'sell-thodsapron', storageBucket: 'sell-thodsapron.firebasestorage.app', messagingSenderId: '163541729229', appId: '1:163541729229:web:7988c884c184d3d4ca4e84' },
+  store: 'tossaporn',    // ร้านในแอปขาย
+  sdk: '10.12.2',        // เวอร์ชัน Firebase SDK (เท่าแอปขาย)
+  low: 3,                // ขายรวมน้อยกว่ากี่ลัง = ขึ้นป้าย "ขายน้อย"
+  dec: 2,                // ทศนิยมของราคาเฉลี่ย
+  offset: 1,             // วันขายตั้งต้น = วันที่ฟอร์ม + กี่วัน (เก็บ 22 → ขาย 23)
+  timeout: 12000         // รอคลาวด์สูงสุดกี่ ms
+};
+const PSS_MAP_KEY = 'thodsapon_pf_salesmap_v1';
+let _pss = null;
+const _pssFr = s => String(s == null ? '' : s).normalize('NFC').replace(/[\s่-๋]/g, '').replace(/ี/g, 'ิ').replace(/ื/g, 'ึ').toLowerCase();   // ไม่สนช่องว่าง/วรรณยุกต์/อิ-อี
+const _pssGk = s => String(s == null ? '' : s).normalize('NFC').replace(/\s+/g, '').toLowerCase();
+function pssDateAdd(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function pssDocKey(iso) { return (+iso.slice(0, 4) + 543) + iso.slice(5, 7) + iso.slice(8, 10); }
+function pssMapLoad() { try { return JSON.parse(localStorage.getItem(PSS_MAP_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function pssLoadSdk() {
+  if (window.firebase && window.firebase.firestore && window.firebase.auth) return Promise.resolve();
+  const base = 'https://www.gstatic.com/firebasejs/' + PSS_CFG.sdk + '/';
+  const load = f => new Promise((ok, no) => { const s = document.createElement('script'); s.src = base + f; s.onload = ok; s.onerror = () => no({ code: 'sdk-load' }); document.head.appendChild(s); });
+  return load('firebase-app-compat.js').then(() => Promise.all([load('firebase-auth-compat.js'), load('firebase-firestore-compat.js')]));
+}
+async function pssFetchDay(iso) {
+  await pssLoadSdk();
+  const fb = window.firebase;
+  const app = (fb.apps || []).find(a => a.name === 'sales') || fb.initializeApp(PSS_CFG.firebase, 'sales');
+  const auth = app.auth();
+  if (!auth.currentUser) await auth.signInAnonymously();
+  const doc = await app.firestore().collection('stores').doc(PSS_CFG.store).collection('days').doc(pssDocKey(iso)).get({ source: 'server' });
+  if (!doc.exists) return { exists: false };
+  let d = null; try { d = JSON.parse((doc.data() || {}).data || 'null'); } catch (e) {}
+  if (!d) return { exists: false };
+  const bills = [].concat(d.sales || [], d.delivery || [], d.cutter || []);
+  const fr = {}, order = [];
+  bills.forEach(b => (b && b.items || []).forEach(it => {
+    if (!it || !it.fruit || !it.grade) return;
+    const f = fr[it.fruit] || (fr[it.fruit] = { grades: {}, order: [] });
+    const k = _pssGk(it.grade), g = f.grades[k] || (f.grades[k] = { name: String(it.grade).trim(), t: 0, kg: 0, bk: 0, pr: {} });
+    if (!f.order.includes(k)) f.order.push(k);
+    g.bk += (+it.basket || 0);
+    const pr = +it.price || 0, tt = +it.total || 0;
+    if (pr > 0 && tt > 0) { g.t += tt; g.kg += tt / pr; g.pr[pr] = 1; }
+    if (!order.includes(it.fruit)) order.push(it.fruit);
+  }));
+  return { exists: true, closed: !!(d.locked && typeof d.locked === 'object'), fruits: fr, order };
+}
+function pssErrText(e) {
+  const c = String((e && (e.code || e.message)) || '').toLowerCase();
+  if (c.indexOf('sdk-load') >= 0 || c.indexOf('timeout') >= 0 || c.indexOf('network') >= 0 || c.indexOf('unavailable') >= 0 || c.indexOf('offline') >= 0) return ['ต่อคลาวด์ของแอปขายไม่ได้', 'เช็กอินเทอร์เน็ตแล้วกด "ลองใหม่"'];
+  if (c.indexOf('operation-not-allowed') >= 0 || c.indexOf('admin-restricted') >= 0) return ['คลาวด์ปฏิเสธการล็อกอิน', 'Firebase Console (sell-thodsapron) → Authentication → Sign-in method → เปิด Anonymous'];
+  if (c.indexOf('referer') >= 0 || c.indexOf('api-key') >= 0 || c.indexOf('requests-from') >= 0) return ['คีย์ของแอปขายไม่อนุญาตโดเมนนี้', 'Google Cloud Console → Credentials → API key ของ sell-thodsapron → เพิ่มโดเมนแอปตลาดในรายการที่อนุญาต'];
+  if (c.indexOf('permission') >= 0 || c.indexOf('insufficient') >= 0) return ['กฎความปลอดภัยของ Firestore ไม่ให้อ่าน', 'Firebase Console → Firestore → Rules → ให้ผู้ล็อกอิน (Anonymous) อ่าน stores/' + PSS_CFG.store + '/days ได้'];
+  return ['ดึงไม่สำเร็จ', 'ลองใหม่ ถ้ายังไม่หายส่งข้อความนี้ให้ผม: ' + (e && (e.code || e.message) || 'unknown')];
+}
+const _PSS_CK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>';
+const _PSS_DL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>';
+function pssAvg(g) { return g.kg > 0 ? Math.round(g.t / g.kg * Math.pow(10, PSS_CFG.dec)) / Math.pow(10, PSS_CFG.dec) : null; }
+function pssFruitData() { const D = _pss.data; return D && D.exists && _pss.fruit && D.fruits[_pss.fruit] ? D.fruits[_pss.fruit] : null; }
+function pssRowsToApply() {
+  const F = pssFruitData(); if (!F) return [];
+  return F.order.filter(k => _pss.sel[k] && pssAvg(F.grades[k]) != null).map(k => ({ k, name: F.grades[k].name, v: pssAvg(F.grades[k]) }));
+}
+function pssConflicts(list) {
+  const out = [];
+  list.forEach(a => {
+    const r = (window._pfDraftRows || []).find(x => _pssGk(x.name) === a.k);
+    if (r && String(r.price) !== '' && !r._copied && Number(r.price) !== a.v) out.push({ name: a.name, old: r.price, v: a.v });
+  });
+  return out;
+}
+function pssHtml() {
+  const s = _pss; if (!s) return '';
+  const dt = new Date(s.date + 'T00:00:00'), wd = _PFT_WD[dt.getDay()];
+  let b = '<div class="pss-tt">ดึงจากแอปขาย</div><div class="pss-st">เลือกวันที่ขายออก (ไม่จำเป็นต้องตรงกับวันเก็บ)</div>'
+    + '<div class="pss-dt"><button data-ps="prev">‹</button><label><span>' + wd + ' ' + pfDateLabel(s.date) + '</span><input type="date" id="pss-date" value="' + s.date + '"></label><button data-ps="next">›</button></div>';
+  if (s.step === 'confirm') {
+    const cf = s.conf;
+    return '<div class="pss-sb"><div class="pss-sh"><div class="pss-grab"></div><div class="pss-tt">ทับราคาที่กรอกไว้?</div><div class="pss-st">มี ' + cf.length + ' เบอร์ที่คุณกรอกราคาไว้แล้ว</div>'
+      + '<div class="pss-gl">' + cf.map(c => '<div class="pss-gr"><span class="pss-nm">' + pfEsc(c.name) + '</span><span class="pss-sub">' + pfEsc(c.old) + ' → <b>' + c.v + '</b></span></div>').join('') + '</div>'
+      + '<button class="pss-big" data-ps="ok2">ทับเลย</button><button class="pss-big pss-cc" data-ps="back">กลับ</button></div></div>';
+  }
+  if (s.loading) b += '<div class="pss-msg">กำลังดึงจากแอปขาย…</div>';
+  else if (s.err) b += '<div class="pss-msg pss-er"><b>' + pfEsc(s.err[0]) + '</b><br>' + pfEsc(s.err[1]) + '</div><button class="pss-big" data-ps="retry">ลองใหม่</button>';
+  else if (!s.data || !s.data.exists) b += '<div class="pss-msg">วันนี้ไม่มีข้อมูลในแอปขาย</div>';
+  else {
+    const D = s.data;
+    b += '<div class="pss-s2 ' + (D.closed ? 'ok' : 'op') + '">' + (D.closed ? pfDateLabel(s.date) + ' · ปิดวันแล้ว · ตัวเลขนิ่ง' : pfDateLabel(s.date) + ' · ยังไม่ปิดวัน · ตัวเลขยังขยับได้ ดึงใหม่ได้ทุกเมื่อ') + '</div>';
+    if (D.order.length > 1) b += '<div class="pss-fr">' + D.order.map(f => '<span class="' + (f === s.fruit ? 'on' : '') + '" data-ps="fruit" data-f="' + pfEsc(f) + '">' + pfEsc(f) + '</span>').join('') + '</div>';
+    const F = pssFruitData();
+    if (!F) b += '<div class="pss-msg">เลือกผลไม้ที่ตรงกับ "' + pfEsc(s.formFruit || '–') + '" ด้านบน</div>';
+    else {
+      b += '<div class="pss-gl">' + F.order.map(k => {
+        const g = F.grades[k], av = pssAvg(g), n = Object.keys(g.pr).length, on = s.sel[k] && av != null, isNew = !(window._pfDraftRows || []).some(r => _pssGk(r.name) === k);
+        return '<div class="pss-gr"><div class="pss-ck' + (on ? '' : ' off') + '" data-ps="g" data-k="' + pfEsc(k) + '">' + (on ? _PSS_CK : '') + '</div><span class="pss-nm">' + pfEsc(g.name) + (isNew ? '<span class="pss-new">เบอร์ใหม่</span>' : '') + '</span>'
+          + '<span class="pss-sub">' + g.bk + ' ลัง · ' + n + ' ราคา' + (g.bk < PSS_CFG.low ? ' <span class="pss-low">ขายน้อย</span>' : '') + '</span><span class="pss-av">' + (av == null ? '–' : av) + '</span></div>';
+      }).join('') + '</div>';
+      const n = pssRowsToApply().length;
+      b += '<div class="pss-note">ติ๊กออกได้ถ้าไม่อยากดึงเบอร์ไหน · ราคาแก้ในช่องได้หลังดึง · วันที่ของฟอร์มไม่เปลี่ยน</div>'
+        + '<button class="pss-big' + (n ? '' : ' dis') + '" data-ps="use">ใช้ราคาเหล่านี้ (' + n + ' เบอร์)</button>';
+    }
+  }
+  return '<div class="pss-sb" data-ps="bg"><div class="pss-sh"><div class="pss-grab"></div>' + b + '<button class="pss-big pss-cc" data-ps="close">ยกเลิก</button></div></div>';
+}
+function pssRender() {
+  let h = document.getElementById('pss'); if (!_pss) { if (h) h.remove(); return; }
+  if (!h) { h = document.createElement('div'); h.id = 'pss'; document.body.appendChild(h); h.addEventListener('click', pssClick); h.addEventListener('change', e => { if (e.target.id === 'pss-date' && e.target.value) pssSetDate(e.target.value); }); }
+  const old = h.querySelector('.pss-sh'), st = old ? old.scrollTop : 0;
+  h.innerHTML = pssHtml();
+  const n = h.querySelector('.pss-sh'); if (n) n.scrollTop = st;
+}
+function pssPickFruit() {
+  const D = _pss.data; if (!D || !D.exists) { _pss.fruit = ''; return; }
+  const key = _pssFr(_pss.formFruit), mp = pssMapLoad()[key];
+  let f = (mp && D.order.includes(mp)) ? mp : D.order.find(x => _pssFr(x) === key && key);
+  if (!f && D.order.length === 1) f = D.order[0];
+  _pss.fruit = f || '';
+  pssResetSel();
+}
+function pssResetSel() { _pss.sel = {}; const F = pssFruitData(); if (F) F.order.forEach(k => { _pss.sel[k] = true; }); }
+async function pssSetDate(iso) {
+  _pss.date = iso; _pss.loading = true; _pss.err = null; _pss.data = null; _pss.step = 'pick'; pssRender();
+  const my = ++_pss.seq;
+  try {
+    const r = await Promise.race([pssFetchDay(iso), new Promise((_, no) => setTimeout(() => no({ code: 'timeout' }), PSS_CFG.timeout))]);
+    if (!_pss || my !== _pss.seq) return;
+    _pss.data = r; pssPickFruit();
+  } catch (e) { if (!_pss || my !== _pss.seq) return; _pss.err = pssErrText(e); }
+  _pss.loading = false; pssRender();
+}
+window.pfSalesOpen = function () {
+  if (!pfIsAdmin()) { if (typeof toast === 'function') toast('เฉพาะเจ้าของร้านเท่านั้น'); return; }
+  const dEl = document.getElementById('pf-date'), fEl = document.getElementById('pf-fruit');
+  const fd = (dEl && dEl.value) || new Date().toISOString().slice(0, 10);
+  _pss = { seq: 0, formFruit: (fEl && fEl.value || '').trim(), date: pssDateAdd(fd, PSS_CFG.offset), step: 'pick', sel: {}, loading: true };
+  pssRender(); pssSetDate(_pss.date);
+};
+function pssApply() {
+  const list = pssRowsToApply(); if (!list.length) return;
+  const rows = window._pfDraftRows = window._pfDraftRows || [];
+  list.forEach(a => {
+    const r = rows.find(x => _pssGk(x.name) === a.k);
+    if (r) { r.price = String(a.v); r._copied = false; return; }
+    const blank = rows.find(x => !String(x.name || '').trim() && String(x.price || '') === '');
+    if (blank) { blank.name = a.name; blank.price = String(a.v); blank._copied = false; } else rows.push({ name: a.name, price: String(a.v) });
+  });
+  window.__pfSalesNote = { date: _pss.date };
+  const key = _pssFr(_pss.formFruit);
+  if (key && _pss.fruit) { const m = pssMapLoad(); m[key] = _pss.fruit; try { localStorage.setItem(PSS_MAP_KEY, JSON.stringify(m)); } catch (e) {} }
+  pfRerenderRows(); pfCopyBarUpdate(); pssNoteRender();
+  _pss = null; pssRender();
+  if (typeof toast === 'function') toast('ดึงราคา ' + list.length + ' เบอร์แล้ว');
+}
+function pssNoteRender() { const el = document.getElementById('pf-salesnote'), n = window.__pfSalesNote; if (el) el.innerHTML = n ? '<div class="pf-copybar done">ราคาจากแอปขาย ' + pfDateLabel(n.date) + ' · วันที่ฟอร์มเป็นของคุณ แก้ได้</div>' : ''; }
+function pssClick(e) {
+  const t = e.target.closest('[data-ps]'); if (!t || !_pss) return;
+  const a = t.dataset.ps;
+  if (a === 'bg') { if (e.target === t) { _pss = null; pssRender(); } return; }
+  if (a === 'close') { _pss = null; pssRender(); return; }
+  if (a === 'prev') return pssSetDate(pssDateAdd(_pss.date, -1));
+  if (a === 'next') return pssSetDate(pssDateAdd(_pss.date, 1));
+  if (a === 'retry') return pssSetDate(_pss.date);
+  if (a === 'fruit') { _pss.fruit = t.dataset.f; pssResetSel(); pssRender(); return; }
+  if (a === 'g') { const k = t.dataset.k; _pss.sel[k] = !_pss.sel[k]; pssRender(); return; }
+  if (a === 'use') { const l = pssRowsToApply(); if (!l.length) return; const cf = pssConflicts(l); if (cf.length) { _pss.conf = cf; _pss.step = 'confirm'; pssRender(); } else pssApply(); return; }
+  if (a === 'ok2') return pssApply();
+  if (a === 'back') { _pss.step = 'pick'; pssRender(); }
+}
+
 window.pfAddRow = function () { window._pfDraftRows.push({ name: '', price: '' }); pfRerenderRows(); };
 window.pfDelRow = function (i) { if (window._pfDraftRows.length <= 1) return; window._pfDraftRows.splice(i, 1); pfRerenderRows(); };
 function pfRerenderRows() { const c = document.getElementById('pf-rows'); if (c) c.innerHTML = pfRowInputsHtml(); }
